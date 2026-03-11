@@ -153,25 +153,20 @@ Sprite = 2D画像を3D空間に置く方法
 const fairyTexture = loader.load("./yousei2.png");
 
 const fairyMaterial = new THREE.SpriteMaterial({
-map:fairyTexture,
-transparent:true,
+map: fairyTexture,
+transparent: true,
 depthWrite:false,
 blending:THREE.AdditiveBlending
 });
 
 const fairy = new THREE.Sprite(fairyMaterial);
-
+   
 /* サイズ */
-
+fairy.renderOrder = 10;
 fairy.scale.set(5,6.5,1);
 
 /* 位置 */
-
-fairy.position.set(0,-0.2,0);
-
-/* 描画順安定 */
-
-fairy.renderOrder = 10;
+fairy.position.set(0,0,0);
 
 scene.add(fairy);
 
