@@ -30,6 +30,52 @@ position:absolute;
 inset:0;
 }
 
+/* ===============================
+UI
+=============================== */
+
+.ui{
+position:absolute;
+inset:0;
+pointer-events:none;
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+padding:24px;
+z-index:10;
+}
+
+.panel{
+pointer-events:auto;
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.12);
+backdrop-filter:blur(12px);
+border-radius:16px;
+padding:16px 20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+max-width:320px;
+}
+
+.title h1{
+margin:0 0 8px;
+font-size:32px;
+letter-spacing:.08em;
+}
+
+.panel p{
+margin:0;
+line-height:1.6;
+font-size:14px;
+color:rgba(255,255,255,.85);
+}
+
+.help{
+font-size:14px;
+line-height:1.8;
+}
+
+/* 月タイトル */
+
 #moonTitle{
 position:absolute;
 left:50%;
@@ -47,6 +93,25 @@ transition:opacity .2s;
 <body>
 
 <div id="scene"></div>
+
+<div class="ui">
+
+<div class="panel title">
+<h1>君について知っている10のこと</h1>
+<p>
+月をクリックすると物語ページへ移動します。
+</p>
+</div>
+
+<div class="panel help">
+操作<br>
+・スクロール：月公転<br>
+・月ホバー：タイトル<br>
+・クリック：ページ移動
+</div>
+
+</div>
+
 <div id="moonTitle"></div>
 
 <script type="module">
@@ -54,7 +119,7 @@ transition:opacity .2s;
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js"
 
 /* ===============================
-基本セット
+基本
 =============================== */
 
 const scene = new THREE.Scene()
@@ -110,7 +175,6 @@ fairy.renderOrder = 10
 
 scene.add(fairy)
 
-
 /* ===============================
 満ち欠け月
 =============================== */
@@ -129,8 +193,6 @@ const cx=size/2
 const cy=size/2
 const r=size*0.34
 
-/* 光グラデーション */
-
 const glow=ctx.createRadialGradient(cx,cy,0,cx,cy,r*1.6)
 
 glow.addColorStop(0,"rgba(255,255,230,0.9)")
@@ -139,8 +201,6 @@ glow.addColorStop(1,"rgba(255,240,200,0)")
 
 ctx.fillStyle=glow
 ctx.fillRect(0,0,size,size)
-
-/* 月 */
 
 ctx.fillStyle="#fffdf3"
 
@@ -161,31 +221,27 @@ return new THREE.CanvasTexture(canvas)
 }
 
 /* ===============================
-月データ
+月
 =============================== */
 
 const moonData=[
 
-{title:"第一話 夜のはじまり",url:"story01.html"},
-{title:"第二話 薄明の庭",url:"story02.html"},
-{title:"第三話 眠らない海",url:"story03.html"},
-{title:"第四話 玻璃の鳥",url:"story04.html"},
-{title:"第五話 風の手紙",url:"story05.html"},
-{title:"第六話 残光の塔",url:"story06.html"},
-{title:"第七話 白い回廊",url:"story07.html"},
-{title:"第八話 祈りの庭園",url:"story08.html"},
-{title:"第九話 朝焼けの手前",url:"story09.html"},
-{title:"第十話 月が明ける場所",url:"story10.html"}
+{title:"No.1 酒場にて",url:"story01.html"},
+{title:"No.2 舌戦",url:"story02.html"},
+{title:"No.3 甘いもの",url:"story03.html"},
+{title:"No.4 宴",url:"story04.html"},
+{title:"No.5 信仰",url:"story05.html"},
+{title:"No.6 似たもの",url:"story06.html"},
+{title:"No.7 家",url:"story07.html"},
+{title:"No.8 空想",url:"story08.html"},
+{title:"No.9 使命",url:"story09.html"},
+{title:"No.10 報告結果",url:"story10.html"}
 
 ]
 
-/* ===============================
-月生成
-=============================== */
-
 const moonGroup=new THREE.Group()
 
-moonGroup.rotation.x=-2.1
+moonGroup.rotation.x=-1.1
 moonGroup.rotation.z=0.35
 
 scene.add(moonGroup)
@@ -224,7 +280,6 @@ moons.push(moon)
 function createStars(size){
 
 const geo=new THREE.BufferGeometry()
-
 const count=400
 
 const pos=new Float32Array(count*3)
@@ -275,8 +330,14 @@ mouse.y=-(e.clientY/window.innerHeight)*2+1
 let orbitTarget=0
 let orbitScroll=0
 
+let cameraTargetX=0
+let cameraTargetY=0
+
 window.addEventListener("wheel",(e)=>{
+
 orbitTarget+=e.deltaY*0.0015
+cameraTargetY+=e.deltaY*0.0003
+
 })
 
 /* ===============================
@@ -297,13 +358,15 @@ window.location.href=hoveredMoon.userData.url
 アニメーション
 =============================== */
 
-const clock=new THREE.Clock()
-
 function animate(){
 
 requestAnimationFrame(animate)
 
 orbitScroll+=(orbitTarget-orbitScroll)*0.08
+
+camera.position.x+=(cameraTargetX-camera.position.x)*0.05
+camera.position.y+=(cameraTargetY-camera.position.y)*0.05
+camera.lookAt(0,0,0)
 
 raycaster.setFromCamera(mouse,camera)
 
@@ -317,16 +380,13 @@ hoveredMoon=intersects[0].object
 
 document.body.style.cursor="pointer"
 
-document.getElementById("moonTitle").innerText=
-hoveredMoon.userData.title
-
-document.getElementById("moonTitle").style.opacity=1
+moonTitle.innerText=hoveredMoon.userData.title
+moonTitle.style.opacity=1
 
 }else{
 
 document.body.style.cursor="default"
-
-document.getElementById("moonTitle").style.opacity=0
+moonTitle.style.opacity=0
 
 }
 
@@ -341,7 +401,6 @@ const z=Math.sin(a)*2
 moon.position.set(x,y,z)
 
 const depth=(z+2)/4
-
 const scale=0.6+depth*0.6
 
 if(moon===hoveredMoon){
@@ -365,8 +424,6 @@ fairyLight.position.y=(mouse.y)*-1
 
 starsNear.rotation.y+=0.0005
 starsFar.rotation.y+=0.0002
-
-particles.rotation.y=clock.getElapsedTime()*0.4
 
 renderer.render(scene,camera)
 
