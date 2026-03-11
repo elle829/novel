@@ -273,7 +273,7 @@
     const fairy = new THREE.Sprite(fairyMaterial);
     
     fairy.scale.set(6,8,1);
-    fairy.position.set(0,-0.2,3);
+    fairy.position.set(0,-0.2,2);
     
     scene.add(fairy);
 
@@ -534,14 +534,17 @@
     let mouseY = 0;
     let isNavigating = false;
 
+    const clock = new THREE.Clock();
+    
     function resize() {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     }
     window.addEventListener('resize', resize);
-
-    const clock = new THREE.Clock();
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('click', onClick);
+    window.addEventListener('wheel', onWheel, { passive: true });
     
     function setTooltipFromStar(star, clientX, clientY) {
       tooltipTitle.textContent = star.userData.title;
@@ -607,6 +610,15 @@
       if (intersects.length > 0) {
         navigateWithFlip("index.html");
       }
+    }
+
+    function onWheel(event) {
+      targetOrbitRotationY += event.deltaY * 0.0017;
+      targetOrbitRotationX += event.deltaY * 0.00032;
+      targetOrbitRotationZ += event.deltaY * 0.00022;
+    
+      targetOrbitRotationX = THREE.MathUtils.clamp(targetOrbitRotationX, -0.42, 0.42);
+      targetOrbitRotationZ = THREE.MathUtils.clamp(targetOrbitRotationZ, -0.25, 0.25);
     }
     
     function animate() {
