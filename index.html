@@ -8,7 +8,7 @@
 <style>
 
 /* ===============================
-   基本画面設定
+   基本画面
    =============================== */
 
 html,body{
@@ -16,11 +16,13 @@ margin:0;
 width:100%;
 height:100%;
 overflow:hidden;
+
 background:
 radial-gradient(circle at 50% 78%, rgba(255,210,160,0.35) 0%, rgba(255,190,150,0.18) 18%, rgba(10,14,40,0) 40%),
 linear-gradient(to top,#1a1e3f 0%,#1b2a63 30%,#13214f 55%,#0a1638 80%,#040817 100%);
+
 font-family:"Hiragino Sans","Yu Gothic",sans-serif;
-color:#fff;
+color:white;
 }
 
 #scene{
@@ -28,18 +30,15 @@ position:absolute;
 inset:0;
 }
 
-/* ===============================
-   UIパネル
-   =============================== */
+/* UI */
 
 .ui{
 position:absolute;
 inset:0;
-pointer-events:none;
 display:flex;
 justify-content:space-between;
 padding:24px;
-z-index:5;
+pointer-events:none;
 }
 
 .panel{
@@ -53,8 +52,8 @@ padding:16px 18px;
 
 .bottom-note{
 position:absolute;
+bottom:20px;
 left:50%;
-bottom:18px;
 transform:translateX(-50%);
 font-size:12px;
 opacity:.7;
@@ -90,267 +89,292 @@ opacity:.7;
 
 <script type="module">
 
-/* =====================================
-   Three.js読み込み
-   ===================================== */
-
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
 
-/* =====================================
-   基本シーン設定
-   ===================================== */
+/* ===============================
+   シーン
+   =============================== */
 
-const scene = new THREE.Scene();
+const scene=new THREE.Scene()
 
-const camera = new THREE.PerspectiveCamera(
+const camera=new THREE.PerspectiveCamera(
 55,
 window.innerWidth/window.innerHeight,
 0.1,
 100
-);
+)
 
-/* カメラ位置 */
-camera.position.set(0,0.6,9);
+camera.position.set(0,0.6,9)
+camera.lookAt(0,0,0)
 
-/* レンダラー */
+/* ===============================
+   renderer
+   =============================== */
 
-const renderer = new THREE.WebGLRenderer({
+const renderer=new THREE.WebGLRenderer({
 antialias:true,
 alpha:true
-});
+})
 
-renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setSize(window.innerWidth,window.innerHeight)
 
-document.getElementById("scene").appendChild(renderer.domElement);
+document.getElementById("scene").appendChild(renderer.domElement)
 
-
-/* =====================================
+/* ===============================
    ライト
-   ===================================== */
+   =============================== */
 
-const ambient = new THREE.AmbientLight(0xaebcff,0.8);
-scene.add(ambient);
+const ambient=new THREE.AmbientLight(0xaebcff,0.8)
+scene.add(ambient)
 
-const fairyLight = new THREE.PointLight(0xa5f4ff,1.6,15);
-scene.add(fairyLight);
+const fairyLight=new THREE.PointLight(0xa5f4ff,1.6,15)
+scene.add(fairyLight)
 
-
-/* =====================================
+/* ===============================
    妖精
-   ===================================== */
+   =============================== */
 
-const loader = new THREE.TextureLoader();
+const loader=new THREE.TextureLoader()
+
+const fairyTexture=loader.load("./yousei2.png")
+
+const fairyMaterial=new THREE.SpriteMaterial({
+map:fairyTexture,
+transparent:true,
+depthWrite:false,
+blending:THREE.AdditiveBlending
+})
+
+const fairy=new THREE.Sprite(fairyMaterial)
+
+fairy.scale.set(5,6.5,1)
+fairy.position.set(0,0,0)
+
+scene.add(fairy)
+
+/* ===============================
+   妖精オーラ
+   =============================== */
+
+const auraMaterial=new THREE.SpriteMaterial({
+color:0xa5f4ff,
+transparent:true,
+opacity:0.5
+})
+
+const aura=new THREE.Sprite(auraMaterial)
+
+aura.scale.set(7,7,1)
+aura.position.set(0,0,0)
+
+scene.add(aura)
+
+/* ===============================
+   月の満ち欠け生成
+   =============================== */
 
 /*
 初心者メモ
-Sprite = 2D画像を3D空間に置く方法
+
+月の画像を使うのではなく
+canvasに直接描画している
+
+phase
+0〜1
+で月の形が変わる
 */
 
-const fairyTexture = loader.load("./png/yousei2.png");
+function createMoonTexture(phase=0.5){
 
-const fairyMaterial = new THREE.SpriteMaterial({
-map: fairyTexture,
-transparent: true,
-depthWrite:false,
-blending:THREE.AdditiveBlending
-});
+const size=256
+const canvas=document.createElement("canvas")
+canvas.width=size
+canvas.height=size
 
-const fairy = new THREE.Sprite(fairyMaterial);
-   
-/* サイズ */
-fairy.renderOrder = 10;
-fairy.scale.set(5,6.5,1);
+const ctx=canvas.getContext("2d")
 
-/* 位置 */
-fairy.position.set(0,0,0);
+const cx=size/2
+const cy=size/2
+const r=size*0.34
 
-scene.add(fairy);
+ctx.clearRect(0,0,size,size)
 
+/* 月 */
 
-/* =====================================
-   妖精の光オーラ
-   ===================================== */
+ctx.fillStyle="#fffdf3"
 
-const auraTexture = loader.load(
-"https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/glow.png"
-);
-   
-const auraMaterial = new THREE.SpriteMaterial({
-map:auraTexture,
-transparent:true,
-opacity:0.5
-});
+ctx.beginPath()
+ctx.arc(cx,cy,r,0,Math.PI*2)
+ctx.fill()
 
-const aura = new THREE.Sprite(auraMaterial);
+/* 満ち欠け */
 
-aura.scale.set(7,7,1);
+ctx.globalCompositeOperation="destination-out"
 
-scene.add(aura);
+const offset=(phase-0.5)*r*2.2
 
+ctx.beginPath()
+ctx.arc(cx+offset,cy,r*0.98,0,Math.PI*2)
+ctx.fill()
 
-/* =====================================
-   月軌道グループ
-   ===================================== */
+ctx.globalCompositeOperation="source-over"
 
-const orbitGroup = new THREE.Group();
-scene.add(orbitGroup);
+return new THREE.CanvasTexture(canvas)
 
+}
 
-/* =====================================
-   月
-   ===================================== */
+/* ===============================
+   月軌道
+   =============================== */
 
-const moonTexture = loader.load(
-"https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/disc.png"
-);
+const orbitGroup=new THREE.Group()
+scene.add(orbitGroup)
 
-const moons=[];
+const moons=[]
 
 for(let i=0;i<10;i++){
 
-const material = new THREE.SpriteMaterial({
+const phase=i/9
+
+const moonTexture=createMoonTexture(phase)
+
+const material=new THREE.SpriteMaterial({
 map:moonTexture,
 transparent:true
-});
+})
 
-const moon = new THREE.Sprite(material);
+const moon=new THREE.Sprite(material)
 
-moon.scale.set(0.9,0.9,1);
+moon.scale.set(0.9,0.9,1)
 
-const angle = i/10*Math.PI*2;
+const angle=i/10*Math.PI*2
 
 moon.position.set(
 Math.cos(angle)*4.5,
 Math.sin(angle)*4.5,
 0
-);
+)
 
-orbitGroup.add(moon);
+orbitGroup.add(moon)
 
-moons.push(moon);
+moons.push(moon)
 
 }
 
+/* ===============================
+   星
+   =============================== */
 
-/* =====================================
-   星背景
-   ===================================== */
+const starGeo=new THREE.BufferGeometry()
 
-const starGeo = new THREE.BufferGeometry();
-const starCount = 800;
+const starCount=800
 
-const starPos = new Float32Array(starCount*3);
+const starPos=new Float32Array(starCount*3)
 
 for(let i=0;i<starCount;i++){
 
-starPos[i*3]=(Math.random()-0.5)*40;
-starPos[i*3+1]=(Math.random()-0.5)*20;
-starPos[i*3+2]=(Math.random()-0.5)*40;
+starPos[i*3]=(Math.random()-0.5)*40
+starPos[i*3+1]=(Math.random()-0.5)*20
+starPos[i*3+2]=(Math.random()-0.5)*40
 
 }
 
-starGeo.setAttribute("position",new THREE.BufferAttribute(starPos,3));
+starGeo.setAttribute(
+"position",
+new THREE.BufferAttribute(starPos,3)
+)
 
-const starMat = new THREE.PointsMaterial({
+const starMat=new THREE.PointsMaterial({
 color:0xffffff,
 size:0.05
-});
+})
 
-const stars = new THREE.Points(starGeo,starMat);
+const stars=new THREE.Points(starGeo,starMat)
 
-scene.add(stars);
+scene.add(stars)
 
-
-/* =====================================
+/* ===============================
    スクロール回転
-   ===================================== */
+   =============================== */
 
-let targetRot=0;
+let targetRot=0
 
 window.addEventListener("wheel",(e)=>{
-targetRot += e.deltaY*0.001;
-});
+targetRot+=e.deltaY*0.001
+})
 
+/* ===============================
+   マウス光
+   =============================== */
 
-/* =====================================
-   マウス光追従
-   ===================================== */
-
-let mouseX=0;
-let mouseY=0;
+let mouseX=0
+let mouseY=0
 
 window.addEventListener("pointermove",(e)=>{
 
-mouseX = (e.clientX/window.innerWidth-0.5)*2;
-mouseY = (e.clientY/window.innerHeight-0.5)*2;
+mouseX=(e.clientX/window.innerWidth-0.5)*2
+mouseY=(e.clientY/window.innerHeight-0.5)*2
 
-});
+})
 
-
-/* =====================================
+/* ===============================
    アニメーション
-   ===================================== */
+   =============================== */
 
-const clock = new THREE.Clock();
+const clock=new THREE.Clock()
 
 function animate(){
 
-requestAnimationFrame(animate);
+requestAnimationFrame(animate)
 
-const t = clock.getElapsedTime();
-
+const t=clock.getElapsedTime()
 
 /* 軌道回転 */
 
-orbitGroup.rotation.y += (targetRot-orbitGroup.rotation.y)*0.08;
+orbitGroup.rotation.y+=
+(targetRot-orbitGroup.rotation.y)*0.08
 
+/* 妖精羽 */
 
-/* 妖精羽アニメーション */
+fairy.scale.y=6.5+Math.sin(t*6)*0.15
 
-fairy.scale.y = 6.5 + Math.sin(t*6)*0.15;
-
-
-/* 妖精光パルス */
+/* オーラ */
 
 aura.scale.set(
-7 + Math.sin(t*2)*0.5,
-7 + Math.sin(t*2)*0.5,
+7+Math.sin(t*2)*0.5,
+7+Math.sin(t*2)*0.5,
 1
-);
+)
 
+/* 光 */
 
-/* 光追従 */
+fairyLight.position.x=mouseX*2
+fairyLight.position.y=0.4-mouseY
 
-fairyLight.position.x = mouseX*2;
-fairyLight.position.y = 0.4-mouseY;
+/* 星 */
 
+stars.rotation.y=t*0.02
 
-/* 星ゆっくり回転 */
-
-stars.rotation.y = t*0.02;
-
-
-/* 描画 */
-
-renderer.render(scene,camera);
+renderer.render(scene,camera)
 
 }
 
-animate();
+animate()
 
-
-/* =====================================
-   画面リサイズ対応
-   ===================================== */
+/* ===============================
+   リサイズ
+   =============================== */
 
 window.addEventListener("resize",()=>{
 
-camera.aspect = window.innerWidth/window.innerHeight;
-camera.updateProjectionMatrix();
-renderer.setSize(window.innerWidth,window.innerHeight);
+camera.aspect=window.innerWidth/window.innerHeight
+camera.updateProjectionMatrix()
 
-});
+renderer.setSize(window.innerWidth,window.innerHeight)
+
+})
 
 </script>
+
 </body>
 </html>
