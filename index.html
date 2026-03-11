@@ -8,7 +8,7 @@
 <style>
 
 /* ===============================
-   基本画面
+   画面
    =============================== */
 
 html,body{
@@ -95,9 +95,9 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.m
    シーン
    =============================== */
 
-const scene=new THREE.Scene()
+const scene = new THREE.Scene()
 
-const camera=new THREE.PerspectiveCamera(
+const camera = new THREE.PerspectiveCamera(
 55,
 window.innerWidth/window.innerHeight,
 0.1,
@@ -111,7 +111,7 @@ camera.lookAt(0,0,0)
    renderer
    =============================== */
 
-const renderer=new THREE.WebGLRenderer({
+const renderer = new THREE.WebGLRenderer({
 antialias:true,
 alpha:true
 })
@@ -124,28 +124,35 @@ document.getElementById("scene").appendChild(renderer.domElement)
    ライト
    =============================== */
 
-const ambient=new THREE.AmbientLight(0xaebcff,0.8)
+const ambient = new THREE.AmbientLight(0xaebcff,0.8)
 scene.add(ambient)
 
-const fairyLight=new THREE.PointLight(0xa5f4ff,1.6,15)
+const fairyLight = new THREE.PointLight(0xa5f4ff,1.6,15)
 scene.add(fairyLight)
 
 /* ===============================
    妖精
    =============================== */
 
-const loader=new THREE.TextureLoader()
+/*
+初心者メモ
 
-const fairyTexture=loader.load("./yousei2.png")
+Sprite
+＝ 2D画像を3D空間に置く方法
+*/
 
-const fairyMaterial=new THREE.SpriteMaterial({
+const loader = new THREE.TextureLoader()
+
+const fairyTexture = loader.load("./png/yousei2.png")
+
+const fairyMaterial = new THREE.SpriteMaterial({
 map:fairyTexture,
 transparent:true,
 depthWrite:false,
 blending:THREE.AdditiveBlending
 })
 
-const fairy=new THREE.Sprite(fairyMaterial)
+const fairy = new THREE.Sprite(fairyMaterial)
 
 fairy.scale.set(5,6.5,1)
 fairy.position.set(0,0,0)
@@ -153,49 +160,27 @@ fairy.position.set(0,0,0)
 scene.add(fairy)
 
 /* ===============================
-   妖精オーラ
-   =============================== */
-
-const auraMaterial=new THREE.SpriteMaterial({
-color:0xa5f4ff,
-transparent:true,
-opacity:0.5
-})
-
-const aura=new THREE.Sprite(auraMaterial)
-
-aura.scale.set(7,7,1)
-aura.position.set(0,0,0)
-
-scene.add(aura)
-
-/* ===============================
    月の満ち欠け生成
    =============================== */
 
 /*
-初心者メモ
-
-月の画像を使うのではなく
-canvasに直接描画している
-
-phase
-0〜1
-で月の形が変わる
+画像ではなく
+canvasで月を描く
 */
 
 function createMoonTexture(phase=0.5){
 
-const size=256
-const canvas=document.createElement("canvas")
-canvas.width=size
-canvas.height=size
+const size = 256
 
-const ctx=canvas.getContext("2d")
+const canvas = document.createElement("canvas")
+canvas.width = size
+canvas.height = size
 
-const cx=size/2
-const cy=size/2
-const r=size*0.34
+const ctx = canvas.getContext("2d")
+
+const cx = size/2
+const cy = size/2
+const r = size*0.34
 
 ctx.clearRect(0,0,size,size)
 
@@ -227,10 +212,16 @@ return new THREE.CanvasTexture(canvas)
    月軌道
    =============================== */
 
-const orbitGroup=new THREE.Group()
+const orbitGroup = new THREE.Group()
+
 scene.add(orbitGroup)
 
-const moons=[]
+/* 軌道を斜めにする */
+
+orbitGroup.rotation.x = Math.PI / 2.2
+orbitGroup.rotation.z = 0.12
+
+const moons = []
 
 for(let i=0;i<10;i++){
 
@@ -265,11 +256,11 @@ moons.push(moon)
    星
    =============================== */
 
-const starGeo=new THREE.BufferGeometry()
+const starGeo = new THREE.BufferGeometry()
 
-const starCount=800
+const starCount = 800
 
-const starPos=new Float32Array(starCount*3)
+const starPos = new Float32Array(starCount*3)
 
 for(let i=0;i<starCount;i++){
 
@@ -284,12 +275,12 @@ starGeo.setAttribute(
 new THREE.BufferAttribute(starPos,3)
 )
 
-const starMat=new THREE.PointsMaterial({
+const starMat = new THREE.PointsMaterial({
 color:0xffffff,
 size:0.05
 })
 
-const stars=new THREE.Points(starGeo,starMat)
+const stars = new THREE.Points(starGeo,starMat)
 
 scene.add(stars)
 
@@ -297,10 +288,10 @@ scene.add(stars)
    スクロール回転
    =============================== */
 
-let targetRot=0
+let targetRot = 0
 
 window.addEventListener("wheel",(e)=>{
-targetRot+=e.deltaY*0.001
+targetRot += e.deltaY*0.001
 })
 
 /* ===============================
@@ -327,33 +318,19 @@ function animate(){
 
 requestAnimationFrame(animate)
 
-const t=clock.getElapsedTime()
-
 /* 軌道回転 */
 
-orbitGroup.rotation.y+=
+orbitGroup.rotation.y +=
 (targetRot-orbitGroup.rotation.y)*0.08
 
-/* 妖精羽 */
+/* 光追従 */
 
-fairy.scale.y=6.5+Math.sin(t*6)*0.15
-
-/* オーラ */
-
-aura.scale.set(
-7+Math.sin(t*2)*0.5,
-7+Math.sin(t*2)*0.5,
-1
-)
-
-/* 光 */
-
-fairyLight.position.x=mouseX*2
-fairyLight.position.y=0.4-mouseY
+fairyLight.position.x = mouseX*2
+fairyLight.position.y = 0.4-mouseY
 
 /* 星 */
 
-stars.rotation.y=t*0.02
+stars.rotation.y = clock.getElapsedTime()*0.02
 
 renderer.render(scene,camera)
 
