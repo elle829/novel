@@ -110,39 +110,6 @@ fairy.renderOrder = 10
 
 scene.add(fairy)
 
-/* ===============================
-妖精光粒子
-=============================== */
-
-const fairyParticles = new THREE.BufferGeometry()
-
-const particleCount = 120
-
-const particlePos = new Float32Array(particleCount*3)
-
-for(let i=0;i<particleCount;i++){
-
-particlePos[i*3]=(Math.random()-0.5)*2
-particlePos[i*3+1]=(Math.random()-0.5)*2
-particlePos[i*3+2]=(Math.random()-0.5)*2
-
-}
-
-fairyParticles.setAttribute(
-"position",
-new THREE.BufferAttribute(particlePos,3)
-)
-
-const particleMat = new THREE.PointsMaterial({
-color:0xa5f4ff,
-size:0.05,
-transparent:true,
-opacity:0.8
-})
-
-const particles = new THREE.Points(fairyParticles,particleMat)
-
-scene.add(particles)
 
 /* ===============================
 満ち欠け月
