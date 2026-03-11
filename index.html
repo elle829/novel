@@ -4,7 +4,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moon Archive</title>
+  
+<!-- Adobe Fonts -->
+<script>
+(function(d) {
+  var config = {
+    kitId: 'iuw1frp',
+    scriptTimeout: 3000,
+    async: true
+  },
+  h=d.documentElement,
+  t=setTimeout(function(){
+    h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";
+  },config.scriptTimeout),
+  tk=d.createElement("script"),
+  f=false,
+  s=d.getElementsByTagName("script")[0],
+  a;
 
+  h.className+=" wf-loading";
+  tk.src='https://use.typekit.net/'+config.kitId+'.js';
+  tk.async=true;
+
+  tk.onload=tk.onreadystatechange=function(){
+    a=this.readyState;
+    if(f||a&&a!="complete"&&a!="loaded")return;
+    f=true;
+    clearTimeout(t);
+    try{Typekit.load(config)}catch(e){}
+  };
+
+  s.parentNode.insertBefore(tk,s)
+})(document);
+</script>
+  
 <style>
 
 /* ===============================
@@ -12,6 +45,7 @@
 =============================== */
 
 html,body{
+
 margin:0;
 width:100%;
 height:100%;
@@ -24,11 +58,17 @@ linear-gradient(to top,#1a1e3f 0%,#1b2a63 30%,#13214f 55%,#0a1638 80%,#040817 10
 color:white;
 
 font-family:
-"FOT-筑紫Aオールド明朝 Pr6N",
-"Tsukushi A Old Mincho",
+"fot-tsukuaoldmin-pr6n",
 "Hiragino Mincho ProN",
 "Yu Mincho",
 serif;
+
+font-weight:300;
+letter-spacing:0.05em;
+
+-webkit-font-smoothing:antialiased;
+text-rendering:optimizeLegibility;
+
 }
 
 #scene{
