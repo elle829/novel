@@ -171,12 +171,10 @@ scene.add(fairy);
    妖精の光オーラ
    ===================================== */
 
-const auraMaterial = new THREE.SpriteMaterial({
-color:0xa5f4ff,
-transparent:true,
-opacity:0.5
-});
-
+const auraTexture = loader.load(
+"https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/sprites/glow.png"
+);
+   
 const auraMaterial = new THREE.SpriteMaterial({
 map:auraTexture,
 transparent:true,
