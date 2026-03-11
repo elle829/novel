@@ -1,339 +1,603 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moon Archive</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moon Archive</title>
+  <style>
+    /* ===============================
+       1) ページ全体
+       =============================== */
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 78%, rgba(255,210,160,0.35) 0%, rgba(255,190,150,0.18) 18%, rgba(10,14,40,0) 40%),
+        linear-gradient(to top, #1a1e3f 0%, #1b2a63 30%, #13214f 55%, #0a1638 80%, #040817 100%);
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      color: #ffffff;
+    }
 
-<style>
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
 
-html,body{
-margin:0;
-width:100%;
-height:100%;
-overflow:hidden;
+    #scene {
+      position: absolute;
+      inset: 0;
+    }
 
-background:
-radial-gradient(circle at 50% 78%, rgba(255,210,160,0.35) 0%, rgba(255,190,150,0.18) 18%, rgba(10,14,40,0) 40%),
-linear-gradient(to top,#1a1e3f 0%,#1b2a63 30%,#13214f 55%,#0a1638 80%,#040817 100%);
+    /* ===============================
+       2) UIパネル
+       =============================== */
+    .ui {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 24px;
+      box-sizing: border-box;
+      z-index: 5;
+    }
 
-font-family:"Hiragino Sans","Yu Gothic",sans-serif;
-color:white;
-}
+    .panel {
+      pointer-events: auto;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 16px 18px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.28);
+      max-width: 360px;
+    }
 
-#scene{
-position:absolute;
-inset:0;
-}
+    .panel h1 {
+      margin: 0 0 10px;
+      font-size: clamp(24px, 3vw, 40px);
+      letter-spacing: 0.06em;
+      font-weight: 700;
+    }
 
-</style>
+    .panel p {
+      margin: 0;
+      line-height: 1.7;
+      color: rgba(255,245,255,0.85);
+      font-size: 14px;
+    }
+
+    .bottom-note {
+      position: absolute;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.68);
+      text-shadow: 0 2px 12px rgba(0,0,0,0.45);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* ===============================
+       3) ホバー用ツールチップ
+       =============================== */
+    .tooltip {
+      position: absolute;
+      min-width: 150px;
+      max-width: 220px;
+      transform: translate(-50%, -130%);
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(10,12,26,0.88);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.34);
+      backdrop-filter: blur(10px);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.18s ease;
+      color: #fff;
+      z-index: 6;
+    }
+
+    .tooltip.show {
+      opacity: 1;
+    }
+
+    .tooltip strong {
+      display: block;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .tooltip span {
+      display: block;
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.82);
+    }
+
+    /* ===============================
+       4) ページめくり風の幕
+       =============================== */
+    .page-flip {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0;
+      transform-origin: right center;
+      transform: perspective(1600px) rotateY(0deg);
+      background:
+        linear-gradient(to left, rgba(0,0,0,0.95) 0%, rgba(5,6,14,0.98) 45%, rgba(8,11,22,1) 100%);
+      box-shadow:
+        inset 50px 0 100px rgba(255,255,255,0.02),
+        inset -80px 0 140px rgba(0,0,0,0.75);
+    }
+
+    .page-flip.active {
+      animation: pageFlipForward 1s cubic-bezier(0.72, 0.02, 0.18, 1) forwards;
+    }
+
+    @keyframes pageFlipForward {
+      0% {
+        opacity: 0;
+        transform: perspective(1600px) rotateY(88deg);
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 1;
+        transform: perspective(1600px) rotateY(0deg);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .ui {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .panel {
+        max-width: calc(100% - 24px);
+      }
+    }
+  </style>
 </head>
-
 <body>
-
-<div id="scene"></div>
-
-<script type="module">
-
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js"
-
-
-/* ===============================
-   シーン
-   =============================== */
-
-const scene = new THREE.Scene()
-
-const camera = new THREE.PerspectiveCamera(
-55,
-window.innerWidth/window.innerHeight,
-0.1,
-100
-)
-
-camera.position.set(0,0.6,9)
-camera.lookAt(0,0,0)
-
-
-/* ===============================
-   renderer
-   =============================== */
-
-const renderer = new THREE.WebGLRenderer({
-antialias:true,
-alpha:true
-})
-
-renderer.setSize(window.innerWidth,window.innerHeight)
-
-document.getElementById("scene").appendChild(renderer.domElement)
-
-
-/* ===============================
-   ライト
-   =============================== */
-
-const ambient = new THREE.AmbientLight(0xaebcff,0.8)
-scene.add(ambient)
-
-const fairyLight = new THREE.PointLight(0xa5f4ff,1.6,15)
-scene.add(fairyLight)
-
-
-/* ===============================
-   妖精（中心）
-   =============================== */
-
-/*
-初心者メモ
-
-Sprite
-＝2D画像を3D空間に置く方法
-*/
-
-const loader = new THREE.TextureLoader()
-
-const fairyTexture = loader.load("./png/yousei2.png")
-
-const fairyMaterial = new THREE.SpriteMaterial({
-map:fairyTexture,
-transparent:true,
-depthWrite:false,
-blending:THREE.AdditiveBlending
-})
-
-const fairy = new THREE.Sprite(fairyMaterial)
-
-fairy.scale.set(5,6.5,1)
-fairy.position.set(0,0,0)
-
-/*
-重要
-
-妖精は orbitGroup に入れない
-scene に直接置く
-*/
-
-scene.add(fairy)
-
-
-/* ===============================
-   月軌道グループ
-   =============================== */
-
-/*
-初心者メモ
-
-このグループを回転させることで
-妖精の周りを公転する
-*/
-
-const orbitGroup = new THREE.Group()
-
-scene.add(orbitGroup)
-
-/*
-軌道を斜めにする
-*/
-
-orbitGroup.rotation.x = -0.6
-orbitGroup.rotation.z = 0.25
-
-
-/* ===============================
-   月の満ち欠け生成
-   =============================== */
-
-function createMoonTexture(phase=0.5){
-
-const size = 256
-
-const canvas = document.createElement("canvas")
-canvas.width = size
-canvas.height = size
-
-const ctx = canvas.getContext("2d")
-
-const cx = size/2
-const cy = size/2
-const r = size*0.34
-
-ctx.clearRect(0,0,size,size)
-
-/* 月 */
-
-ctx.fillStyle="#fffdf3"
-
-ctx.beginPath()
-ctx.arc(cx,cy,r,0,Math.PI*2)
-ctx.fill()
-
-/* 満ち欠け */
-
-ctx.globalCompositeOperation="destination-out"
-
-const offset=(phase-0.5)*r*2.2
-
-ctx.beginPath()
-ctx.arc(cx+offset,cy,r*0.98,0,Math.PI*2)
-ctx.fill()
-
-ctx.globalCompositeOperation="source-over"
-
-return new THREE.CanvasTexture(canvas)
-
-}
-
-
-/* ===============================
-   月生成
-   =============================== */
-
-for(let i=0;i<10;i++){
-
-const phase=i/9
-
-const moonTexture=createMoonTexture(phase)
-
-const material=new THREE.SpriteMaterial({
-map:moonTexture,
-transparent:true
-})
-
-const moon=new THREE.Sprite(material)
-
-moon.scale.set(0.9,0.9,1)
-
-/*
-pivot
-＝公転の中心
-*/
-
-const pivot=new THREE.Group()
-
-pivot.add(moon)
-
-/*
-妖精からの距離
-*/
-
-moon.position.set(4.5,0,0)
-
-/*
-角度
-*/
-
-pivot.rotation.z=i/10*Math.PI*2
-
-orbitGroup.add(pivot)
-
-}
-
-
-/* ===============================
-   星
-   =============================== */
-
-const starGeo=new THREE.BufferGeometry()
-
-const starCount=800
-
-const starPos=new Float32Array(starCount*3)
-
-for(let i=0;i<starCount;i++){
-
-starPos[i*3]=(Math.random()-0.5)*40
-starPos[i*3+1]=(Math.random()-0.5)*20
-starPos[i*3+2]=(Math.random()-0.5)*40
-
-}
-
-starGeo.setAttribute(
-"position",
-new THREE.BufferAttribute(starPos,3)
-)
-
-const starMat=new THREE.PointsMaterial({
-color:0xffffff,
-size:0.05
-})
-
-const stars=new THREE.Points(starGeo,starMat)
-
-scene.add(stars)
-
-
-/* ===============================
-   スクロール回転
-   =============================== */
-
-let targetRot = 0
-
-window.addEventListener("wheel",(e)=>{
-targetRot += e.deltaY*0.001
-})
-
-
-/* ===============================
-   マウス光
-   =============================== */
-
-let mouseX=0
-let mouseY=0
-
-window.addEventListener("pointermove",(e)=>{
-
-mouseX=(e.clientX/window.innerWidth-0.5)*2
-mouseY=(e.clientY/window.innerHeight-0.5)*2
-
-})
-
-
-/* ===============================
-   アニメーション
-   =============================== */
-
-const clock=new THREE.Clock()
-
-function animate(){
-
-requestAnimationFrame(animate)
-
-/* 公転 */
-
-orbitGroup.rotation.y +=
-(targetRot-orbitGroup.rotation.y)*0.08
-
-/* 光 */
-
-fairyLight.position.x = mouseX*2
-fairyLight.position.y = 0.4-mouseY
-
-/* 星 */
-
-stars.rotation.y = clock.getElapsedTime()*0.02
-
-renderer.render(scene,camera)
-
-}
-
-animate()
-
-
-/* ===============================
-   リサイズ
-   =============================== */
-
-window.addEventListener("resize",()=>{
-
-camera.aspect=window.innerWidth/window.innerHeight
-camera.updateProjectionMatrix()
-
-renderer.setSize(window.innerWidth,window.innerHeight)
-
-})
-
-</script>
-
+  <div id="app">
+    <div id="scene"></div>
+
+    <div class="ui">
+      <div class="panel">
+        <h1>Moon Archive</h1>
+        <p>
+          妖精の周囲を巡る月をクリックすると、それぞれの物語ページへ移動します。<br />
+          スクロールすると軌道全体が立体的に回転します。
+        </p>
+      </div>
+
+      <div class="panel">
+        <p>
+          操作：<br />
+          ・スクロール：軌道を立体回転<br />
+          ・月にホバー：タイトル表示<br />
+          ・月をクリック：ページめくり遷移<br />
+          ・マウス移動：光が少し追従
+        </p>
+      </div>
+    </div>
+
+    <div class="tooltip" id="tooltip">
+      <strong></strong>
+      <span></span>
+    </div>
+
+    <div class="bottom-note">DAWN LIGHT / TEN MOONS IN ORBIT</div>
+    <div class="page-flip" id="pageFlip"></div>
+  </div>
+
+  <script type="module">
+    import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
+
+    /* ===============================
+       5) HTML要素を取得
+       =============================== */
+    const container = document.getElementById("scene");
+    const tooltip = document.getElementById("tooltip");
+    const tooltipTitle = tooltip.querySelector("strong");
+    const tooltipDesc = tooltip.querySelector("span");
+    const pageFlip = document.getElementById("pageFlip");
+
+    /* ===============================
+       6) Three.jsの基本セット
+       =============================== */
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x0a1024, 14, 36);
+
+    const camera = new THREE.PerspectiveCamera(
+      55,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      100
+    );
+    camera.position.set(0, 0.6, 9);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    container.appendChild(renderer.domElement);
+
+    /* ===============================
+       7) ライト
+       =============================== */
+
+    const ambientLight = new THREE.AmbientLight(0xaebcff, 0.85);
+    scene.add(ambientLight);
+
+    const fairyLight = new THREE.PointLight(0xa5f4ff, 1.8, 16, 2);
+    fairyLight.position.set(0, 0.2, 2.5);
+    scene.add(fairyLight);
+
+    const warmLight = new THREE.DirectionalLight(0xffc8a8, 0.8);
+    warmLight.position.set(-3, -1, 4);
+    scene.add(warmLight);
+
+    /* ===============================
+       8) 妖精（中心に固定）
+       =============================== */
+
+    const loader = new THREE.TextureLoader();
+
+    /*
+      初心者メモ
+      Sprite = 2D画像を3D空間に置く方法
+      妖精は scene に直接置く
+      orbitGroup に入れないのが重要
+    */
+    const fairyTexture = loader.load("./png/yousei2.png");
+
+    const fairyMaterial = new THREE.SpriteMaterial({
+      map: fairyTexture,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+
+    const fairy = new THREE.Sprite(fairyMaterial);
+    fairy.scale.set(5.0, 6.5, 1);
+    fairy.position.set(0, 0, 0);
+    fairy.renderOrder = 10;
+    scene.add(fairy);
+
+    /* ===============================
+       9) 月の軌道グループ
+       =============================== */
+
+    /*
+      初心者メモ
+      このグループだけを回す
+      これで「妖精の周りを月が公転」して見える
+    */
+    const orbitGroup = new THREE.Group();
+    scene.add(orbitGroup);
+
+    /*
+      軌道を最初から斜めの楕円に見せるための傾き
+      x を傾けると奥方向へ倒れる
+      z を少し足すと斜め感が出る
+    */
+    const baseOrbitTiltX = -0.95;
+    const baseOrbitTiltZ = 0.34;
+    orbitGroup.rotation.x = baseOrbitTiltX;
+    orbitGroup.rotation.z = baseOrbitTiltZ;
+
+    /* ===============================
+       10) 月の満ち欠けテクスチャをCanvasで作る
+       =============================== */
+
+    /*
+      初心者メモ
+      画像を使わず canvas に描いて月を作る
+      phase の値で満ち欠けを変える
+      0〜1 の間で形が変わる
+    */
+    function createMoonTexture(phase = 0.5) {
+      const size = 256;
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+
+      const cx = size / 2;
+      const cy = size / 2;
+      const r = size * 0.34;
+
+      ctx.clearRect(0, 0, size, size);
+
+      /* 月本体 */
+      ctx.fillStyle = "#fffdf3";
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      /* 満ち欠けを切り抜く */
+      ctx.globalCompositeOperation = "destination-out";
+      const offset = (phase - 0.5) * r * 2.2;
+
+      ctx.beginPath();
+      ctx.arc(cx + offset, cy, r * 0.98, 0, Math.PI * 2);
+      ctx.fill();
+
+      /* 輪郭を薄く足す */
+      ctx.globalCompositeOperation = "source-over";
+      ctx.strokeStyle = "rgba(255,255,255,0.15)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    /* ===============================
+       11) 月データ
+       =============================== */
+
+    const moonLinkData = [
+      { title: "第一話", desc: "夜のはじまり", url: "novels/story01.html" },
+      { title: "第二話", desc: "薄明の庭", url: "novels/story02.html" },
+      { title: "第三話", desc: "眠らない海", url: "novels/story03.html" },
+      { title: "第四話", desc: "玻璃の鳥", url: "novels/story04.html" },
+      { title: "第五話", desc: "風の手紙", url: "novels/story05.html" },
+      { title: "第六話", desc: "残光の塔", url: "novels/story06.html" },
+      { title: "第七話", desc: "白い回廊", url: "novels/story07.html" },
+      { title: "第八話", desc: "祈りの庭園", url: "novels/story08.html" },
+      { title: "第九話", desc: "朝焼けの手前", url: "novels/story09.html" },
+      { title: "第十話", desc: "月が明ける場所", url: "novels/story10.html" }
+    ];
+
+    const moonSprites = [];
+    const moonPivots = [];
+
+    /*
+      初心者メモ
+      pivot を作って、その中に月を入れる
+      月そのものを回すのではなく
+      pivot を回すことで「公転」にする
+    */
+    const radiusX = 6.0;  // 横方向の半径
+    const radiusY = 2.5;  // 縦方向の半径（小さくすると横長楕円）
+
+    for (let i = 0; i < moonLinkData.length; i++) {
+      const item = moonLinkData[i];
+      const phase = i / (moonLinkData.length - 1);
+
+      const moonTexture = createMoonTexture(phase);
+
+      const moonMaterial = new THREE.SpriteMaterial({
+        map: moonTexture,
+        transparent: true,
+        depthWrite: false
+      });
+
+      const moon = new THREE.Sprite(moonMaterial);
+      moon.scale.set(0.95, 0.95, 1);
+
+      const pivot = new THREE.Group();
+
+      /*
+        ここが重要
+        月を楕円上に直接置く
+        x と y の半径を変えることで真円ではなく楕円になる
+      */
+      const angle = (i / moonLinkData.length) * Math.PI * 2;
+      moon.position.set(
+        Math.cos(angle) * radiusX,
+        Math.sin(angle) * radiusY,
+        0
+      );
+
+      /*
+        hover や click 用データ
+      */
+      moon.userData = {
+        ...item,
+        pivot,
+        phaseSeed: Math.random() * Math.PI * 2,
+        baseScale: 0.95
+      };
+
+      pivot.add(moon);
+      orbitGroup.add(pivot);
+
+      moonSprites.push(moon);
+      moonPivots.push(pivot);
+    }
+
+    /* ===============================
+       12) 背景の星
+       =============================== */
+
+    const starGeo = new THREE.BufferGeometry();
+    const starCount = 900;
+    const starPos = new Float32Array(starCount * 3);
+
+    for (let i = 0; i < starCount; i++) {
+      starPos[i * 3 + 0] = (Math.random() - 0.5) * 40;
+      starPos[i * 3 + 1] = (Math.random() - 0.5) * 20;
+      starPos[i * 3 + 2] = (Math.random() - 0.5) * 40;
+    }
+
+    starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
+
+    const starMat = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 0.05,
+      transparent: true,
+      opacity: 0.9
+    });
+
+    const stars = new THREE.Points(starGeo, starMat);
+    scene.add(stars);
+
+    /* ===============================
+       13) hover / click 用
+       =============================== */
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+
+    let hoveredMoon = null;
+    let mouseX = 0;
+    let mouseY = 0;
+    let isNavigating = false;
+
+    function setTooltipFromMoon(moon, clientX, clientY) {
+      tooltipTitle.textContent = moon.userData.title;
+      tooltipDesc.textContent = moon.userData.desc;
+      tooltip.style.left = `${clientX}px`;
+      tooltip.style.top = `${clientY}px`;
+      tooltip.classList.add("show");
+    }
+
+    function hideTooltip() {
+      tooltip.classList.remove("show");
+    }
+
+    function navigateWithFlip(url) {
+      if (!url || isNavigating) return;
+      isNavigating = true;
+      pageFlip.classList.add("active");
+      setTimeout(() => {
+        window.location.href = url;
+      }, 760);
+    }
+
+    function onPointerMove(event) {
+      const rect = renderer.domElement.getBoundingClientRect();
+
+      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+      mouseY = (event.clientY / window.innerHeight) * 2 - 1;
+
+      raycaster.setFromCamera(pointer, camera);
+      const intersects = raycaster.intersectObjects(moonSprites, false);
+
+      if (intersects.length > 0) {
+        hoveredMoon = intersects[0].object;
+        document.body.style.cursor = "pointer";
+        setTooltipFromMoon(hoveredMoon, event.clientX, event.clientY);
+      } else {
+        hoveredMoon = null;
+        document.body.style.cursor = "default";
+        hideTooltip();
+      }
+    }
+
+    function onClick() {
+      if (hoveredMoon?.userData?.url) {
+        navigateWithFlip(hoveredMoon.userData.url);
+      }
+    }
+
+    /* ===============================
+       14) スクロールで軌道回転
+       =============================== */
+
+    let targetOrbitRotationY = 0;
+
+    function onWheel(event) {
+      targetOrbitRotationY += event.deltaY * 0.0015;
+    }
+
+    /* ===============================
+       15) イベント登録
+       =============================== */
+
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("click", onClick);
+    window.addEventListener("wheel", onWheel, { passive: true });
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    /* ===============================
+       16) アニメーション
+       =============================== */
+
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const t = clock.getElapsedTime();
+
+      /*
+        軌道全体をゆっくりスクロール回転
+        妖精は scene 側にあるので回らない
+      */
+      orbitGroup.rotation.y += (targetOrbitRotationY - orbitGroup.rotation.y) * 0.08;
+
+      /*
+        軌道の斜め角度は維持する
+      */
+      orbitGroup.rotation.x = baseOrbitTiltX;
+      orbitGroup.rotation.z = baseOrbitTiltZ;
+
+      /*
+        月を少しだけふわっと拡縮
+      */
+      moonSprites.forEach((moon, index) => {
+        const pulse = 1 + Math.sin(t * 2.2 + moon.userData.phaseSeed) * 0.05;
+        moon.scale.set(
+          moon.userData.baseScale * pulse,
+          moon.userData.baseScale * pulse,
+          1
+        );
+
+        if (hoveredMoon === moon) {
+          moon.scale.set(
+            moon.userData.baseScale * 1.14,
+            moon.userData.baseScale * 1.14,
+            1
+          );
+        }
+      });
+
+      /*
+        マウスに少し光を追従させる
+      */
+      fairyLight.position.x = mouseX * 2.0;
+      fairyLight.position.y = 0.4 - mouseY * 1.0;
+
+      /*
+        星背景をほんの少し回す
+      */
+      stars.rotation.y = t * 0.02;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
 </body>
 </html>
