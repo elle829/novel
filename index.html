@@ -1,95 +1,7 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moon Archive</title>
-
-<style>
-
-/* ===============================
-   画面
-   =============================== */
-
-html,body{
-margin:0;
-width:100%;
-height:100%;
-overflow:hidden;
-
-background:
-radial-gradient(circle at 50% 78%, rgba(255,210,160,0.35) 0%, rgba(255,190,150,0.18) 18%, rgba(10,14,40,0) 40%),
-linear-gradient(to top,#1a1e3f 0%,#1b2a63 30%,#13214f 55%,#0a1638 80%,#040817 100%);
-
-font-family:"Hiragino Sans","Yu Gothic",sans-serif;
-color:white;
-}
-
-#scene{
-position:absolute;
-inset:0;
-}
-
-/* UI */
-
-.ui{
-position:absolute;
-inset:0;
-display:flex;
-justify-content:space-between;
-padding:24px;
-pointer-events:none;
-}
-
-.panel{
-pointer-events:auto;
-background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.1);
-backdrop-filter:blur(10px);
-border-radius:18px;
-padding:16px 18px;
-}
-
-.bottom-note{
-position:absolute;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-font-size:12px;
-opacity:.7;
-}
-
-</style>
-</head>
-
-<body>
-
-<div id="scene"></div>
-
-<div class="ui">
-
-<div class="panel">
-<h1>Moon Archive</h1>
-<p>
-妖精の周囲を巡る月をクリックすると物語へ移動します。<br>
-スクロールで軌道が回転します。
-</p>
-</div>
-
-<div class="panel">
-操作<br>
-・スクロール：軌道回転<br>
-・月ホバー：タイトル表示<br>
-・クリック：ページ遷移
-</div>
-
-</div>
-
-<div class="bottom-note">DAWN LIGHT / TEN MOONS IN ORBIT</div>
-
 <script type="module">
 
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
+
 
 /* ===============================
    シーン
@@ -107,6 +19,7 @@ window.innerWidth/window.innerHeight,
 camera.position.set(0,0.6,9)
 camera.lookAt(0,0,0)
 
+
 /* ===============================
    renderer
    =============================== */
@@ -118,7 +31,8 @@ alpha:true
 
 renderer.setSize(window.innerWidth,window.innerHeight)
 
-document.getElementById("scene").appendChild(renderer.domElement)
+document.body.appendChild(renderer.domElement)
+
 
 /* ===============================
    ライト
@@ -130,16 +44,31 @@ scene.add(ambient)
 const fairyLight = new THREE.PointLight(0xa5f4ff,1.6,15)
 scene.add(fairyLight)
 
+
 /* ===============================
-   妖精
+   orbitGroup（最重要）
    =============================== */
 
 /*
 初心者メモ
 
-Sprite
-＝ 2D画像を3D空間に置く方法
+このグループが
+「妖精＋月軌道」の中心になります
 */
+
+const orbitGroup = new THREE.Group()
+
+scene.add(orbitGroup)
+
+/* 軌道を斜めにする */
+
+orbitGroup.rotation.x = Math.PI / 2.2
+orbitGroup.rotation.z = 0.12
+
+
+/* ===============================
+   妖精
+   =============================== */
 
 const loader = new THREE.TextureLoader()
 
@@ -155,18 +84,20 @@ blending:THREE.AdditiveBlending
 const fairy = new THREE.Sprite(fairyMaterial)
 
 fairy.scale.set(5,6.5,1)
-fairy.position.set(0,0,0)
+
+/*
+重要
+
+sceneではなく
+orbitGroupに入れる
+*/
 
 orbitGroup.add(fairy)
 
-/* ===============================
-   月の満ち欠け生成
-   =============================== */
 
-/*
-画像ではなく
-canvasで月を描く
-*/
+/* ===============================
+   月の満ち欠け
+   =============================== */
 
 function createMoonTexture(phase=0.5){
 
@@ -184,7 +115,7 @@ const r = size*0.34
 
 ctx.clearRect(0,0,size,size)
 
-/* 月 */
+/* 月本体 */
 
 ctx.fillStyle="#fffdf3"
 
@@ -208,18 +139,10 @@ return new THREE.CanvasTexture(canvas)
 
 }
 
+
 /* ===============================
-   月軌道
+   月生成
    =============================== */
-
-const orbitGroup = new THREE.Group()
-
-scene.add(orbitGroup)
-
-/* 軌道を斜めにする */
-
-orbitGroup.rotation.x = Math.PI / 2.2
-orbitGroup.rotation.z = 0.12
 
 const moons = []
 
@@ -238,57 +161,51 @@ const moon=new THREE.Sprite(material)
 
 moon.scale.set(0.9,0.9,1)
 
-const angle=i/10*Math.PI*2
-
-for(let i=0;i<10;i++){
-
-const phase=i/9
-const moonTexture=createMoonTexture(phase)
-
-const material=new THREE.SpriteMaterial({
-map:moonTexture,
-transparent:true
-})
-
-const moon=new THREE.Sprite(material)
-
-moon.scale.set(0.9,0.9,1)
-
-/* pivot作成 */
+/*
+pivotを作る
+これが公転の中心
+*/
 
 const pivot=new THREE.Group()
 
-/* pivotに月追加 */
+/*
+pivotの中に月を入れる
+*/
 
 pivot.add(moon)
 
-/* 月の距離 */
+/*
+妖精からの距離
+*/
 
 moon.position.x=4.5
 
-/* 角度 */
+/*
+角度
+*/
 
 pivot.rotation.z=i/10*Math.PI*2
 
+/*
+orbitGroupに追加
+*/
+
 orbitGroup.add(pivot)
-
-}
-
-orbitGroup.add(moon)
 
 moons.push(moon)
 
 }
 
+
 /* ===============================
    星
    =============================== */
 
-const starGeo = new THREE.BufferGeometry()
+const starGeo=new THREE.BufferGeometry()
 
-const starCount = 800
+const starCount=800
 
-const starPos = new Float32Array(starCount*3)
+const starPos=new Float32Array(starCount*3)
 
 for(let i=0;i<starCount;i++){
 
@@ -303,14 +220,15 @@ starGeo.setAttribute(
 new THREE.BufferAttribute(starPos,3)
 )
 
-const starMat = new THREE.PointsMaterial({
+const starMat=new THREE.PointsMaterial({
 color:0xffffff,
 size:0.05
 })
 
-const stars = new THREE.Points(starGeo,starMat)
+const stars=new THREE.Points(starGeo,starMat)
 
 scene.add(stars)
+
 
 /* ===============================
    スクロール回転
@@ -321,6 +239,7 @@ let targetRot = 0
 window.addEventListener("wheel",(e)=>{
 targetRot += e.deltaY*0.001
 })
+
 
 /* ===============================
    マウス光
@@ -335,6 +254,7 @@ mouseX=(e.clientX/window.innerWidth-0.5)*2
 mouseY=(e.clientY/window.innerHeight-0.5)*2
 
 })
+
 
 /* ===============================
    アニメーション
@@ -351,7 +271,7 @@ requestAnimationFrame(animate)
 orbitGroup.rotation.y +=
 (targetRot-orbitGroup.rotation.y)*0.08
 
-/* 光追従 */
+/* 光 */
 
 fairyLight.position.x = mouseX*2
 fairyLight.position.y = 0.4-mouseY
@@ -365,6 +285,7 @@ renderer.render(scene,camera)
 }
 
 animate()
+
 
 /* ===============================
    リサイズ
@@ -380,6 +301,3 @@ renderer.setSize(window.innerWidth,window.innerHeight)
 })
 
 </script>
-
-</body>
-</html>
