@@ -157,7 +157,7 @@ const fairy = new THREE.Sprite(fairyMaterial)
 fairy.scale.set(5,6.5,1)
 fairy.position.set(0,0,0)
 
-scene.add(fairy)
+orbitGroup.add(fairy)
 
 /* ===============================
    月の満ち欠け生成
@@ -240,11 +240,39 @@ moon.scale.set(0.9,0.9,1)
 
 const angle=i/10*Math.PI*2
 
-moon.position.set(
-Math.cos(angle)*4.5,
-Math.sin(angle)*4.5,
-0
-)
+for(let i=0;i<10;i++){
+
+const phase=i/9
+const moonTexture=createMoonTexture(phase)
+
+const material=new THREE.SpriteMaterial({
+map:moonTexture,
+transparent:true
+})
+
+const moon=new THREE.Sprite(material)
+
+moon.scale.set(0.9,0.9,1)
+
+/* pivot作成 */
+
+const pivot=new THREE.Group()
+
+/* pivotに月追加 */
+
+pivot.add(moon)
+
+/* 月の距離 */
+
+moon.position.x=4.5
+
+/* 角度 */
+
+pivot.rotation.z=i/10*Math.PI*2
+
+orbitGroup.add(pivot)
+
+}
 
 orbitGroup.add(moon)
 
