@@ -270,12 +270,12 @@
       depthWrite:false
     });
     
-    const moon = new THREE.Sprite(fairyMaterial);
+    const fairy = new THREE.Sprite(fairyMaterial);
     
-    moon.scale.set(6,8,1);
-    moon.position.set(0,-0.2,2);
+    fairy.scale.set(6,8,1);
+    fairy.position.set(0,-0.2,3);
     
-    scene.add(moon);
+    scene.add(fairy);
 
     const fairyGlowTexture = (() => {
       const size = 512;
@@ -534,6 +534,15 @@
     let mouseY = 0;
     let isNavigating = false;
 
+    function resize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    window.addEventListener('resize', resize);
+
+    const clock = new THREE.Clock();
+    
     function setTooltipFromStar(star, clientX, clientY) {
       tooltipTitle.textContent = star.userData.title;
       tooltipDesc.textContent = star.userData.desc;
@@ -554,24 +563,24 @@
         window.location.href = url;
       }, 760);
     }
-
+    
     function onPointerMove(event) {
       const rect = renderer.domElement.getBoundingClientRect();
       pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
+    
       mouseX = (event.clientX / window.innerWidth) * 2 - 1;
       mouseY = (event.clientY / window.innerHeight) * 2 - 1;
-
+    
       raycaster.setFromCamera(pointer, camera);
-
-      const clickableObjects = [moon, ...starMeshes];
+    
+      const clickableObjects = [fairy, ...starMeshes];
       const intersects = raycaster.intersectObjects(clickableObjects, false);
-
+    
       if (intersects.length > 0) {
         const obj = intersects[0].object;
-
-        if (obj === moon) {
+    
+        if (obj === fairy) {
           hoveredStar = null;
           document.body.style.cursor = 'pointer';
           hideTooltip();
@@ -586,104 +595,82 @@
         hideTooltip();
       }
     }
-
+    
     function onClick() {
       if (hoveredStar?.userData?.url) {
         navigateWithFlip(hoveredStar.userData.url);
         return;
       }
-
+    
       raycaster.setFromCamera(pointer, camera);
-      const intersects = raycaster.intersectObject(moon, false);
+      const intersects = raycaster.intersectObject(fairy, false);
       if (intersects.length > 0) {
         navigateWithFlip("index.html");
       }
     }
-
-    function onWheel(event) {
-      targetOrbitRotationY += event.deltaY * 0.0017;
-      targetOrbitRotationX += event.deltaY * 0.00032;
-      targetOrbitRotationZ += event.deltaY * 0.00022;
-
-      targetOrbitRotationX = THREE.MathUtils.clamp(targetOrbitRotationX, -0.42, 0.42);
-      targetOrbitRotationZ = THREE.MathUtils.clamp(targetOrbitRotationZ, -0.25, 0.25);
-    }
-
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('click', onClick);
-    window.addEventListener('wheel', onWheel, { passive: true });
-
-    function resize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-    window.addEventListener('resize', resize);
-
-    const clock = new THREE.Clock();
-
+    
     function animate() {
       requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
-
+    
       currentOrbitRotationY += (targetOrbitRotationY - currentOrbitRotationY) * 0.08;
       currentOrbitRotationX += (targetOrbitRotationX - currentOrbitRotationX) * 0.08;
       currentOrbitRotationZ += (targetOrbitRotationZ - currentOrbitRotationZ) * 0.08;
-
+    
       orbitGroup.rotation.y = currentOrbitRotationY;
       orbitGroup.rotation.x = currentOrbitRotationX + Math.sin(t * 0.35) * 0.03;
       orbitGroup.rotation.z = currentOrbitRotationZ + Math.sin(t * 0.22) * 0.02;
-
+    
       const fairyPulse = 1 + Math.sin(t * 2.1) * 0.035;
-      moon.scale.set(6.0 * fairyPulse, 8.0 * fairyPulse, 1);
-      moon.material.opacity = 0.97;
-
+      fairy.scale.set(6.0 * fairyPulse, 8.0 * fairyPulse, 1);
+      fairy.material.opacity = 0.97;
+    
       fairyAura.scale.set(
         7.0 + Math.sin(t * 1.8) * 0.45,
         7.0 + Math.sin(t * 1.8) * 0.45,
         1
       );
       fairyAura.material.opacity = 0.45 + Math.sin(t * 1.8) * 0.08;
-
+    
       moonLight.intensity = 1.45 + Math.sin(t * 1.7) * 0.18;
       fairyGlow.intensity = 1.45 + Math.sin(t * 2.25 + 0.4) * 0.22;
-
+    
       dawnLight.position.x = -4 + mouseX * 1.8;
       dawnLight.position.y = -1 - mouseY * 0.9;
-
+    
       rimLight.position.x = mouseX * 2.2;
       rimLight.position.y = -4 - mouseY * 1.2;
-
+    
       fairyGlow.position.x = 0.15 + mouseX * 0.24;
       fairyGlow.position.y = 0.45 - mouseY * 0.18;
-
+    
       starMeshes.forEach((star, index) => {
         const { baseScale, phaseSeed, trail } = star.userData;
         const pulse = 1 + Math.sin(t * 2.4 + phaseSeed) * 0.06;
         star.scale.set(baseScale * pulse, baseScale * pulse, 1);
-
+    
         star.material.rotation = Math.sin(t * 0.9 + index) * 0.03;
-
+    
         trail.scale.set(
           2.4 + Math.sin(t * 2 + phaseSeed) * 0.18,
           0.52 + Math.sin(t * 1.6 + phaseSeed) * 0.04,
           1
         );
-
+    
         trail.material.opacity =
           0.22 + Math.abs(Math.sin(t * 2.2 + phaseSeed)) * 0.18;
-
+    
         if (hoveredStar === star) {
           trail.material.opacity = 0.5;
           star.scale.set(baseScale * 1.13, baseScale * 1.13, 1);
         }
-
+    
         star.parent.rotation.z = star.userData.angle + Math.sin(t * 0.25 + index) * 0.06;
       });
-
+    
       dust.rotation.y = t * 0.01;
       dust.rotation.x = Math.sin(t * 0.08) * 0.03;
-
+    
       renderer.render(scene, camera);
     }
 
