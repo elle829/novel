@@ -1048,7 +1048,7 @@ scene.add(hudRing);
 
 function createMoonTexture(phase){
 
-  const size = 512;
+  const size = 256;
 
   const canvas = document.createElement("canvas");
   canvas.width = size;
@@ -1056,119 +1056,46 @@ function createMoonTexture(phase){
 
   const ctx = canvas.getContext("2d");
 
-  /* 完全透明 */
-  ctx.clearRect(0,0,size,size);
+  const cx = size / 2;
+  const cy = size / 2;
+  const r = size * 0.34;
 
-  const cx = size/2;
-  const cy = size/2;
-  const r = size*0.22;
-
-  /* =================================
-     外側ネオングロー
-  ================================= */
-
+  /* 外側のやわらかい光 */
   const glow = ctx.createRadialGradient(
-    cx,cy,r*0.6,
-    cx,cy,r*2.0
+    cx, cy, 0,
+    cx, cy, r * 1.6
   );
 
-  glow.addColorStop(0,"rgba(210,235,255,0.25)");
-  glow.addColorStop(0.4,"rgba(150,190,255,0.18)");
-  glow.addColorStop(0.7,"rgba(110,150,255,0.08)");
-  glow.addColorStop(1,"rgba(0,0,0,0)");
+  glow.addColorStop(0, "rgba(230,240,255,0.9)");
+  glow.addColorStop(0.5, "rgba(200,220,255,0.35)");
+  glow.addColorStop(1, "rgba(200,220,255,0)");
 
   ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, size, size);
+
+  /* 月本体 */
+  ctx.fillStyle = "#dfe9ff";
 
   ctx.beginPath();
-  ctx.arc(cx,cy,r*2.6,0,Math.PI*2);
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.fill();
 
+  /* 月相をくり抜く */
+  ctx.globalCompositeOperation = "destination-out";
 
-  /* =================================
-   月リング（シームレス）
-================================= */
-
-ctx.globalCompositeOperation = "lighter";
-
-const ring = ctx.createRadialGradient(
-  cx, cy, r*0.7,
-  cx, cy, r
-);
-
-ring.addColorStop(0, "rgba(210,235,255,0)");
-ring.addColorStop(0.6, "rgba(210,235,255,0.4)");
-ring.addColorStop(1, "rgba(210,235,255,0.8)");
-
-/* =================================
-   月リング（ぼかし輪郭）
-================================= */
-
-const ringGlow = ctx.createRadialGradient(
-  cx, cy, r*0.55,
-  cx, cy, r
-);
-
-ringGlow.addColorStop(0,"rgba(122,143,216,0)");
-ringGlow.addColorStop(0.55,"rgba(122,143,216,0.2)");
-ringGlow.addColorStop(0.75,"rgba(122,143,216,0.55)");
-ringGlow.addColorStop(1,"rgba(122,143,216,0)");
-
-ctx.fillStyle = ring;
-
-ctx.beginPath();
-ctx.arc(cx,cy,r,0,Math.PI*2);
-ctx.fill();
-
-ctx.globalCompositeOperation = "source-over";
-
-
-  /* =================================
-     月相くり抜き
-  ================================= */
-
-  ctx.globalCompositeOperation="destination-out";
-
-  const offset = (phase - 0.5) * r * 2;
+  const offset = (phase - 0.5) * r * 2.2;
 
   ctx.beginPath();
-  ctx.arc(cx + offset, cy, r * 0.95, 0, Math.PI * 2);
+  ctx.arc(cx + offset, cy, r * 0.98, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.globalCompositeOperation="source-over";
-
-
-  /* =================================
-     月エッジぼかし
-  ================================= */
-
-  const edge = ctx.createRadialGradient(
-    cx,cy,r*0.85,
-    cx,cy,r*1.2
-  );
-
-  edge.addColorStop(0,"rgba(200,220,255,0)");
-  edge.addColorStop(1,"rgba(180,210,255,0.25)");
-
-  ctx.fillStyle=edge;
-
-  ctx.beginPath();
-  ctx.arc(cx,cy,r*1.2,0,Math.PI*2);
-  ctx.fill();
-
-
-  /* =================================
-     texture生成
-  ================================= */
+  ctx.globalCompositeOperation = "source-over";
 
   const texture = new THREE.CanvasTexture(canvas);
-  texture.minFilter = THREE.LinearFilter;
-  texture.magFilter = THREE.LinearFilter;
-  texture.generateMipmaps = false;
   texture.needsUpdate = true;
   texture.colorSpace = THREE.SRGBColorSpace;
 
   return texture;
-
 }
 
      
