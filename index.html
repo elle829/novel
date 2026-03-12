@@ -543,8 +543,6 @@ body{
   .cross-bl{bottom:28px; left:38px;}
   .cross-br{bottom:28px; right:38px;}
 
-}
-
 .site-header{
   position:fixed;
   top:22px;
@@ -557,6 +555,23 @@ body{
     0 0 8px rgba(210,220,255,.25),
     0 0 20px rgba(122,143,216,.25);
   z-index:10;
+}
+
+.window-frame{
+    width:260px;
+}
+
+.ui-window.left{
+    left:10px;
+}
+
+.ui-window.right{
+    right:10px;
+}
+
+.window-text{
+    font-size:12px;
+}
 }
 
 /* =========================================================
@@ -785,7 +800,7 @@ HUD FRAME
 position:fixed;
 inset:0;
 
-background-image:url("./png/hud_frame.svg");
+background-image:url("./png/hud_frame2.svg");
 background-repeat:no-repeat;
 background-position:center;
 background-size:contain;
@@ -800,6 +815,71 @@ drop-shadow(0 0 12px rgba(120,180,255,.6))
 drop-shadow(0 0 30px rgba(120,180,255,.35))
 drop-shadow(0 0 80px rgba(120,180,255,.2));
 
+}
+
+/* ======================================
+UIレイヤー
+====================================== */
+
+.ui-window{
+    position:fixed;
+    top:120px;
+    z-index:50;
+    pointer-events:auto;
+    animation:uiAppear 1s ease;
+}
+
+@keyframes uiAppear{
+0%{
+opacity:0;
+transform:translateY(30px);
+}
+100%{
+opacity:1;
+transform:translateY(0);
+}
+}
+     
+/* 左 */
+.ui-window.left{
+    left:40px;
+}
+
+/* 右 */
+.ui-window.right{
+    right:40px;
+}
+
+/* フレームPNG */
+@keyframes hudGlow{
+0%{opacity:.6}
+50%{opacity:1}
+100%{opacity:.6}
+}
+.window-frame{
+    width:420px;
+    display:block;
+    filter:drop-shadow(0 0 8px rgba(120,190,255,0.5));
+    animation:hudGlow 4s infinite;
+}
+
+/* テキスト */
+.window-text{
+    position:absolute;
+    top:70px;
+    left:40px;
+    right:40px;
+    bottom:40px;
+
+    color:#cfe7ff;
+    font-size:14px;
+    line-height:1.6;
+
+    font-family:
+    "FOT-筑紫Aオールド明朝 Pr6N",
+    serif;
+
+    pointer-events:none;
 }
      
 </style>
@@ -1610,6 +1690,31 @@ bootScreen.classList.add("hide");
 </script>
 
 <div class="hud-frame"></div>
+
+<!-- ======================================
+UI ウィンドウ
+====================================== -->
+
+<div class="ui-window left">
+    <img src="png/window1.png" class="window-frame">
+    <div class="window-text">
+        INFORMATION<br>
+        『君について知っている10のこと』<br>
+         A5フルカラー / 78P / butterfly binding<br>
+         ハードカバー＋ブックケース付き<br>
+         3,500JPY
+    </div>
+</div>
+
+<div class="ui-window right">
+    <img src="png/window2.png" class="window-frame">
+    <div class="window-text">
+        DESCRIPTION<br>
+        「君のこと、もっと教えてください」<br>
+        どうかこの本のページが溢れかえってしまう前に、<br>
+        君の一番柔らかいところに触れることができたらいいけれど。
+    </div>
+</div>
 
 </body>
 </html>
