@@ -822,67 +822,100 @@ drop-shadow(0 0 80px rgba(120,180,255,.2));
 UIレイヤー
 ====================================== */
 
-/* 共通 */
+/* ウィンドウ共通 */
 .ui-window{
-    z-index:50;
+
+position:fixed;
+z-index:15;
+
+animation:uiAppear 1.2s ease;
+
 }
 
-/* 左ウィンドウ（少し下） */
+/* 左ウィンドウ */
+
 .ui-window.left{
-    left:40px;
-    top:180px;
+
+left:40px;
+top:210px;
+
 }
 
-/* 右ウィンドウ（中央より少し下） */
+/* 右ウィンドウ */
+
 .ui-window.right{
-    right:40px;
-    top:340px;
+
+right:40px;
+top:340px;
+
 }
 
-@keyframes uiAppear{
-0%{
-opacity:0;
-transform:translateY(30px);
-}
-100%{
-opacity:1;
-transform:translateY(0);
-}
-}
+/* PNGフレーム */
 
-/* フレームPNG */
-@keyframes hudGlow{
-0%{opacity:.6}
-50%{opacity:1}
-100%{opacity:.6}
-}
 .window-frame{
+
 width:420px;
 display:block;
+
 filter:
 drop-shadow(0 0 8px rgba(120,190,255,0.5))
 drop-shadow(0 0 24px rgba(120,190,255,0.35))
 drop-shadow(0 0 60px rgba(120,190,255,0.2));
+
 animation:hudGlow 4s infinite;
+
 }
 
 /* テキスト */
+
 .window-text{
-    position:absolute;
-    top:70px;
-    left:40px;
-    right:40px;
-    bottom:40px;
 
-    color:#cfe7ff;
-    font-size:14px;
-    line-height:1.6;
+position:absolute;
 
-    font-family:
-    "FOT-筑紫Aオールド明朝 Pr6N",
-    serif;
+top:70px;
+left:40px;
+right:40px;
+bottom:40px;
 
-    pointer-events:none;
+color:#cfe7ff;
+
+font-size:14px;
+line-height:1.6;
+
+font-family:
+"fot-tsukuaoldmin-pr6n",
+"Yu Mincho",
+serif;
+
+pointer-events:none;
+
+}
+
+
+/* 出現アニメ */
+
+@keyframes uiAppear{
+
+0%{
+opacity:0;
+transform:translateY(30px);
+}
+
+100%{
+opacity:1;
+transform:translateY(0);
+}
+
+}
+
+/* HUD光 */
+
+@keyframes hudGlow{
+
+0%{opacity:.6}
+50%{opacity:1}
+100%{opacity:.6}
+
 }
 
 /* =========================================================
