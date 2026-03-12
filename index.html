@@ -899,7 +899,7 @@ const fairyMaterial = new THREE.SpriteMaterial({
 
 const fairy = new THREE.Sprite(fairyMaterial);
 
-fairy.scale.set(5,6.5,1);
+fairy.scale.set(4.2,5.4,1);
 
 fairy.renderOrder = 10;
 
@@ -993,8 +993,8 @@ scene.add(moonGroup);
 
 const moons=[];
 
-const radiusX=6;
-const radiusY=2.5;
+const radiusX=4.5;
+const radiusY=1.9;
 
 for(let i=0;i<10;i++){
 
@@ -1153,11 +1153,11 @@ function updatePopupForHoveredMoon(moon){
 
   /* popup配置 */
 
-  let popupX = screenX + 160;
-  let popupY = screenY - 70;
+  let popupX = screenX + 200;
+  let popupY = screenY - 90;
 
   if(screenX > window.innerWidth * 0.55){
-    popupX = screenX - 300;
+    popupX = screenX - 340;
   }
 
   moonPopup.style.left = popupX + "px";
@@ -1226,6 +1226,12 @@ function updatePopupForHoveredMoon(moon){
   tail.style.top = startY + "px";
   tail.style.width = dist + "px";
   tail.style.transform = "rotate(" + angle + "deg)";
+
+  const safeDistance = 120;
+  if(dist < safeDistance){
+    tail.style.opacity = 0;
+    return;
+  }
 
 }
 
