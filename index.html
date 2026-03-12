@@ -621,57 +621,64 @@ body{
   z-index:10;
 }
 
-.help-button{
+/* =========================================================
+   UIボタン共通
+   ========================================================= */
+
+.ui-buttons-left{
+  position:fixed;
+  left:28px;
+  bottom:28px;
+  display:flex;
+  gap:12px;
+  z-index:20;
+}
+
+.ui-buttons-right{
   position:fixed;
   right:28px;
   bottom:28px;
+  z-index:20;
+}
 
+.ui-button{
   width:44px;
   height:44px;
-
   border-radius:50%;
-
   background:rgba(255,255,255,0.08);
   border:1px solid rgba(255,255,255,0.15);
-
   display:flex;
   align-items:center;
   justify-content:center;
-
-  font-size:20px;
+  font-size:18px;
   color:#eef2ff;
-  cursor:pointer;
-
   backdrop-filter:blur(8px);
-
-  z-index:20;
+  text-decoration:none;
 }
+
+/* =========================================================
+   ヘルプポップアップ
+   ========================================================= */
 
 .help-popup{
   position:fixed;
   right:28px;
   bottom:90px;
-
   width:220px;
   padding:14px 16px;
-
   background:rgba(15,18,40,0.95);
   border:1px solid rgba(255,255,255,0.15);
   border-radius:12px;
-
   font-size:13px;
   line-height:1.6;
   color:#eef2ff;
-
   opacity:0;
   pointer-events:none;
-
   transition:opacity .2s ease;
-
   z-index:20;
 }
 
-.help-button:hover + .help-popup{
+.ui-buttons-right:hover + .help-popup{
   opacity:1;
 }
 
@@ -723,22 +730,24 @@ body{
   君について知っている10のこと
 </header>
      
-<div class="help-button">?</div>
-
-<div class="help-popup">
-  操作<br><br>
-  ・スクロール：月公転<br>
-  ・月ホバー：タイトル表示<br>
-  ・クリック：ページ移動
+<div class="ui-buttons-left">
+     <a class="ui-button" href="https://x.com/dousuru829" target="_blank">
+     X
+     </a>
+     <a class="ui-button" href="https://www.pixiv.net/en/users/93975402" target="_blank">
+     P
+     </a>
 </div>
 
-<div class="sns-buttons">
-  <a class="sns-button" href="https://x.com/dousuru829" target="_blank">
-    X
-  </a>
-  <a class="sns-button" href="https://www.pixiv.net/en/users/93975402" target="_blank">
-    P
-  </a>
+<div class="ui-buttons-right">
+     <div class="ui-button">?</div>
+</div>
+
+<div class="help-popup">
+操作<br><br>
+・スクロール：月公転<br>
+・月ホバー：タイトル表示<br>
+・クリック：ページ移動
 </div>
      
 <div class="popup-tail"></div>
