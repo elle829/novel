@@ -932,7 +932,7 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 
-camera.position.set(0,0.6,9);
+camera.position.set(0,0.2,9);
 
 
 const renderer = new THREE.WebGLRenderer({
@@ -989,6 +989,7 @@ fairy.scale.set(4.2,5.4,1);
 fairy.renderOrder = 10;
 
 scene.add(fairy);
+
 
 /* =========================================================
    3.5) 観測HUDリング
@@ -1492,7 +1493,7 @@ function animate(){
 
   orbitScroll+=(orbitTarget-orbitScroll)*0.08;
 
-  camera.position.x+=(mouseX*0.6-camera.position.x)*0.05;
+  camera.position.x+=(mouseX*0.35-camera.position.x)*0.05;
 
   camera.lookAt(0,0,0);
 
