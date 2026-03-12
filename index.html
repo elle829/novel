@@ -132,6 +132,7 @@ body{
 #scene{
   position:absolute;
   inset:0;
+  z-index:1;
 }
 
 
@@ -142,20 +143,13 @@ body{
 
 
 .bottom{
-
   position:absolute;
-
   bottom:18px;
   left:50%;
-
   transform:translateX(-50%);
-
   font-size:12px;
-
   opacity:.7;
-
   z-index:5;
-
 }
 
 
@@ -165,33 +159,22 @@ body{
    ========================================================= */
 
 .page-flip{
-
   position:fixed;
-
   inset:0;
-
   background:black;
-
   opacity:0;
-
   pointer-events:none;
-
   z-index:50;
-
 }
 
 .page-flip.active{
-
   animation:flip 1s forwards;
-
 }
 
 @keyframes flip{
-
   0%{opacity:0;}
   20%{opacity:1;}
   100%{opacity:1;}
-
 }
 
 
@@ -201,23 +184,15 @@ body{
    ========================================================= */
 
 #moonPopup{
-
   position:absolute;
-
   pointer-events:none;
-
   opacity:0;
-
   transform:translate(-50%,-50%) scale(.95);
-
   transform-origin:center center;
-
   transition:
     opacity .22s ease,
     transform .22s ease;
-
   z-index:20;
-
 }
 
 
