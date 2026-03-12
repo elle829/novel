@@ -1196,12 +1196,12 @@ function updatePopupForHoveredMoon(moon){
   let endX;
   let endY;
 
-  if(popupSide==="right"){
-    endX=popupX-rect.width/2;
-    endY=popupY;
+  if(popupSide === "right"){
+     endX = rect.left;
+     endY = rect.top + rect.height / 2;
   }else{
-    endX=popupX+rect.width/2;
-    endY=popupY;
+     endX = rect.right;
+     endY = rect.top + rect.height / 2;
   }
 
   const dx=endX-screenX;
