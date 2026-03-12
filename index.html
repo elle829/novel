@@ -1912,13 +1912,14 @@ const vitalWave = document.getElementById("vitalWave");
 const vitalWave2 = document.getElementById("vitalWave2");
 
 const ECG_WIDTH = 360;
-const ECG_BASE_Y = 70;
-const ECG_BASE_Y2 = 75;
-const ECG_SPEED = 1.0;
-const ECG_RESET_X = ECG_WIDTH + 36;
+const ECG_BASE_Y = 80;
+const ECG_BASE_Y2 = 80;
 
-let ecgHeadX = -28;
-let beatCooldown = 0;
+const ECG_SPEED = 1.25;      // 左→右
+const ECG_RESET_X = ECG_WIDTH + 40;
+
+let ecgHeadX = -60;
+let beatCooldown = 36;
 let activeBeat = null;
 
 function rand(min, max){
@@ -1926,62 +1927,78 @@ function rand(min, max){
 }
 
 function makeBeatShape(){
-  const pAmp = rand(2, 5);
-  const pWidth = rand(8, 12);
+  const pAmp = rand(1.8, 4.5);
+  const pWidth = rand(7, 11);
 
-  const qAmp = rand(3, 6);
-  const rAmp = rand(28, 48);
-  const sAmp = rand(10, 18);
+  const qAmp = rand(2.5, 5);
+  const rAmp = rand(24, 42);
+  const sAmp = rand(8, 15);
 
-  const tAmp = rand(7, 14);
-  const tWidth = rand(18, 28);
+  const tAmp = rand(5, 11);
+  const tWidth = rand(16, 24);
 
-  const prGap = rand(8, 12);
-  const stGap = rand(10, 16);
-  const tail = rand(20, 34);
+  const prGap = rand(7, 11);
+  const stGap = rand(8, 14);
+  const tail = rand(14, 24);
 
   return [
-    { x:-36, y:0 },
-    { x:-26, y:0 },
+    { x:-30, y:0 },
+    { x:-20, y:0 },
 
-    { x:-26 + pWidth * 0.35, y:-pAmp * 0.45 },
-    { x:-26 + pWidth * 0.7,  y:-pAmp },
-    { x:-26 + pWidth,        y:0 },
+    /* P */
+    { x:-20 + pWidth * 0.35, y:-pAmp * 0.45 },
+    { x:-20 + pWidth * 0.70, y:-pAmp },
+    { x:-20 + pWidth,        y:0 },
 
+    /* PR */
     { x:-prGap, y:0 },
 
-    { x:-3, y:qAmp },
-    { x:2, y:-rAmp },
-    { x:8, y:sAmp },
-    { x:14, y:0 },
+    /* QRS */
+    { x:-2, y:qAmp },
+    { x:2,  y:-rAmp },
+    { x:7,  y:sAmp },
+    { x:11, y:0 },
 
-    { x:14 + stGap, y:rand(-1.0, 1.0) },
+    /* ST */
+    { x:11 + stGap, y:rand(-0.6, 0.6) },
 
-    { x:14 + stGap + tWidth * 0.35, y:-tAmp * 0.55 },
-    { x:14 + stGap + tWidth * 0.7,  y:-tAmp },
-    { x:14 + stGap + tWidth,        y:0 },
+    /* T */
+    { x:11 + stGap + tWidth * 0.35, y:-tAmp * 0.55 },
+    { x:11 + stGap + tWidth * 0.70, y:-tAmp },
+    { x:11 + stGap + tWidth,        y:0 },
 
-    { x:14 + stGap + tWidth + tail, y:0 }
+    /* tail */
+    { x:11 + stGap + tWidth + tail, y:0 }
   ];
 }
 
-     
 function buildRunningWavePath(baseY, headX, beatShape){
   let d = `M 0 ${baseY}`;
 
-  const flatLeft = Math.max(0, headX - 44);
-  d += ` L ${flatLeft.toFixed(1)} ${baseY}`;
+  const beatStartX = beatShape ? headX + beatShape[0].x : headX;
+
+  if(beatStartX > 0){
+    d += ` L ${beatStartX.toFixed(1)} ${baseY}`;
+  }
 
   if(beatShape){
     for(const p of beatShape){
       const x = headX + p.x;
-      if(x >= -20 && x <= ECG_WIDTH + 20){
-        d += ` L ${x.toFixed(1)} ${(baseY + p.y).toFixed(1)}`;
+      const y = baseY + p.y;
+
+      if(x >= -30 && x <= ECG_WIDTH + 30){
+        d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
       }
     }
+
+    const beatEndX = headX + beatShape[beatShape.length - 1].x;
+    if(beatEndX < ECG_WIDTH){
+      d += ` L ${ECG_WIDTH} ${baseY}`;
+    }
+  }else{
+    d += ` L ${ECG_WIDTH} ${baseY}`;
   }
 
-  d += ` L ${ECG_WIDTH} ${baseY}`;
   return d;
 }
 
@@ -1993,20 +2010,19 @@ function updateVitalWave(){
 
   if(!activeBeat && beatCooldown <= 0){
     activeBeat = makeBeatShape();
-    beatCooldown = rand(92, 148);
   }
 
   if(activeBeat){
-    const beatEnd = ecgHeadX + activeBeat[activeBeat.length - 1].x;
-    if(beatEnd > ECG_WIDTH + 26){
+    const beatEndX = ecgHeadX + activeBeat[activeBeat.length - 1].x;
+
+    if(beatEndX > ECG_WIDTH + 28){
       activeBeat = null;
+      beatCooldown = rand(65, 120);
     }
   }
 
   if(ecgHeadX > ECG_RESET_X){
-    ecgHeadX = -28;
-    activeBeat = null;
-    beatCooldown = 0;
+    ecgHeadX = -60;
   }
 
   vitalWave.setAttribute(
@@ -2015,14 +2031,14 @@ function updateVitalWave(){
   );
 
   if(activeBeat){
-    const ghost = activeBeat.map(p => ({
-      x: p.x - 2,
+    const ghostBeat = activeBeat.map(p => ({
+      x: p.x - 1.5,
       y: p.y * 0.42
     }));
 
     vitalWave2.setAttribute(
       "d",
-      buildRunningWavePath(ECG_BASE_Y2, ecgHeadX, ghost)
+      buildRunningWavePath(ECG_BASE_Y2, ecgHeadX, ghostBeat)
     );
   }else{
     vitalWave2.setAttribute(
@@ -2189,45 +2205,47 @@ bootScreen.classList.add("hide");
 </script>
 
 <div class="vital-graph">
-<svg viewBox="0 0 360 180">
-<g class="ecg-grid">
-<!-- 縦線 -->
-<line x1="40" y1="0" x2="40" y2="180"/>
-<line x1="80" y1="0" x2="80" y2="180"/>
-<line x1="120" y1="0" x2="120" y2="180"/>
-<line x1="160" y1="0" x2="160" y2="180"/>
-<line x1="200" y1="0" x2="200" y2="180"/>
-<line x1="240" y1="0" x2="240" y2="180"/>
-<line x1="280" y1="0" x2="280" y2="180"/>
-<line x1="320" y1="0" x2="320" y2="180"/>
-<!-- 横線 -->
-<line x1="0" y1="40" x2="360" y2="40"/>
-<line x1="0" y1="80" x2="360" y2="80"/>
-<line x1="0" y1="120" x2="360" y2="120"/>
-</g>
-     
-  <!-- 軸 -->
-  <line x1="0" y1="140" x2="360" y2="140" class="axis"/>
-  <line x1="0" y1="0" x2="0" y2="140" class="axis"/>
+<svg viewBox="0 0 360 180" preserveAspectRatio="none">
+  <!-- グリッド -->
+  <g class="ecg-grid">
+    <!-- major -->
+    <line x1="0"   y1="24" x2="0"   y2="144" class="major"/>
+    <line x1="120" y1="24" x2="120" y2="144" class="major"/>
+    <line x1="240" y1="24" x2="240" y2="144" class="major"/>
+    <line x1="360" y1="24" x2="360" y2="144" class="major"/>
+
+    <line x1="0" y1="24"  x2="360" y2="24"  class="major"/>
+    <line x1="0" y1="80"  x2="360" y2="80"  class="major"/>
+    <line x1="0" y1="144" x2="360" y2="144" class="major"/>
+
+    <!-- minor -->
+    <line x1="40"  y1="24" x2="40"  y2="144"/>
+    <line x1="80"  y1="24" x2="80"  y2="144"/>
+    <line x1="160" y1="24" x2="160" y2="144"/>
+    <line x1="200" y1="24" x2="200" y2="144"/>
+    <line x1="280" y1="24" x2="280" y2="144"/>
+    <line x1="320" y1="24" x2="320" y2="144"/>
+
+    <line x1="0" y1="52"  x2="360" y2="52"/>
+    <line x1="0" y1="108" x2="360" y2="108"/>
+  </g>
+
+  <!-- フレーム -->
+  <line x1="0" y1="24"  x2="360" y2="24"  class="axis"/>
+  <line x1="0" y1="144" x2="360" y2="144" class="axis"/>
+  <line x1="0" y1="24"  x2="0"   y2="144" class="axis"/>
 
   <!-- メモリ -->
   <g class="ticks">
-    <line x1="70" y1="140" x2="70" y2="130"/>
-    <line x1="140" y1="140" x2="140" y2="130"/>
-    <line x1="210" y1="140" x2="210" y2="130"/>
-    <line x1="280" y1="140" x2="280" y2="130"/>
+    <line x1="40"  y1="144" x2="40"  y2="136"/>
+    <line x1="120" y1="144" x2="120" y2="136"/>
+    <line x1="200" y1="144" x2="200" y2="136"/>
+    <line x1="280" y1="144" x2="280" y2="136"/>
   </g>
 
   <!-- 波形 -->
-  <path id="vitalWave" class="vital-wave" d="M0 70 L360 70"></path>
-
-<path id="vitalWave2" class="vital-wave sub-wave"
-  stroke="#6ecbff"
-  stroke-width="1.5"
-  opacity="0.6"
-  fill="none"
-  d="M0 75 L360 75">
-</path>
+  <path id="vitalWave" class="vital-wave" d="M0 80 L360 80"></path>
+  <path id="vitalWave2" class="vital-wave sub-wave" d="M0 80 L360 80"></path>
 </svg>
 </div>
 
