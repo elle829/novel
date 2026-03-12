@@ -1195,8 +1195,9 @@ function updatePopupForHoveredMoon(moon){
      const fairyDist = Math.sqrt(fx*fx + fy*fy) || 0.0001;
      if(fairyDist < fairySafeRadius){
        const push = fairySafeRadius - fairyDist;
-       popupX += (fx/fairyDist) * push;
-       popupY += (fy/fairyDist) * push;
+       /* 外側方向に押す */
+       popupX += outwardX * push;
+       popupY += outwardY * push;
      }
      
   /* 画面外にはみ出しにくくする */
