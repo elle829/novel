@@ -180,7 +180,7 @@ html, body{
 }
 
 .popup-tail{
-  position:absolute;
+  position:fixed;
   width:0;
   height:2px;
   background:var(--ui-accent);
@@ -597,7 +597,7 @@ right:30px;
 
 <body>
 
-<div id="scene"></div>
+<div id="scene"></>
 
 <!-- =========================================================
      上部UI
@@ -623,12 +623,12 @@ right:30px;
      - 左下カットは clip-path で本体ごと処理
      - 上部プレート / 丸ボタン / クロスを追加
      ========================================================= -->
-<div id="moonPopup">
   <div class="popup-tail">
     <span class="tail-line tail-line-1"></span>
     <span class="tail-line tail-line-2"></span>
     <span class="tail-node"></span>
   </div>
+  <div id="moonPopup">
   <div class="console">
     <div class="console-top-plate"></div>
 
@@ -948,8 +948,14 @@ function animate(){
 
       /* ポップアップ位置 */
      
-     const popupX = screenX + 140
+     let popupX = screenX + 140
      const popupY = screenY - 60
+     
+     /* 画面右側なら popup を左に出す */
+     
+     if(screenX > window.innerWidth / 2){
+       popupX = screenX - 260
+     }
      
      moonPopup.style.left = popupX + "px"
      moonPopup.style.top = popupY + "px"
@@ -961,21 +967,22 @@ function animate(){
      
      if(tail){
      
-       const targetX = popupX - 210
-       const targetY = popupY + 60
-          
-       const dx = targetX - screenX
-       const dy = targetY - screenY
+     const startX = screenX
+     const startY = screenY
      
-       const angle = Math.atan2(dy, dx) * 180 / Math.PI
-       const dist = Math.sqrt(dx*dx + dy*dy)
+     const endX = popupX - 200
+     const endY = popupY + 20
      
-       tail.style.left = screenX + "px"
-       tail.style.top = screenY + "px"
+     const dx = endX - startX
+     const dy = endY - startY
      
-       tail.style.width = dist + "px"
+     const angle = Math.atan2(dy,dx) * 180 / Math.PI
+     const dist = Math.sqrt(dx*dx + dy*dy)
      
-       tail.style.transform = "rotate(" + angle + "deg)"
+     tail.style.left = startX + "px"
+     tail.style.top = startY + "px"
+     tail.style.width = dist + "px"
+     tail.style.transform = "rotate("+angle+"deg)"
      
      }
     }
