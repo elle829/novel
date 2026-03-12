@@ -1012,31 +1012,54 @@ scene.add(fairy);
 
 function createMoonTexture(phase){
 
-  const size = 256;
+  const size = 512;
 
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
 
   const ctx = canvas.getContext("2d");
+
+  /* 完全透明 */
   ctx.clearRect(0,0,size,size);
-     
+
   const cx = size/2;
   const cy = size/2;
-  const r = size*0.34;
+  const r = size*0.28;
 
-  /* =========================
+  /* =================================
+     外側ネオングロー
+  ================================= */
+
+  const glow = ctx.createRadialGradient(
+    cx,cy,r*0.8,
+    cx,cy,r*2.6
+  );
+
+  glow.addColorStop(0,"rgba(210,235,255,0.35)");
+  glow.addColorStop(0.4,"rgba(150,190,255,0.25)");
+  glow.addColorStop(0.7,"rgba(110,150,255,0.12)");
+  glow.addColorStop(1,"rgba(0,0,0,0)");
+
+  ctx.fillStyle = glow;
+
+  ctx.beginPath();
+  ctx.arc(cx,cy,r*2.6,0,Math.PI*2);
+  ctx.fill();
+
+
+  /* =================================
      月本体
-  ========================= */
+  ================================= */
 
   const body = ctx.createRadialGradient(
     cx,cy,0,
     cx,cy,r
   );
 
-  body.addColorStop(0,"rgba(240,250,255,1)");
-  body.addColorStop(0.7,"rgba(220,235,255,0.95)");
-  body.addColorStop(1,"rgba(200,220,255,0.85)");
+  body.addColorStop(0,"rgba(245,250,255,1)");
+  body.addColorStop(0.5,"rgba(225,240,255,0.95)");
+  body.addColorStop(1,"rgba(205,225,255,0.85)");
 
   ctx.fillStyle = body;
 
@@ -1045,47 +1068,53 @@ function createMoonTexture(phase){
   ctx.fill();
 
 
-  /* =========================
+  /* =================================
      月相くり抜き
-  ========================= */
+  ================================= */
 
-  ctx.globalCompositeOperation = "destination-out";
+  ctx.globalCompositeOperation="destination-out";
 
-  const offset = (phase-0.5)*r*2;
+  const offset = (phase - 0.5) * r * 2;
 
   ctx.beginPath();
-  ctx.arc(cx+offset,cy,r,0,Math.PI*2);
+  ctx.arc(cx + offset, cy, r * 0.95, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.globalCompositeOperation = "source-over";
+  ctx.globalCompositeOperation="source-over";
 
 
-  /* =========================
-     青ネオングロー
-  ========================= */
+  /* =================================
+     月エッジぼかし
+  ================================= */
 
-  const glow = ctx.createRadialGradient(
-    cx,cy,r*0.9,
-    cx,cy,r*2.2
+  const edge = ctx.createRadialGradient(
+    cx,cy,r*0.85,
+    cx,cy,r*1.2
   );
 
-  glow.addColorStop(0,"rgba(200,230,255,0.35)");
-  glow.addColorStop(0.5,"rgba(140,180,255,0.25)");
-  glow.addColorStop(1,"rgba(100,140,255,0)");
+  edge.addColorStop(0,"rgba(200,220,255,0)");
+  edge.addColorStop(1,"rgba(180,210,255,0.25)");
 
-  ctx.fillStyle = glow;
+  ctx.fillStyle=edge;
 
   ctx.beginPath();
-  ctx.arc(cx,cy,r*2.2,0,Math.PI*2);
+  ctx.arc(cx,cy,r*1.2,0,Math.PI*2);
   ctx.fill();
 
+
+  /* =================================
+     texture生成
+  ================================= */
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.needsUpdate = true;
   texture.colorSpace = THREE.SRGBColorSpace;
+
   return texture;
+
 }
 
+     
 /* =========================================================
    5) 月データ
    ========================================================= */
@@ -1131,7 +1160,8 @@ for(let i=0;i<10;i++){
     map:tex,
     transparent:true,
     depthWrite:false,
-    depthTest:false
+    depthTest:false,
+    blending:THREE.AdditiveBlending
   });
      
   const moon=new THREE.Sprite(mat);
@@ -1585,7 +1615,7 @@ bootScreen.classList.add("hide");
 </script>
 
 <div class="hud-frame">
-<img src="./png/hud-frame.svg">
+<img src="./png/hud_frame.svg">
 </div>
 
 </body>
