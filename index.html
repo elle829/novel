@@ -54,7 +54,7 @@
   s.parentNode.insertBefore(tk, s);
 
 })(document);
-
+     
 </script>
 
 
@@ -1035,54 +1035,7 @@ height:10px;
    波形UI
    ========================== */
 
-.wave-ui{
-position:fixed;
-right:320px;
-top:120px;
-width:260px;
-height:60px;
-opacity:.7;
-z-index:6;
-}
 
-/* SVG */
-.wave-svg{
-width:100%;
-height:100%;
-}
-
-/* 波形 */
-.wave1{
-fill:none;
-stroke:#9edcff;
-stroke-width:3;
-filter:
-drop-shadow(0 0 6px rgba(120,190,255,.6))
-drop-shadow(0 0 18px rgba(120,190,255,.4));
-stroke-dasharray:800;
-stroke-dashoffset:0;
-animation:waveMove 6s linear infinite;
-}
-
-.wave2{
-fill:none;
-stroke:#6ecbff;
-stroke-width:2;
-opacity:.7;
-stroke-dasharray:800;
-stroke-dashoffset:200;
-animation:waveMove 8s linear infinite reverse;
-}
-
-/* アニメーション */
-@keyframes waveMove{
-0%{
-stroke-dashoffset:0;
-}
-100%{
-stroke-dashoffset:-800;
-}
-}
 
 /* =========================
    妖精 → 波形 接続ライン
@@ -1090,7 +1043,7 @@ stroke-dashoffset:-800;
 
 .vital-line{
 position:fixed;
-width:260px;
+width:280px;
 height:2px;
 background:#9edcff;
 top:260px;
@@ -1105,12 +1058,12 @@ opacity:.7;
 
 .vital-node{
 position:fixed;
-width:14px;
-height:14px;
+width:12px;
+height:12px;
 border-radius:50%;
 background:#dff6ff;
-top:252px;
-right:428px;
+top:260px;
+right:430px;
 box-shadow:
 0 0 8px rgba(120,190,255,.9),
 0 0 18px rgba(120,190,255,.6);
@@ -1152,6 +1105,44 @@ opacity:.8;
 .vital-data span{
 color:#9edcff;
 margin-right:6px;
+}
+
+/* ======================
+バイタルグラフ
+====================== */
+
+.vital-graph{
+position:fixed;
+right:320px;
+top:110px;
+width:260px;
+height:120px;
+opacity:.7;
+z-index:6;
+}
+
+/* 軸 */
+.axis{
+stroke:#7fc6ff;
+stroke-width:1;
+opacity:.5;
+
+}
+
+/* 目盛り */
+.ticks line{
+stroke:#7fc6ff;
+stroke-width:1;
+opacity:.4;
+}
+
+.vital-wave{
+fill:none;
+stroke:#9edcff;
+stroke-width:2;
+filter:
+drop-shadow(0 0 6px rgba(120,190,255,.8))
+drop-shadow(0 0 16px rgba(120,190,255,.4));
 }
      
 </style>
@@ -1267,23 +1258,10 @@ ENTER
 <div class="bar"></div>
 <div class="bar"></div>
 </div>
-
-<div class="vital-window">
-<div class="vital-title">
-FAIRY VITAL
-</div>
-<div class="vital-data">
-<span>HR</span> 84<br>
-<span>MAG</span> 67<br>
-<span>STB</span> 92
-</div>
-</div>
      
 <div class="bottom">
-ABOUT YOU / MIRRORING LAB.
+ELLE / MIRRORING LAB.
 </div>
-
-
 
 <div class="page-flip" id="pageFlip"></div>
 
@@ -1567,7 +1545,7 @@ function createStars(size,count){
     geo,
     new THREE.PointsMaterial({
       color:0xffffff,
-      size:0.05
+      size:0.025 * window.devicePixelRatio
     })
   );
 
@@ -1628,9 +1606,8 @@ let orbitTarget=0;
 let orbitScroll=0;
 
 window.addEventListener("wheel",e=>{
-  orbitTarget+=e.deltaY*0.0015;
+  orbitTarget += Math.sign(e.deltaY) * 0.12;
 });
-
 
 
 /* =========================================================
@@ -1680,8 +1657,8 @@ function updatePopupForHoveredMoon(moon){
   let outwardY = screenY - orbitCenterY;
 
   /* ゼロ割り防止 */
-  const outwardLen = Math.sqrt(outwardX * outwardX + outwardY * outwardY) || 0.0001;
-
+  const outwardLen = Math.hypot(outwardX,outwardY) || 0.0001;
+     
   /* 正規化（長さ1にする） */
   outwardX /= outwardLen;
   outwardY /= outwardLen;
@@ -1704,11 +1681,10 @@ function updatePopupForHoveredMoon(moon){
      /* popupサイズ取得 */
      moonPopup.style.left = popupX + "px";
      moonPopup.style.top = popupY + "px";
-     moonPopup.offsetWidth;
      
-     const rectTemp = moonPopup.getBoundingClientRect();
-     const popupHalfW = rectTemp.width * 0.5;
-     const popupHalfH = rectTemp.height * 0.5;
+     let rect = moonPopup.getBoundingClientRect();
+     const popupHalfW = rect.width * 0.5;
+     const popupHalfH = rect.height * 0.5;
      
      /* 妖精座標 */
      
@@ -1719,8 +1695,6 @@ function updatePopupForHoveredMoon(moon){
      
      const fairyX = (fairyScreen.x * 0.5 + 0.5) * window.innerWidth;
      const fairyY = (-fairyScreen.y * 0.5 + 0.5) * window.innerHeight;
-     
-     const fairyRadius = 240;
      
      /* 探索 */
      
@@ -1733,7 +1707,7 @@ let bestScore = -Infinity;
 
 for(let i=0;i<32;i++){
 
-  const angle = i / 16 * Math.PI * 2;
+  const angle = i / 32 * Math.PI * 2;
 
   const testX = screenX + Math.cos(angle) * popupDistance;
   const testY = screenY + Math.sin(angle) * popupDistance;
@@ -1749,7 +1723,7 @@ for(let i=0;i<32;i++){
   const dx = testX - fairyX;
   const dy = testY - fairyY;
 
-  const dist = Math.sqrt(dx*dx + dy*dy);
+  const dist = Math.hypot(dx,dy);
 
   /* 妖精から遠いほどスコア高い */
   const score = dist;
@@ -1767,17 +1741,11 @@ for(let i=0;i<32;i++){
 popupX = bestX;
 popupY = bestY;
      
-     popupX = bestX;
-     popupY = bestY;
-
-     
   moonPopup.style.left = popupX + "px";
   moonPopup.style.top = popupY + "px";
 
   /* popupサイズ取得 */
-  moonPopup.offsetWidth;
-
-  let rect = moonPopup.getBoundingClientRect();
+  rect = moonPopup.getBoundingClientRect();
 
   const halfW = rect.width * 0.5;
   const halfH = rect.height * 0.5;
@@ -1805,7 +1773,7 @@ popupY = bestY;
   let dx = closestX - screenX;
   let dy = closestY - screenY;
 
-  const len = Math.sqrt(dx*dx + dy*dy) || 0.0001;
+  const len = Math.hypot(dx,dy) || 0.0001;
 
   const dirX = dx / len;
   const dirY = dy / len;
@@ -1831,20 +1799,17 @@ popupY = bestY;
 
 
   /* 距離 */
-
-  const dist = Math.sqrt(
-    (endX - startX) * (endX - startX) +
-    (endY - startY) * (endY - startY)
+  const dist = Math.hypot(
+    endX - startX,
+    endY - startY
   );
 
 
   /* 角度 */
-
   const angle = Math.atan2(
     endY - startY,
     endX - startX
   ) * 180 / Math.PI;
-
   const consoleBox = moonPopup.querySelector(".console");
   if(flip){
     consoleBox.classList.add("flip");
@@ -1853,7 +1818,6 @@ popupY = bestY;
   }
 
   /* 描画 */
-
   tail.style.opacity = 1;
   tail.style.left = startX + "px";
   tail.style.top = startY + "px";
@@ -1868,6 +1832,27 @@ popupY = bestY;
 
 }
 
+
+/* ===============================
+   vital wave animation
+   =============================== */
+
+let vitalWave = document.getElementById("vitalWave");
+let waveTime = 0;
+
+function updateVitalWave(){
+  if(!vitalWave) return;
+  waveTime += 0.05;
+  const a = Math.sin(waveTime) * 20;
+  const b = Math.cos(waveTime) * 20;
+  const path =
+`M0 60
+C 30 ${60-a}, 60 ${60+a}, 90 60
+S 150 ${60-b}, 180 60
+S 240 ${60+a}, 260 60`;
+  vitalWave.setAttribute("d",path);
+}
+     
 
 /* =========================================================
    13) アニメーション
@@ -1945,6 +1930,8 @@ function animate(){
 
   hudRing.rotation.y += 0.002;
 
+  updateVitalWave();
+
   renderer.render(scene,camera);
 
 }
@@ -1985,18 +1972,31 @@ bootScreen.classList.add("hide");
 
 </script>
 
-<div class="wave-ui">
-<svg viewBox="0 0 600 120" class="wave-svg">
-<path class="wave1"
-d="M0 60 
-C 80 20, 120 100, 200 60
-S 320 20, 400 60
-S 520 100, 600 60" />
-<path class="wave2"
-d="M0 70
-C 90 110, 150 10, 240 70
-S 360 110, 450 70
-S 540 10, 600 70" />
+<div class="vital-graph">
+<svg viewBox="0 0 260 120">
+<!-- 軸 -->
+<line x1="0" y1="100" x2="260" y2="100" class="axis"/>
+<line x1="0" y1="0" x2="0" y2="100" class="axis"/>
+<!-- メモリ -->
+<g class="ticks">
+<line x1="50" y1="100" x2="50" y2="95"/>
+<line x1="100" y1="100" x2="100" y2="95"/>
+<line x1="150" y1="100" x2="150" y2="95"/>
+<line x1="200" y1="100" x2="200" y2="95"/>
+</g>
+<!-- 波形 -->
+<path id="vitalWave" class="vital-wave"
+d="M0 60
+C 30 40, 60 80, 90 60
+S 150 40, 180 60
+S 240 80, 260 60">
+</path>
+<path
+stroke="#6ecbff"
+stroke-width="1.5"
+opacity="0.6"
+fill="none"
+d="M0 65 C 30 75, 60 45, 90 65 S 150 75, 180 65 S 240 45, 260 65"/>
 </svg>
 </div>
 
