@@ -1137,12 +1137,20 @@ opacity:.4;
 }
 
 .vital-wave{
-fill:none;
-stroke:#9edcff;
-stroke-width:2;
-filter:
-drop-shadow(0 0 6px rgba(120,190,255,.8))
-drop-shadow(0 0 16px rgba(120,190,255,.4));
+  fill:none;
+  stroke:#9edcff;
+  stroke-width:2;
+  transform-box:fill-box;
+  transform-origin:left center;
+  filter:
+    drop-shadow(0 0 6px rgba(120,190,255,.8))
+    drop-shadow(0 0 16px rgba(120,190,255,.4));
+}
+
+.sub-wave{
+  stroke:#6ecbff;
+  stroke-width:1.5;
+  opacity:0.6;
 }
      
 </style>
@@ -1844,7 +1852,7 @@ const vitalWave = document.getElementById("vitalWave");
 const vitalWave2 = document.getElementById("vitalWave2");
 
 const ECG_WIDTH = 360;
-const ECG_STEP = 0.8;          // 横スクロール速度
+const ECG_STEP = 0.35;          // 横スクロール速度
 const ECG_BASE_Y = 70;
 const ECG_BASE_Y2 = 75;
 
@@ -1931,25 +1939,14 @@ function buildScrollingECGPath(width, baseY, offset, seedShift = 0){
 
 function updateVitalWave(){
   if(!vitalWave) return;
-
   ecgOffset -= ECG_STEP;
-
-  if(ecgOffset <= -128){
-    ecgOffset = 0;
-    ecgSeed += 1;
+  if(ecgOffset <= -360){
+    ecgOffset += 360;
   }
-
-  vitalWave.setAttribute(
-    "d",
-    buildScrollingECGPath(ECG_WIDTH, ECG_BASE_Y, ecgOffset, 0)
-  );
-
-  if(vitalWave2){
-    vitalWave2.setAttribute(
-      "d",
-      buildScrollingECGPath(ECG_WIDTH, ECG_BASE_Y2, ecgOffset * 0.92, 0.37)
-    );
-  }
+  vitalWave.setAttribute("d", ecgPathMain);
+  vitalWave2.setAttribute("d", ecgPathSub);
+  vitalWave.style.transform = `translateX(${ecgOffset}px)`;
+  vitalWave2.style.transform = `translateX(${ecgOffset}px)`;
 }
 
 
@@ -2127,7 +2124,7 @@ bootScreen.classList.add("hide");
   <!-- 波形 -->
   <path id="vitalWave" class="vital-wave" d="M0 70 L360 70"></path>
 
-<path id="vitalWave2"
+<path id="vitalWave2" class="vital-wave sub-wave"
   stroke="#6ecbff"
   stroke-width="1.5"
   opacity="0.6"
