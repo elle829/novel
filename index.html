@@ -1080,7 +1080,10 @@ function createMoonTexture(phase){
   ctx.fill();
 
 
-  return new THREE.CanvasTexture(canvas);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
 }
 
 /* =========================================================
@@ -1127,9 +1130,10 @@ for(let i=0;i<10;i++){
   const mat=new THREE.SpriteMaterial({
     map:tex,
     transparent:true,
-    depthWrite:false
+    depthWrite:false,
+    depthTest:false
   });
-
+     
   const moon=new THREE.Sprite(mat);
 
   moon.userData={
