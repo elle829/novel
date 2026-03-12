@@ -1152,7 +1152,10 @@ window.addEventListener("click",()=>{
 
 function updatePopupForHoveredMoon(moon){
 
-  const v = moon.position.clone();
+  const worldPos = new THREE.Vector3();
+  moon.getWorldPosition(worldPos);
+
+  const v = worldPos.clone();
   v.project(camera);
 
   const screenX = (v.x * 0.5 + 0.5) * window.innerWidth;
