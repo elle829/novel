@@ -1115,8 +1115,8 @@ function updatePopupForHoveredMoon(moon){
      moonPopup.offsetWidth;
      
      const rectTemp = moonPopup.getBoundingClientRect();
-     const halfW = rectTemp.width * 0.5;
-     const halfH = rectTemp.height * 0.5;
+     const popupHalfW = rectTemp.width * 0.5;
+     const popupHalfH = rectTemp.height * 0.5;
      
      /* 妖精座標 */
      
@@ -1143,10 +1143,10 @@ function updatePopupForHoveredMoon(moon){
        const testY = screenY + Math.sin(angle) * popupDistance;
      
        const insideScreen =
-         testX - halfW > 0 &&
-         testX + halfW < window.innerWidth &&
-         testY - halfH > 0 &&
-         testY + halfH < window.innerHeight;
+         testX - popupHalfW > 0 &&
+         testX + popupHalfW < window.innerWidth &&
+         testY - popupHalfH > 0 &&
+         testY + popupHalfH < window.innerHeight
      
        const dx = testX - fairyX;
        const dy = testY - fairyY;
