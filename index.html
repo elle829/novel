@@ -1103,15 +1103,15 @@ ring.addColorStop(1, "rgba(210,235,255,0.8)");
    月リング（ぼかし輪郭）
 ================================= */
 
-const ring = ctx.createRadialGradient(
+const ringGlow = ctx.createRadialGradient(
   cx, cy, r*0.55,
   cx, cy, r
 );
 
-ring.addColorStop(0,"rgba(210,235,255,0)");
-ring.addColorStop(0.55,"rgba(210,235,255,0.15)");
-ring.addColorStop(0.75,"rgba(210,235,255,0.5)");
-ring.addColorStop(1,"rgba(210,235,255,0)");
+ringGlow.addColorStop(0,"rgba(122,143,216,0)");
+ringGlow.addColorStop(0.55,"rgba(122,143,216,0.2)");
+ringGlow.addColorStop(0.75,"rgba(122,143,216,0.55)");
+ringGlow.addColorStop(1,"rgba(122,143,216,0)");
 
 ctx.fillStyle = ring;
 
