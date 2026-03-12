@@ -186,7 +186,7 @@ html, body{
   background:var(--ui-accent);
   transform-origin:left center;
   pointer-events:none;
-  z-index:0;
+  z-index:25;
   box-shadow:
     0 0 6px rgba(122,143,216,.45),
     0 0 16px rgba(122,143,216,.22);
@@ -207,46 +207,6 @@ html, body{
     0 0 6px rgba(122,143,216,.5);
 }
 
-.tail-line{
-  position:absolute;
-  display:block;
-  height:2px;
-  background:var(--ui-accent);
-  box-shadow:
-    0 0 6px rgba(122,143,216,.45),
-    0 0 16px rgba(122,143,216,.22);
-}
-
-/* 最初の斜め線 */
-.tail-line-1{
-  left:0;
-  bottom:10px;
-  width:42px;
-  transform:rotate(-28deg);
-  transform-origin:left center;
-}
-
-/* 二本目の水平線 */
-.tail-line-2{
-  left:34px;
-  bottom:28px;
-  width:56px;
-}
-
-/* 先端のノード */
-.tail-node{
-  position:absolute;
-  left:-4px;
-  bottom:7px;
-  width:8px;
-  height:8px;
-  border:2px solid var(--ui-accent);
-  background:rgba(8,10,24,.85);
-  transform:rotate(45deg);
-  box-shadow:
-    0 0 6px rgba(122,143,216,.38),
-    0 0 12px rgba(122,143,216,.18);
-}
      
 /* ---------------------------------------------------------
    本体フレーム
@@ -597,7 +557,7 @@ right:30px;
 
 <body>
 
-<div id="scene"></>
+<div id="scene"></div>
 
 <!-- =========================================================
      上部UI
@@ -623,11 +583,7 @@ right:30px;
      - 左下カットは clip-path で本体ごと処理
      - 上部プレート / 丸ボタン / クロスを追加
      ========================================================= -->
-  <div class="popup-tail">
-    <span class="tail-line tail-line-1"></span>
-    <span class="tail-line tail-line-2"></span>
-    <span class="tail-node"></span>
-  </div>
+  <div class="popup-tail"></div>
   <div id="moonPopup">
   <div class="console">
     <div class="console-top-plate"></div>
@@ -856,7 +812,8 @@ window.addEventListener("pointermove", (e) => {
 const moonPopup = document.getElementById("moonPopup");
 const moonTitle = document.getElementById("moonTitle");
 const moonSubtitle = document.getElementById("moonSubtitle");
-
+const tail = document.querySelector(".popup-tail")
+     
 /* =========================================================
    10) スクロールで公転
    ========================================================= */
@@ -930,59 +887,90 @@ function animate(){
     const scale = 0.6 + depth * 0.6;
 
     if(moon === hovered){
-      moon.scale.set(scale * 1.2, scale * 1.2, 1);
-    }else{
-      moon.scale.set(scale, scale, 1);
-    }
-
-    moon.material.opacity = 0.5 + depth * 0.5;
-    moon.renderOrder = z > 0 ? 5 : 15;
-
-    /* ホバー中の月の位置へポップアップを追従 */
-    if(moon === hovered){
-      const v = moon.position.clone();
-      v.project(camera);
-
-      const screenX = (v.x * 0.5 + 0.5) * window.innerWidth;
-      const screenY = (-v.y * 0.5 + 0.5) * window.innerHeight;
-
-      /* ポップアップ位置 */
+           moon.scale.set(scale * 1.2, scale * 1.2, 1);
+         }else{
+           moon.scale.set(scale, scale, 1);
+         }
+     
+         moon.material.opacity = 0.5 + depth * 0.5;
+         moon.renderOrder = z > 0 ? 5 : 15;
+     
+         /* ホバー中の月の位置へポップアップを追従 */
+         /* ホバー中の月の位置へポップアップを追従 */
+     if(moon === hovered){
+     
+     const v = moon.position.clone()
+     v.project(camera)
+     
+     const screenX = (v.x*0.5+0.5)*window.innerWidth
+     const screenY = (-v.y*0.5+0.5)*window.innerHeight
+     
+     /* ===== ポップアップ位置 ===== */
      
      let popupX = screenX + 140
-     const popupY = screenY - 60
+     let popupY = screenY - 60
      
-     /* 画面右側なら popup を左に出す */
+     let popupSide = "right"
      
-     if(screenX > window.innerWidth / 2){
-       popupX = screenX - 260
+     /* 画面右側なら popup を左へ */
+     
+     if(screenX > window.innerWidth/2){
+     
+     popupX = screenX - 260
+     popupSide = "left"
+     
      }
      
-     moonPopup.style.left = popupX + "px"
-     moonPopup.style.top = popupY + "px"
+     /* popup配置 */
+     
+     moonPopup.style.left = popupX+"px"
+     moonPopup.style.top = popupY+"px"
+     const rect = moonPopup.getBoundingClientRect()
      
      
-     /* 吹き出し線 */
+     /* ===== 吹き出し線 ===== */
      
-     const tail = document.querySelector(".popup-tail")
      
      if(tail){
+     
+     /* 月位置 */
      
      const startX = screenX
      const startY = screenY
      
-     const endX = popupX - 200
-     const endY = popupY + 20
+     /* popup接続点 */
+     
+     let endX
+     let endY
+     
+     if(popupSide==="right"){
+     
+     endX = popupX - rect.width/2
+     endY = popupY
+     
+     }else{
+     
+     endX = popupX + rect.width/2
+     endY = popupY
+     
+     }
+     
+     /* 線ベクトル */
      
      const dx = endX - startX
      const dy = endY - startY
      
-     const angle = Math.atan2(dy,dx) * 180 / Math.PI
+     const angle = Math.atan2(dy,dx)*180/Math.PI
      const dist = Math.sqrt(dx*dx + dy*dy)
      
-     tail.style.left = startX + "px"
-     tail.style.top = startY + "px"
-     tail.style.width = dist + "px"
+     /* 描画 */
+     
+     tail.style.left = startX+"px"
+     tail.style.top = startY+"px"
+     tail.style.width = dist+"px"
      tail.style.transform = "rotate("+angle+"deg)"
+     
+     }
      
      }
     }
