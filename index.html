@@ -991,6 +991,8 @@ const fairyMaterial = new THREE.SpriteMaterial({
   map:fairyTexture,
   transparent:true,
   depthWrite:false,
+  depthTest:false,
+  blending:THREE.AdditiveBlending
 });
 
 const fairy = new THREE.Sprite(fairyMaterial);
