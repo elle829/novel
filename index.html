@@ -4,16 +4,19 @@
 <head>
 
 <meta charset="UTF-8" />
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <title>Moon Archive</title>
+
 
 <!-- =========================================================
      Adobe Fonts
      ========================================================= -->
 
 <script>
-(function(d) {
+
+(function(d){
 
   var config = {
     kitId: "iuw1frp",
@@ -23,8 +26,8 @@
 
   h = d.documentElement,
 
-  t = setTimeout(function() {
-    h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+  t = setTimeout(function(){
+    h.className = h.className.replace(/\bwf-loading\b/g,"") + " wf-inactive";
   }, config.scriptTimeout),
 
   tk = d.createElement("script"),
@@ -37,24 +40,26 @@
   tk.src = "https://use.typekit.net/" + config.kitId + ".js";
   tk.async = true;
 
-  tk.onload = tk.onreadystatechange = function() {
+  tk.onload = tk.onreadystatechange = function(){
 
     a = this.readyState;
 
     if (f || (a && a !== "complete" && a !== "loaded")) return;
 
     f = true;
+
     clearTimeout(t);
 
-    try {
+    try{
       Typekit.load(config);
-    } catch (e) {}
+    }catch(e){}
 
   };
 
   s.parentNode.insertBefore(tk, s);
 
 })(document);
+
 </script>
 
 
@@ -66,6 +71,7 @@
    ========================================================= */
 
 :root{
+
   --ui-accent:#7a8fd8;
   --ui-accent-glow:rgba(122,143,216,.48);
   --ui-accent-soft:rgba(122,143,216,.24);
@@ -75,7 +81,9 @@
 
   --ui-frame-bg-top:rgba(25,25,35,.88);
   --ui-frame-bg-bottom:rgba(18,18,25,.95);
+
 }
+
 
 
 /* =========================================================
@@ -88,25 +96,26 @@ body{
   margin:0;
   width:100%;
   height:100%;
+
   overflow:hidden;
 
   background:
 
-    radial-gradient(
-      circle at 50% 78%,
-      rgba(255,210,160,0.35) 0%,
-      rgba(255,190,150,0.18) 18%,
-      rgba(10,14,40,0) 40%
-    ),
+  radial-gradient(
+    circle at 50% 78%,
+    rgba(255,210,160,0.35) 0%,
+    rgba(255,190,150,0.18) 18%,
+    rgba(10,14,40,0) 40%
+  ),
 
-    linear-gradient(
-      to top,
-      #1a1e3f 0%,
-      #1b2a63 30%,
-      #13214f 55%,
-      #0a1638 80%,
-      #040817 100%
-    );
+  linear-gradient(
+    to top,
+    #1a1e3f 0%,
+    #1b2a63 30%,
+    #13214f 55%,
+    #0a1638 80%,
+    #040817 100%
+  );
 
   color:white;
 
@@ -121,6 +130,7 @@ body{
 
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
+
 }
 
 
@@ -128,6 +138,7 @@ body{
   position:absolute;
   inset:0;
 }
+
 
 
 /* =========================================================
@@ -145,15 +156,18 @@ body{
   justify-content:space-between;
 
   padding:24px;
+
   z-index:5;
 
 }
+
 
 .panel{
 
   pointer-events:auto;
 
   background:rgba(255,255,255,0.05);
+
   border:1px solid rgba(255,255,255,0.10);
 
   backdrop-filter:blur(10px);
@@ -163,22 +177,28 @@ body{
   padding:12px 16px;
 
   max-width:320px;
+
 }
+
 
 .panel h1{
 
   margin:0 0 6px;
+
   font-size:30px;
 
 }
 
+
 .panel p{
 
   margin:0;
+
   font-size:13px;
   line-height:1.5;
 
 }
+
 
 .help{
 
@@ -187,20 +207,24 @@ body{
 
 }
 
+
 .bottom{
 
   position:absolute;
+
   bottom:18px;
   left:50%;
 
   transform:translateX(-50%);
 
   font-size:12px;
+
   opacity:.7;
 
   z-index:5;
 
 }
+
 
 
 /* =========================================================
@@ -210,6 +234,7 @@ body{
 .page-flip{
 
   position:fixed;
+
   inset:0;
 
   background:black;
@@ -230,13 +255,12 @@ body{
 
 @keyframes flip{
 
-  0%{ opacity:0; }
-
-  20%{ opacity:1; }
-
-  100%{ opacity:1; }
+  0%{opacity:0;}
+  20%{opacity:1;}
+  100%{opacity:1;}
 
 }
+
 
 
 /* =========================================================
@@ -262,6 +286,7 @@ body{
   z-index:20;
 
 }
+
 
 
 /* =========================================================
@@ -293,6 +318,7 @@ body{
 
 }
 
+
 /* 月側ノード */
 
 .popup-tail::before{
@@ -318,6 +344,7 @@ body{
 }
 
 
+
 /* =========================================================
    6) フレーム
    ========================================================= */
@@ -330,7 +357,8 @@ body{
 
   padding:50px 40px 48px;
 
-  background:linear-gradient(
+  background:
+  linear-gradient(
     180deg,
     var(--ui-frame-bg-top),
     var(--ui-frame-bg-bottom)
@@ -340,14 +368,15 @@ body{
 
   box-shadow:
 
-    0 0 8px rgba(122,143,216,.35),
-    0 0 18px rgba(122,143,216,.28),
-    0 0 38px rgba(122,143,216,.22),
+  0 0 8px rgba(122,143,216,.35),
+  0 0 18px rgba(122,143,216,.28),
+  0 0 38px rgba(122,143,216,.22),
 
-    inset 0 0 18px rgba(122,143,216,.08),
-    inset 0 0 24px rgba(0,0,0,.55);
+  inset 0 0 18px rgba(122,143,216,.08),
+  inset 0 0 24px rgba(0,0,0,.55);
 
-  clip-path:polygon(
+  clip-path:
+  polygon(
     0 0,
     100% 0,
     100% 100%,
@@ -375,4 +404,934 @@ body{
 
 }
 
-...
+
+
+/* =========================================================
+   7) 上部プレート
+   ========================================================= */
+
+.console-top-plate{
+
+  position:absolute;
+
+  left:-14px;
+  right:-14px;
+
+  top:-54px;
+
+  height:52px;
+
+  background:var(--ui-accent);
+
+  box-shadow:0 8px 20px var(--ui-accent-glow);
+
+  z-index:-2;
+
+}
+
+.console-top-plate::after{
+
+  content:"";
+
+  position:absolute;
+
+  top:0;
+  right:-34px;
+
+  width:0;
+  height:0;
+
+  border-top:52px solid var(--ui-accent);
+  border-left:34px solid transparent;
+
+}
+
+
+
+/* =========================================================
+   8) 右上ボタン
+   ========================================================= */
+
+.console-dots{
+
+  position:absolute;
+
+  top:-42px;
+  right:18px;
+
+  display:flex;
+  gap:16px;
+
+}
+
+.console-dots span{
+
+  display:block;
+
+  width:20px;
+  height:20px;
+
+  border-radius:50%;
+
+  background:rgba(0,0,0,.28);
+
+}
+
+
+
+/* =========================================================
+   9) タイトル
+   ========================================================= */
+
+.popup-title{
+
+  position:relative;
+
+  z-index:2;
+
+  font-size:24px;
+
+  letter-spacing:.10em;
+
+  margin-bottom:16px;
+
+  color:var(--ui-title);
+
+  text-shadow:
+
+  0 0 6px rgba(210,220,255,.18),
+  0 0 14px rgba(122,143,216,.18);
+
+}
+
+.popup-subtitle{
+
+  position:relative;
+
+  z-index:2;
+
+  font-size:14px;
+
+  line-height:1.7;
+
+  letter-spacing:.05em;
+
+  color:var(--ui-subtitle);
+
+  opacity:.90;
+
+  text-shadow:0 0 6px rgba(122,143,216,.12);
+
+}
+
+
+/* =========================================================
+   10) 角
+   ========================================================= */
+
+.corner{
+
+  position:absolute;
+
+  width:24px;
+  height:24px;
+
+  border-color:var(--ui-accent);
+
+  z-index:1;
+
+}
+
+.tl{
+  top:-2px;
+  left:-2px;
+
+  border-left:2px solid;
+  border-top:2px solid;
+}
+
+.tr{
+  top:-2px;
+  right:-2px;
+
+  border-right:2px solid;
+  border-top:2px solid;
+}
+
+.bl{
+  display:none;
+}
+
+.br{
+  bottom:-2px;
+  right:-2px;
+
+  border-right:2px solid;
+  border-bottom:2px solid;
+}
+
+
+
+/* =========================================================
+   11) 目盛り
+   ========================================================= */
+
+.scale{
+
+  position:absolute;
+
+  top:20px;
+  bottom:20px;
+
+  width:30px;
+
+  opacity:.65;
+
+  z-index:1;
+
+  background:
+  repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 8px,
+    var(--ui-accent) 9px,
+    var(--ui-accent) 10px
+  );
+
+  filter:
+  drop-shadow(
+    0 0 4px rgba(122,143,216,.22)
+  );
+
+}
+
+.scale.left{
+  left:16px;
+}
+
+.scale.right{
+  right:16px;
+}
+
+
+
+/* =========================================================
+   12) クロス
+   ========================================================= */
+
+.cross{
+
+  position:absolute;
+
+  width:28px;
+  height:28px;
+
+  z-index:1;
+
+}
+
+.cross::before,
+.cross::after{
+
+  content:"";
+
+  position:absolute;
+
+  background:var(--ui-accent);
+
+  box-shadow:
+  0 0 6px var(--ui-accent-soft),
+  0 0 14px rgba(122,143,216,.18);
+
+}
+
+.cross::before{
+
+  left:50%;
+  top:0;
+
+  width:2px;
+  height:100%;
+
+  transform:translateX(-50%);
+
+}
+
+.cross::after{
+
+  top:50%;
+  left:0;
+
+  width:100%;
+  height:2px;
+
+  transform:translateY(-50%);
+
+}
+
+.cross-tl{top:36px; left:30px;}
+.cross-tr{top:36px; right:30px;}
+.cross-bl{bottom:34px; left:30px;}
+.cross-br{bottom:34px; right:30px;}
+
+
+
+/* =========================================================
+   13) モバイル
+   ========================================================= */
+
+@media (max-width:768px){
+
+  .ui{
+    flex-direction:column;
+    gap:10px;
+    padding:14px;
+  }
+
+  .panel{
+    max-width:85%;
+  }
+
+  .panel h1{
+    font-size:22px;
+  }
+
+  .panel p{
+    font-size:12px;
+  }
+
+  .bottom{
+    font-size:10px;
+  }
+
+  .console{
+
+    width:min(84vw,360px);
+
+    padding:30px 26px 28px;
+
+    clip-path:
+    polygon(
+      0 0,
+      100% 0,
+      100% 100%,
+      52px 100%,
+      0 calc(100% - 52px)
+    );
+
+  }
+
+  .console-top-plate{
+    top:-42px;
+    height:40px;
+  }
+
+  .console-top-plate::after{
+    border-top:40px solid var(--ui-accent);
+    border-left:28px solid transparent;
+    right:-28px;
+  }
+
+  .console-dots{
+    top:-31px;
+    right:14px;
+    gap:12px;
+  }
+
+  .console-dots span{
+    width:14px;
+    height:14px;
+  }
+
+  .popup-title{
+    font-size:18px;
+    margin-bottom:8px;
+  }
+
+  .popup-subtitle{
+    font-size:12px;
+  }
+
+  .scale.left{left:8px;}
+  .scale.right{right:8px;}
+
+  .cross{width:20px;height:20px;}
+
+  .cross-tl{top:28px; left:38px;}
+  .cross-tr{top:28px; right:38px;}
+  .cross-bl{bottom:28px; left:38px;}
+  .cross-br{bottom:28px; right:38px;}
+
+}
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+<div id="scene"></div>
+
+
+
+<!-- =========================================================
+     上部UI
+     ========================================================= -->
+
+<div class="ui">
+
+  <div class="panel">
+
+    <h1>君について知っている10のこと</h1>
+
+    <p>
+    月をクリックすると物語ページへ移動します
+    </p>
+
+  </div>
+
+
+  <div class="panel help">
+
+    操作<br>
+
+    ・スクロール：月公転<br>
+    ・月ホバー：タイトル表示<br>
+    ・クリック：ページ移動
+
+  </div>
+
+</div>
+
+
+
+<div class="popup-tail"></div>
+
+
+
+<!-- =========================================================
+     月ホバー時ポップアップ
+     ========================================================= -->
+
+<div id="moonPopup">
+
+  <div class="console">
+
+    <div class="console-top-plate"></div>
+
+    <div class="console-dots">
+      <span></span>
+      <span></span>
+    </div>
+
+    <div class="scale left"></div>
+    <div class="scale right"></div>
+
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner br"></div>
+
+    <div class="cross cross-tl"></div>
+    <div class="cross cross-tr"></div>
+    <div class="cross cross-bl"></div>
+    <div class="cross cross-br"></div>
+
+    <div class="popup-title" id="moonTitle"></div>
+    <div class="popup-subtitle" id="moonSubtitle"></div>
+
+  </div>
+
+</div>
+
+
+
+<div class="bottom">
+ABOUT YOU / MIRRORING LAB.
+</div>
+
+
+
+<div class="page-flip" id="pageFlip"></div>
+
+
+
+<script type="module">
+
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
+
+
+/* =========================================================
+   1) 基本
+   ========================================================= */
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+  55,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100
+);
+
+camera.position.set(0,0.6,9);
+
+
+const renderer = new THREE.WebGLRenderer({
+  antialias:true,
+  alpha:true
+});
+
+renderer.setSize(window.innerWidth,window.innerHeight);
+
+renderer.setPixelRatio(
+  Math.min(window.devicePixelRatio,2)
+);
+
+document
+.getElementById("scene")
+.appendChild(renderer.domElement);
+
+
+
+/* =========================================================
+   2) ライト
+   ========================================================= */
+
+scene.add(new THREE.AmbientLight(0xaebcff,0.9));
+
+const fairyLight = new THREE.PointLight(
+  0xa5f4ff,
+  2,
+  20
+);
+
+scene.add(fairyLight);
+
+
+
+/* =========================================================
+   3) 妖精
+   ========================================================= */
+
+const loader = new THREE.TextureLoader();
+
+const fairyTexture = loader.load("./png/yousei3.png");
+
+const fairyMaterial = new THREE.SpriteMaterial({
+  map:fairyTexture,
+  transparent:true,
+  depthWrite:false
+});
+
+const fairy = new THREE.Sprite(fairyMaterial);
+
+fairy.scale.set(5,6.5,1);
+
+fairy.renderOrder = 10;
+
+scene.add(fairy);
+
+
+
+/* =========================================================
+   4) 月テクスチャ
+   ========================================================= */
+
+function createMoonTexture(phase){
+
+  const size = 256;
+
+  const canvas = document.createElement("canvas");
+
+  canvas.width = size;
+  canvas.height = size;
+
+  const ctx = canvas.getContext("2d");
+
+  const cx = size/2;
+  const cy = size/2;
+
+  const r = size*0.34;
+
+  const g = ctx.createRadialGradient(
+    cx,cy,0,
+    cx,cy,r*1.6
+  );
+
+  g.addColorStop(0,"rgba(255,255,230,0.9)");
+  g.addColorStop(0.5,"rgba(255,230,180,0.35)");
+  g.addColorStop(1,"rgba(255,230,180,0)");
+
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,size,size);
+
+  ctx.fillStyle="#fffdf3";
+
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.globalCompositeOperation="destination-out";
+
+  const offset=(phase-0.5)*r*2.2;
+
+  ctx.beginPath();
+  ctx.arc(cx+offset,cy,r*0.98,0,Math.PI*2);
+  ctx.fill();
+
+  return new THREE.CanvasTexture(canvas);
+
+}
+
+
+
+/* =========================================================
+   5) 月データ
+   ========================================================= */
+
+const moonData=[
+
+{title:"酒場にて",subtitle:"フラッグシップ / デミアン",url:"story01.html"},
+{title:"舌戦",subtitle:"秘聞の館 / ネフェル、ヤフォダ",url:"story02.html"},
+{title:"甘いもの",subtitle:"カチャカチャクルムカケ工房 / アイノ、イネファ",url:"story03.html"},
+{title:"宴",subtitle:"西風騎士団 / ファルカ",url:"story04.html"},
+{title:"信仰",subtitle:"霜月の子 / ラウマ",url:"story05.html"},
+{title:"似たもの",subtitle:"実験設計局 / サンドローネ",url:"story06.html"},
+{title:"家",subtitle:"銀月の庭 / コロンビーナ、旅人",url:"story07.html"},
+{title:"空想",subtitle:"魔女会 / アルベド、ドゥリン",url:"story08.html"},
+{title:"使命",subtitle:"ライトキーパー / イルーガ、ニキータ",url:"story09.html"},
+{title:"報告結果",subtitle:"君へ",url:"story10.html"}
+
+];
+
+
+
+/* =========================================================
+   6) 月グループ
+   ========================================================= */
+
+const moonGroup=new THREE.Group();
+
+moonGroup.rotation.x=-2.1;
+moonGroup.rotation.z=0.35;
+
+scene.add(moonGroup);
+
+const moons=[];
+
+const radiusX=6;
+const radiusY=2.5;
+
+for(let i=0;i<10;i++){
+
+  const tex=createMoonTexture(i/9);
+
+  const mat=new THREE.SpriteMaterial({
+    map:tex,
+    transparent:true,
+    depthWrite:false
+  });
+
+  const moon=new THREE.Sprite(mat);
+
+  moon.userData={
+    angle:i/10*Math.PI*2,
+    title:moonData[i].title,
+    subtitle:moonData[i].subtitle,
+    url:moonData[i].url
+  };
+
+  moonGroup.add(moon);
+
+  moons.push(moon);
+
+}
+
+
+
+/* =========================================================
+   7) 星
+   ========================================================= */
+
+function createStars(size,count){
+
+  const geo=new THREE.BufferGeometry();
+
+  const pos=new Float32Array(count*3);
+
+  for(let i=0;i<count;i++){
+
+    pos[i*3]=(Math.random()-0.5)*size;
+    pos[i*3+1]=(Math.random()-0.5)*size;
+    pos[i*3+2]=(Math.random()-0.5)*size;
+
+  }
+
+  geo.setAttribute(
+    "position",
+    new THREE.BufferAttribute(pos,3)
+  );
+
+  return new THREE.Points(
+    geo,
+    new THREE.PointsMaterial({
+      color:0xffffff,
+      size:0.05
+    })
+  );
+
+}
+
+const starsNear=createStars(40,400);
+const starsFar=createStars(60,400);
+
+scene.add(starsNear);
+scene.add(starsFar);
+
+
+
+/* =========================================================
+   8) マウス
+   ========================================================= */
+
+const raycaster=new THREE.Raycaster();
+
+const mouse=new THREE.Vector2();
+
+let hovered=null;
+
+let mouseX=0;
+let mouseY=0;
+
+window.addEventListener("pointermove",e=>{
+
+  mouse.x=(e.clientX/window.innerWidth)*2-1;
+  mouse.y=-(e.clientY/window.innerHeight)*2+1;
+
+  mouseX=mouse.x;
+  mouseY=mouse.y;
+
+});
+
+
+
+/* =========================================================
+   9) DOM取得
+   ========================================================= */
+
+const moonPopup=document.getElementById("moonPopup");
+const moonTitle=document.getElementById("moonTitle");
+const moonSubtitle=document.getElementById("moonSubtitle");
+
+const tail=document.querySelector(".popup-tail");
+
+const pageFlip=document.getElementById("pageFlip");
+
+
+
+/* =========================================================
+   10) 公転
+   ========================================================= */
+
+let orbitTarget=0;
+let orbitScroll=0;
+
+window.addEventListener("wheel",e=>{
+  orbitTarget+=e.deltaY*0.0015;
+});
+
+
+
+/* =========================================================
+   11) クリック遷移
+   ========================================================= */
+
+window.addEventListener("click",()=>{
+
+  if(hovered){
+
+    pageFlip.classList.add("active");
+
+    setTimeout(()=>{
+      location.href=hovered.userData.url;
+    },600);
+
+  }
+
+});
+
+
+
+/* =========================================================
+   12) popup位置
+   ========================================================= */
+
+function updatePopupForHoveredMoon(moon){
+
+  const v=moon.position.clone();
+  v.project(camera);
+
+  const screenX=(v.x*0.5+0.5)*window.innerWidth;
+  const screenY=(-v.y*0.5+0.5)*window.innerHeight;
+
+  let popupX=screenX+140;
+  let popupY=screenY-60;
+
+  let popupSide="right";
+
+  if(screenX>window.innerWidth/2){
+    popupX=screenX-260;
+    popupSide="left";
+  }
+
+  moonPopup.style.left=popupX+"px";
+  moonPopup.style.top=popupY+"px";
+
+  const rect=moonPopup.getBoundingClientRect();
+
+  let endX;
+  let endY;
+
+  if(popupSide==="right"){
+    endX=popupX-rect.width/2;
+    endY=popupY;
+  }else{
+    endX=popupX+rect.width/2;
+    endY=popupY;
+  }
+
+  const dx=endX-screenX;
+  const dy=endY-screenY;
+
+  const angleRad=Math.atan2(dy,dx);
+  const angleDeg=angleRad*180/Math.PI;
+
+  const dist=Math.sqrt(dx*dx+dy*dy);
+
+  const moonOffset=35;
+
+  const startX=screenX+Math.cos(angleRad)*moonOffset;
+  const startY=screenY+Math.sin(angleRad)*moonOffset;
+
+  tail.style.opacity=1;
+
+  tail.style.left=startX+"px";
+  tail.style.top=startY+"px";
+
+  tail.style.width=Math.max(0,dist-moonOffset)+"px";
+
+  tail.style.transform="rotate("+angleDeg+"deg)";
+
+}
+
+
+
+/* =========================================================
+   13) アニメーション
+   ========================================================= */
+
+function animate(){
+
+  requestAnimationFrame(animate);
+
+  orbitScroll+=(orbitTarget-orbitScroll)*0.08;
+
+  camera.position.x+=(mouseX*0.6-camera.position.x)*0.05;
+
+  camera.lookAt(0,0,0);
+
+  raycaster.setFromCamera(mouse,camera);
+
+  const hit=raycaster.intersectObjects(moons);
+
+  hovered=hit.length>0 ? hit[0].object : null;
+
+  if(hovered){
+
+    document.body.style.cursor="pointer";
+
+    moonTitle.textContent=hovered.userData.title;
+    moonSubtitle.textContent=hovered.userData.subtitle;
+
+    moonPopup.style.opacity=1;
+    moonPopup.style.transform="translate(-50%,-50%) scale(1)";
+
+  }else{
+
+    document.body.style.cursor="default";
+
+    moonPopup.style.opacity=0;
+    moonPopup.style.transform="translate(-50%,-50%) scale(.95)";
+
+    tail.style.opacity=0;
+
+  }
+
+  for(const moon of moons){
+
+    const a=moon.userData.angle+orbitScroll;
+
+    const x=Math.cos(a)*radiusX;
+    const y=Math.sin(a)*radiusY;
+    const z=Math.sin(a)*2;
+
+    moon.position.set(x,y,z);
+
+    const depth=(z+2)/4;
+    const scale=0.6+depth*0.6;
+
+    if(moon===hovered){
+      moon.scale.set(scale*1.2,scale*1.2,1);
+    }else{
+      moon.scale.set(scale,scale,1);
+    }
+
+    moon.material.opacity=0.5+depth*0.5;
+
+    moon.renderOrder=z>0 ? 5 : 15;
+
+  }
+
+  if(hovered){
+    updatePopupForHoveredMoon(hovered);
+  }
+
+  fairyLight.position.x=mouseX*2;
+  fairyLight.position.y=mouseY*-1;
+
+  starsNear.rotation.y+=0.0005;
+  starsFar.rotation.y+=0.0002;
+
+  renderer.render(scene,camera);
+
+}
+
+animate();
+
+
+
+/* =========================================================
+   14) リサイズ
+   ========================================================= */
+
+window.addEventListener("resize",()=>{
+
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(window.innerWidth,window.innerHeight);
+
+  renderer.setPixelRatio(
+    Math.min(window.devicePixelRatio,2)
+  );
+
+});
+
+</script>
+
+</body>
+</html>
