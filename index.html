@@ -1113,8 +1113,8 @@ margin-right:6px;
 
 .vital-graph{
 position:fixed;
-right:360px;
-top:90px;
+right:300px;
+top:145px;
 width:360px;
 height:180px;
 opacity:.8;
@@ -1841,33 +1841,139 @@ popupY = bestY;
 
 let vitalWave = document.getElementById("vitalWave");
 let vitalWave2 = document.getElementById("vitalWave2");
+
 let waveTime = 0;
+let nextBeatTime = 0;
+
+function rand(min, max){
+  return min + Math.random() * (max - min);
+}
+
+function clamp(value, min, max){
+  return Math.max(min, Math.min(max, value));
+}
+
+function createBeatPattern(){
+
+  /* 拍の開始位置 */
+  const start = rand(110, 205);
+
+  /* 各波の個体差 */
+  const pAmp = rand(2, 7);
+  const pWidth = rand(7, 16);
+
+  const qAmp = rand(2, 8);
+  const rAmp = rand(32, 52);
+  const sAmp = rand(8, 24);
+
+  const tAmp = rand(6, 18);
+  const tWidth = rand(16, 34);
+
+  /* 区間の不規則さ */
+  const prGap = rand(8, 18);
+  const stGap = rand(10, 22);
+  const restTail = rand(20, 46);
+
+  /* ベースライン揺れ */
+  const baseDrift = rand(-1.5, 1.5);
+
+  return [
+    /* 左のフラット */
+    { x: start - 58, y: baseDrift },
+    { x: start - 44, y: baseDrift },
+
+    /* P波 */
+    { x: start - 44 + pWidth * 0.25, y: baseDrift - pAmp * 0.45 },
+    { x: start - 44 + pWidth * 0.5,  y: baseDrift - pAmp },
+    { x: start - 44 + pWidth,        y: baseDrift },
+
+    /* PR区間 */
+    { x: start - prGap, y: baseDrift },
+
+    /* QRS */
+    { x: start - 4, y: baseDrift + qAmp },
+    { x: start + 3, y: baseDrift - rAmp },
+    { x: start + 10, y: baseDrift + sAmp },
+    { x: start + 18, y: baseDrift + rand(-1.2, 1.2) },
+
+    /* ST区間 */
+    { x: start + 18 + stGap, y: baseDrift + rand(-2.0, 2.0) },
+
+    /* T波 */
+    { x: start + 18 + stGap + tWidth * 0.35, y: baseDrift - tAmp * 0.55 },
+    { x: start + 18 + stGap + tWidth * 0.7,  y: baseDrift - tAmp },
+    { x: start + 18 + stGap + tWidth,        y: baseDrift + rand(-0.8, 0.8) },
+
+    /* 余韻 */
+    { x: start + 18 + stGap + tWidth + restTail, y: baseDrift + rand(-1.0, 1.0) }
+  ];
+}
+
+function createSubPattern(mainPattern){
+  return mainPattern.map((p, i) => ({
+    x: p.x + rand(-3, 3),
+    y: p.y * rand(0.22, 0.42) + (i % 4 === 0 ? rand(-1.2, 1.2) : 0)
+  }));
+}
+
+function buildVitalPath(width, baseY, pattern){
+
+  let d = `M0 ${baseY}`;
+
+  for(const p of pattern){
+    const x = clamp(p.x, 0, width);
+    const y = baseY + p.y;
+    d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
+  }
+
+  d += ` L ${width} ${baseY}`;
+
+  return d;
+}
+
+function lerpPattern(current, target, amount){
+  return current.map((p, i) => ({
+    x: p.x + (target[i].x - p.x) * amount,
+    y: p.y + (target[i].y - p.y) * amount
+  }));
+}
+
+let currentPattern = createBeatPattern();
+let targetPattern = createBeatPattern();
+
+let currentPattern2 = createSubPattern(currentPattern);
+let targetPattern2 = createSubPattern(targetPattern);
 
 function updateVitalWave(){
+
   if(!vitalWave) return;
-  waveTime += 0.02;
-  const t = waveTime * 42 % 360;
-  const path =
-`M0 70
-L ${t-40} 70
-L ${t-20} 70
-L ${t-10} 50
-L ${t} 90
-L ${t+10} 30
-L ${t+20} 70
-L 360 70`;
-  vitalWave.setAttribute("d", path);
+
+  waveTime += 0.016;
+
+  /* 拍のタイミングも不規則 */
+  if(waveTime >= nextBeatTime){
+    targetPattern = createBeatPattern();
+    targetPattern2 = createSubPattern(targetPattern);
+
+    nextBeatTime = waveTime + rand(0.85, 2.2);
+  }
+
+  /* 少し速めに補間して自然に変化 */
+  currentPattern = lerpPattern(currentPattern, targetPattern, 0.1);
+  currentPattern2 = lerpPattern(currentPattern2, targetPattern2, 0.1);
+
+  const width = 360;
+
+  vitalWave.setAttribute(
+    "d",
+    buildVitalPath(width, 70, currentPattern)
+  );
+
   if(vitalWave2){
-    const t2 = (waveTime * 38) % 360;
-    const path2 =
-`M0 75
-L ${t2-30} 75
-L ${t2-10} 65
-L ${t2} 85
-L ${t2+10} 60
-L ${t2+20} 75
-L 360 75`;
-    vitalWave2.setAttribute("d", path2);
+    vitalWave2.setAttribute(
+      "d",
+      buildVitalPath(width, 75, currentPattern2)
+    );
   }
 }
 
@@ -2029,29 +2135,30 @@ bootScreen.classList.add("hide");
 
 <div class="vital-graph">
 <svg viewBox="0 0 360 180">
-<!-- 軸 -->
-<line x1="0" y1="140" x2="360" y2="140" class="axis"/>
-<line x1="0" y1="0" x2="0" y2="140" class="axis"/>
-<!-- メモリ -->
-<g class="ticks">
-<line x1="70" y1="140" x2="70" y2="130"/>
-<line x1="140" y1="140" x2="140" y2="130"/>
-<line x1="210" y1="140" x2="210" y2="130"/>
-<line x1="280" y1="140" x2="280" y2="130"/>
-</g>
-<!-- 波形 -->
-<path id="vitalWave" class="vital-wave"
-d="M0 80
-C 40 60, 80 100, 120 80
-S 200 60, 240 80
-S 320 100, 360 80">
-</path>
-<path id="vitalWave2"
-stroke="#6ecbff"
-stroke-width="1.5"
-opacity="0.6"
-fill="none"
-d="M0 75 L 360 75"/>
+  <!-- 軸 -->
+  <line x1="0" y1="140" x2="360" y2="140" class="axis"/>
+  <line x1="0" y1="0" x2="0" y2="140" class="axis"/>
+
+  <!-- メモリ -->
+  <g class="ticks">
+    <line x1="70" y1="140" x2="70" y2="130"/>
+    <line x1="140" y1="140" x2="140" y2="130"/>
+    <line x1="210" y1="140" x2="210" y2="130"/>
+    <line x1="280" y1="140" x2="280" y2="130"/>
+  </g>
+
+  <!-- 波形 -->
+  <path id="vitalWave" class="vital-wave"
+    d="M0 70 L 140 70 L 150 60 L 160 84 L 170 32 L 182 78 L 360 70">
+  </path>
+
+  <path id="vitalWave2"
+    stroke="#6ecbff"
+    stroke-width="1.5"
+    opacity="0.6"
+    fill="none"
+    d="M0 75 L 145 75 L 155 70 L 165 81 L 175 58 L 186 76 L 360 75">
+  </path>
 </svg>
 </div>
 
