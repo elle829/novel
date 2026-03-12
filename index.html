@@ -1043,17 +1043,17 @@ height:10px;
 
 .vital-line{
 position:fixed;
-width:280px;
 height:2px;
 background:#9edcff;
-top:260px;
-right:430px;
-transform:rotate(-18deg);
+left:0;
+top:0;
+width:0;
 box-shadow:
 0 0 6px rgba(120,190,255,.8),
 0 0 16px rgba(120,190,255,.4);
 z-index:5;
 opacity:.7;
+transform-origin:left center;
 }
 
 .vital-node{
@@ -1062,8 +1062,8 @@ width:12px;
 height:12px;
 border-radius:50%;
 background:#dff6ff;
-top:260px;
-right:430px;
+left:0;
+top:0;
 box-shadow:
 0 0 8px rgba(120,190,255,.9),
 0 0 18px rgba(120,190,255,.6);
@@ -1595,6 +1595,8 @@ const moonSubtitle=document.getElementById("moonSubtitle");
 const tail=document.querySelector(".popup-tail");
 
 const pageFlip=document.getElementById("pageFlip");
+const vitalNode = document.querySelector(".vital-node");
+const vitalLine = document.querySelector(".vital-line");
 
 
 
@@ -1838,6 +1840,7 @@ popupY = bestY;
    =============================== */
 
 let vitalWave = document.getElementById("vitalWave");
+let vitalWave2 = document.getElementById("vitalWave2");
 let waveTime = 0;
 
 function updateVitalWave(){
@@ -1845,14 +1848,22 @@ function updateVitalWave(){
   waveTime += 0.05;
   const a = Math.sin(waveTime) * 20;
   const b = Math.cos(waveTime) * 20;
-  const path =
+  const path1 =
 `M0 60
 C 30 ${60-a}, 60 ${60+a}, 90 60
 S 150 ${60-b}, 180 60
 S 240 ${60+a}, 260 60`;
-  vitalWave.setAttribute("d",path);
-}
-     
+  vitalWave.setAttribute("d",path1);
+  if(vitalWave2){
+    const c = Math.sin(waveTime*1.4) * 22;
+    const path2 =
+`M0 65
+C 30 ${65+c}, 60 ${65-c}, 90 65
+S 150 ${65+c*0.6}, 180 65
+S 240 ${65-c*0.6}, 260 65`;
+    vitalWave2.setAttribute("d",path2);
+  }
+}    
 
 /* =========================================================
    13) アニメーション
@@ -1930,6 +1941,44 @@ function animate(){
 
   hudRing.rotation.y += 0.002;
 
+/* ノードを妖精位置に */
+const fairyWorld = new THREE.Vector3();
+fairy.getWorldPosition(fairyWorld);
+
+const v = fairyWorld.clone().project(camera);
+
+const nodeBaseX = (v.x * 0.5 + 0.5) * window.innerWidth;
+const nodeBaseY = (-v.y * 0.5 + 0.5) * window.innerHeight;
+
+/* ノード中心位置を少し妖精にかぶせる */
+const nodeOffsetX = 6;
+const nodeOffsetY = -4;
+
+const nodeX = nodeBaseX + nodeOffsetX;
+const nodeY = nodeBaseY + nodeOffsetY;
+
+/* ノード自体は中央合わせで配置 */
+vitalNode.style.left = (nodeX - 6) + "px";
+vitalNode.style.top = (nodeY - 6) + "px";
+
+/* ノード → グラフ線 */
+const graph = document.querySelector(".vital-graph");
+const rect = graph.getBoundingClientRect();
+
+const graphX = rect.left;
+const graphY = rect.top + rect.height/2;
+
+const dx = graphX - nodeX;
+const dy = graphY - nodeY;
+
+const length = Math.hypot(dx,dy);
+const angle = Math.atan2(dy,dx) * 180 / Math.PI;
+
+vitalLine.style.left = nodeX + "px";
+vitalLine.style.top = nodeY + "px";
+vitalLine.style.width = length + "px";
+vitalLine.style.transform = "rotate(" + angle + "deg)";
+     
   updateVitalWave();
 
   renderer.render(scene,camera);
@@ -1991,7 +2040,7 @@ C 30 40, 60 80, 90 60
 S 150 40, 180 60
 S 240 80, 260 60">
 </path>
-<path
+<path id="vitalWave2"
 stroke="#6ecbff"
 stroke-width="1.5"
 opacity="0.6"
