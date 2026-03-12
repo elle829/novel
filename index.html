@@ -294,28 +294,18 @@ body{
    ========================================================= */
 
 .popup-tail{
-
   position:fixed;
-
   width:0;
   height:2px;
-
   background:var(--ui-accent);
-
-  transform-origin:left center;
-
+  transform-origin:0 50%;
   pointer-events:none;
-
   z-index:25;
-
   opacity:0;
-
   box-shadow:
     0 0 6px rgba(122,143,216,.45),
     0 0 16px rgba(122,143,216,.22);
-
   transition:opacity .18s ease;
-
 }
 
 
@@ -1192,8 +1182,10 @@ function updatePopupForHoveredMoon(moon){
   const angleRad = Math.atan2(dy, dx);
   const angleDeg = angleRad * 180 / Math.PI;
 
+  const spriteOffset = moon.scale.y * 18;
+
   const startX = screenX;
-  const startY = screenY;
+  const startY = screenY - spriteOffset;
 
   const dist = Math.sqrt(
     (endX - startX) * (endX - startX) +
