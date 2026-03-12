@@ -992,8 +992,6 @@ const fairyMaterial = new THREE.SpriteMaterial({
   map:fairyTexture,
   transparent:true,
   depthWrite:false,
-  depthTest:false,
-  blending:THREE.AdditiveBlending
 });
 
 const fairy = new THREE.Sprite(fairyMaterial);
@@ -1555,7 +1553,7 @@ function animate(){
     if(moon===hovered){
       moon.scale.set(scale*1.2,scale*1.2,1);
     }else{
-      moon.scale.set(scale,scale,1);
+      moon.scale.set(scale*1.1,scale*1.1,1);
     }
 
     moon.material.opacity=0.5+depth*0.5;
