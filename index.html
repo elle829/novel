@@ -1155,22 +1155,20 @@ opacity:.4;
 .vital-wave{
   fill:none;
   stroke:#9edcff;
-  stroke-width:2;
+  stroke-width:2.2;
   stroke-linecap:round;
   stroke-linejoin:round;
-  transform-box:fill-box;
-  transform-origin:left center;
   filter:
-    drop-shadow(0 0 6px rgba(120,190,255,.8))
-    drop-shadow(0 0 16px rgba(120,190,255,.4));
+    drop-shadow(0 0 6px rgba(120,190,255,.9))
+    drop-shadow(0 0 18px rgba(120,190,255,.55));
 }
 
 .sub-wave{
-  stroke:#6ecbff;
-  stroke-width:1.5;
-  opacity:0.6;
+  stroke:#9edcff;
+  stroke-width:1.1;
+  opacity:0.22;
 }
-
+     
 /* ======================
    ECG スキャンライン
 ====================== */
@@ -1180,19 +1178,21 @@ content:"";
 position:absolute;
 left:0;
 right:0;
-height:2px;
+height:10px;
 z-index:10;
 pointer-events:none;
 background:
 linear-gradient(
-90deg,
-transparent,
-rgba(120,190,255,.9),
-transparent
+180deg,
+rgba(120,190,255,0) 0%,
+rgba(120,190,255,.08) 30%,
+rgba(120,190,255,.22) 50%,
+rgba(120,190,255,.08) 70%,
+rgba(120,190,255,0) 100%
 );
 box-shadow:
-0 0 8px rgba(120,190,255,.8),
-0 0 20px rgba(120,190,255,.5);
+0 0 8px rgba(120,190,255,.55),
+0 0 18px rgba(120,190,255,.28);
 animation:scanline 3s linear infinite;
 }
 
@@ -1905,7 +1905,7 @@ popupY = bestY;
 
 /* ===============================
    vital wave animation
-   左 → 右へ流れるECG
+   Shutterstock風の「走査型」心電図
    =============================== */
 
 const vitalWave = document.getElementById("vitalWave");
@@ -1914,112 +1914,70 @@ const vitalWave2 = document.getElementById("vitalWave2");
 const ECG_WIDTH = 360;
 const ECG_BASE_Y = 70;
 const ECG_BASE_Y2 = 75;
-const ECG_SPEED = 0.18;   // 小さくするともっと遅い
 
-const ecgBeats = [];
-let nextBeatX = -120;
+let ecgHeadX = -28;
+const ECG_SPEED = 1.0;
+const ECG_RESET_X = ECG_WIDTH + 36;
 
-function rand(min, max){
-  return min + Math.random() * (max - min);
-}
+let beatCooldown = 0;
+let activeBeat = null;
+function makeBeatShape(){
+  const pAmp = rand(2, 5);
+  const pWidth = rand(8, 12);
 
-function createBeatPoints(startX){
-  const pAmp = rand(2, 6);
-  const pWidth = rand(8, 14);
+  const qAmp = rand(3, 6);
+  const rAmp = rand(28, 48);
+  const sAmp = rand(10, 18);
 
-  const qAmp = rand(2, 6);
-  const rAmp = rand(28, 52);
-  const sAmp = rand(10, 22);
+  const tAmp = rand(7, 14);
+  const tWidth = rand(18, 28);
 
-  const tAmp = rand(6, 16);
-  const tWidth = rand(18, 30);
-
-  const prGap = rand(8, 14);
-  const stGap = rand(10, 18);
-  const tail = rand(18, 36);
+  const prGap = rand(8, 12);
+  const stGap = rand(10, 16);
+  const tail = rand(20, 34);
 
   return [
-    { x:startX - 42, y:0 },
-    { x:startX - 30, y:0 },
+    { x:-36, y:0 },
+    { x:-26, y:0 },
 
-    { x:startX - 30 + pWidth * 0.35, y:-pAmp * 0.5 },
-    { x:startX - 30 + pWidth * 0.7,  y:-pAmp },
-    { x:startX - 30 + pWidth,        y:0 },
+    /* P */
+    { x:-26 + pWidth * 0.35, y:-pAmp * 0.45 },
+    { x:-26 + pWidth * 0.7,  y:-pAmp },
+    { x:-26 + pWidth,        y:0 },
 
-    { x:startX - prGap, y:0 },
+    /* PR */
+    { x:-prGap, y:0 },
 
-    { x:startX - 3, y:qAmp },
-    { x:startX + 2, y:-rAmp },
-    { x:startX + 8, y:sAmp },
-    { x:startX + 14, y:0 },
+    /* QRS */
+    { x:-3, y:qAmp },
+    { x:2, y:-rAmp },
+    { x:8, y:sAmp },
+    { x:14, y:0 },
 
-    { x:startX + 14 + stGap, y:rand(-1.2, 1.2) },
+    /* ST */
+    { x:14 + stGap, y:rand(-1.0, 1.0) },
 
-    { x:startX + 14 + stGap + tWidth * 0.35, y:-tAmp * 0.55 },
-    { x:startX + 14 + stGap + tWidth * 0.7,  y:-tAmp },
-    { x:startX + 14 + stGap + tWidth,        y:0 },
+    /* T */
+    { x:14 + stGap + tWidth * 0.35, y:-tAmp * 0.55 },
+    { x:14 + stGap + tWidth * 0.7,  y:-tAmp },
+    { x:14 + stGap + tWidth,        y:0 },
 
-    { x:startX + 14 + stGap + tWidth + tail, y:0 }
+    /* tail */
+    { x:14 + stGap + tWidth + tail, y:0 }
   ];
 }
 
-function createBeat(startX){
-  const points = createBeatPoints(startX);
-  return {
-    points,
-    startX: points[0].x,
-    endX: points[points.length - 1].x
-  };
-}
-
-function seedInitialBeats(){
-  ecgBeats.length = 0;
-
-  let x = -80;
-  while(x < ECG_WIDTH + 80){
-    const beat = createBeat(x);
-    ecgBeats.push(beat);
-    x = beat.endX + rand(42, 95);
-  }
-
-  nextBeatX = x;
-}
-
-function shiftBeats(dx){
-  for(const beat of ecgBeats){
-    for(const p of beat.points){
-      p.x += dx;
-    }
-    beat.startX += dx;
-    beat.endX += dx;
-  }
-}
-
-function pruneBeats(){
-  while(ecgBeats.length && ecgBeats[0].startX > ECG_WIDTH + 80){
-    ecgBeats.shift();
-  }
-}
-
-function spawnBeatsIfNeeded(){
-  while(nextBeatX < 60){
-    const beat = createBeat(nextBeatX);
-    ecgBeats.push(beat);
-    nextBeatX = beat.endX + rand(42, 95);
-  }
-}
-
-function buildWavePath(baseY, sub = false){
+function buildRunningWavePath(baseY, headX, beatShape){
   let d = `M 0 ${baseY}`;
 
-  for(const beat of ecgBeats){
-    for(const p of beat.points){
-      if(p.x >= -60 && p.x <= ECG_WIDTH + 60){
-        const y = sub
-          ? baseY + p.y * 0.42
-          : baseY + p.y;
+  const flatLeft = Math.max(0, headX - 44);
+  d += ` L ${flatLeft.toFixed(1)} ${baseY}`;
 
-        d += ` L ${p.x.toFixed(1)} ${y.toFixed(1)}`;
+  if(beatShape){
+    for(const p of beatShape){
+      const x = headX + p.x;
+      if(x >= -20 && x <= ECG_WIDTH + 20){
+        d += ` L ${x.toFixed(1)} ${(baseY + p.y).toFixed(1)}`;
       }
     }
   }
@@ -2028,19 +1986,51 @@ function buildWavePath(baseY, sub = false){
   return d;
 }
 
-seedInitialBeats();
-
 function updateVitalWave(){
   if(!vitalWave || !vitalWave2) return;
 
-  shiftBeats(ECG_SPEED);
-  nextBeatX += ECG_SPEED;
+  ecgHeadX += ECG_SPEED;
+  beatCooldown -= ECG_SPEED;
 
-  pruneBeats();
-  spawnBeatsIfNeeded();
+  if(!activeBeat && beatCooldown <= 0){
+    activeBeat = makeBeatShape();
+    beatCooldown = rand(92, 148);
+  }
 
-  vitalWave.setAttribute("d", buildWavePath(ECG_BASE_Y, false));
-  vitalWave2.setAttribute("d", buildWavePath(ECG_BASE_Y2, true));
+  if(activeBeat){
+    const beatEnd = ecgHeadX + activeBeat[activeBeat.length - 1].x;
+    if(beatEnd > ECG_WIDTH + 26){
+      activeBeat = null;
+    }
+  }
+
+  if(ecgHeadX > ECG_RESET_X){
+    ecgHeadX = -28;
+    activeBeat = null;
+    beatCooldown = 0;
+  }
+
+  vitalWave.setAttribute(
+    "d",
+    buildRunningWavePath(ECG_BASE_Y, ecgHeadX, activeBeat)
+  );
+
+  if(activeBeat){
+    const ghost = activeBeat.map(p => ({
+      x: p.x - 2,
+      y: p.y * 0.42
+    }));
+
+    vitalWave2.setAttribute(
+      "d",
+      buildRunningWavePath(ECG_BASE_Y2, ecgHeadX, ghost)
+    );
+  }else{
+    vitalWave2.setAttribute(
+      "d",
+      `M 0 ${ECG_BASE_Y2} L ${ECG_WIDTH} ${ECG_BASE_Y2}`
+    );
+  }
 }
      
 /* =========================================================
