@@ -197,92 +197,110 @@ Popup Container
 position:absolute;
 pointer-events:none;
 opacity:0;
-transition:opacity .2s, transform .2s;
-z-index:20;
 transform:scale(.95);
+transition:.2s;
+z-index:20;
 }
 
+/* ===============================
+コンソールフレーム
+=============================== */
 
-/* =========================================
-Frame
-========================================= */
-
-.popup-frame{
+.console{
 position:relative;
-min-width:260px;
-padding:22px 30px;
+width:420px;
+padding:40px 40px;
 background:linear-gradient(
 180deg,
-rgba(30,30,40,.9),
-rgba(20,20,28,.92)
+rgba(25,25,35,.9),
+rgba(18,18,25,.95)
 );
-border:2px solid #3aa0c7;
+border:2px solid #2fb6df;
 box-shadow:
-0 0 20px rgba(60,170,210,.25),
+0 0 30px rgba(60,200,255,.25),
 inset 0 0 20px rgba(0,0,0,.6);
-
 }
 
-
-/* =========================================
-Corner Cross
-========================================= */
-
-.popup-frame::before,
-.popup-frame::after{
-content:"";
-position:absolute;
-width:28px;
-height:28px;
-border-left:2px solid #3aa0c7;
-border-top:2px solid #3aa0c7;
-top:-2px;
-left:-2px;
-}
-
-.popup-frame::after{
-border-left:none;
-border-top:2px solid #3aa0c7;
-border-right:2px solid #3aa0c7;
-right:-2px;
-left:auto;
-}
-
-
-/* =========================================
-Bottom Corners
-========================================= */
-
-.popup-frame span{
-position:absolute;
-width:28px;
-height:28px;
-border-left:2px solid #3aa0c7;
-border-bottom:2px solid #3aa0c7;
-bottom:-2px;
-left:-2px;
-}
-
-
-/* =========================================
-Title
-========================================= */
+/* ===============================
+タイトル
+=============================== */
 
 .popup-title{
-font-size:22px;
-letter-spacing:.12em;
+font-size:24px;
+letter-spacing:.1em;
 margin-bottom:6px;
-color:#dfefff;
 }
-
-/* =========================================
-Subtitle
-========================================= */
 
 .popup-subtitle{
 font-size:14px;
-opacity:.75;
-letter-spacing:.06em;
+opacity:.7;
+}
+
+/* ===============================
+コーナークロス
+=============================== */
+
+.corner{
+position:absolute;
+width:24px;
+height:24px;
+border-color:#2fb6df;
+}
+
+.tl{
+top:-2px;
+left:-2px;
+border-left:2px solid;
+border-top:2px solid;
+}
+
+.tr{
+top:-2px;
+right:-2px;
+border-right:2px solid;
+border-top:2px solid;
+}
+
+.bl{
+bottom:-2px;
+left:-2px;
+border-left:2px solid;
+border-bottom:2px solid;
+}
+
+.br{
+bottom:-2px;
+right:-2px;
+border-right:2px solid;
+border-bottom:2px solid;
+}
+
+/* ===============================
+サイド目盛り
+=============================== */
+
+.scale{
+position:absolute;
+top:20px;
+bottom:20px;
+width:30px;
+background:
+repeating-linear-gradient(
+to bottom,
+transparent 0px,
+transparent 8px,
+#2fb6df 9px,
+#2fb6df 10px
+);
+opacity:.6;
+}
+
+.scale.left{
+left:-36px;
+}
+
+.scale.right{
+right:-36px;
 }
 
 </style>
@@ -311,7 +329,13 @@ letter-spacing:.06em;
 </div>
 
 <div id="moonPopup">
-  <div class="popup-frame">
+  <div class="console">
+    <div class="scale left"></div>
+    <div class="scale right"></div>
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
     <div class="popup-title" id="moonTitle"></div>
     <div class="popup-subtitle" id="moonSubtitle"></div>
   </div>
