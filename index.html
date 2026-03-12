@@ -1030,6 +1030,59 @@ height:40px;
 height:10px;
 }
 }
+
+/* ==========================
+   波形UI
+   ========================== */
+
+.wave-ui{
+position:fixed;
+left:220px;
+bottom:140px;
+width:260px;
+height:60px;
+opacity:.45;
+z-index:4;
+}
+
+/* SVG */
+.wave-svg{
+width:100%;
+height:100%;
+}
+
+/* 波形 */
+.wave1{
+fill:none;
+stroke:#9edcff;
+stroke-width:3;
+filter:
+drop-shadow(0 0 6px rgba(120,190,255,.6))
+drop-shadow(0 0 18px rgba(120,190,255,.4));
+stroke-dasharray:800;
+stroke-dashoffset:0;
+animation:waveMove 6s linear infinite;
+}
+
+.wave2{
+fill:none;
+stroke:#6ecbff;
+stroke-width:2;
+opacity:.7;
+stroke-dasharray:800;
+stroke-dashoffset:200;
+animation:waveMove 8s linear infinite reverse;
+}
+
+/* アニメーション */
+@keyframes waveMove{
+0%{
+stroke-dashoffset:0;
+}
+100%{
+stroke-dashoffset:-800;
+}
+}
      
 </style>
 
@@ -1853,6 +1906,21 @@ bootScreen.classList.add("hide");
 
 </script>
 
+<div class="wave-ui">
+<svg viewBox="0 0 600 120" class="wave-svg">
+<path class="wave1"
+d="M0 60 
+C 80 20, 120 100, 200 60
+S 320 20, 400 60
+S 520 100, 600 60" />
+<path class="wave2"
+d="M0 70
+C 90 110, 150 10, 240 70
+S 360 110, 450 70
+S 540 10, 600 70" />
+</svg>
+</div>
+     
 <div class="hud-frame"></div>
 
 <!-- ======================================
