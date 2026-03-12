@@ -1905,7 +1905,7 @@ popupY = bestY;
 
 /* ===============================
    vital wave animation
-   Shutterstock風の「走査型」心電図
+   よりリアルで、広がりのあるECG
    =============================== */
 
 const vitalWave = document.getElementById("vitalWave");
@@ -1915,61 +1915,86 @@ const ECG_WIDTH = 360;
 const ECG_BASE_Y = 80;
 const ECG_BASE_Y2 = 80;
 
-const ECG_SPEED = 1.25;      // 左→右
-const ECG_RESET_X = ECG_WIDTH + 40;
+const ECG_SPEED = 0.95;      // 左→右
+const ECG_RESET_X = ECG_WIDTH + 60;
 
-let ecgHeadX = -60;
-let beatCooldown = 36;
+let ecgHeadX = -90;
+let beatCooldown = 52;
 let activeBeat = null;
 
 function rand(min, max){
   return min + Math.random() * (max - min);
 }
 
+/* 拍を広めに、実際の心電図っぽく作る */
 function makeBeatShape(){
-  const pAmp = rand(1.8, 4.5);
-  const pWidth = rand(7, 11);
 
-  const qAmp = rand(2.5, 5);
-  const rAmp = rand(24, 42);
-  const sAmp = rand(8, 15);
+  const pAmp = rand(1.8, 4.2);
+  const pWidth = rand(10, 16);
 
-  const tAmp = rand(5, 11);
-  const tWidth = rand(16, 24);
+  const qAmp = rand(2.5, 5.0);
+  const rAmp = rand(30, 48);
+  const sAmp = rand(10, 18);
 
-  const prGap = rand(7, 11);
-  const stGap = rand(8, 14);
-  const tail = rand(14, 24);
+  const stLift = rand(-0.5, 0.8);
 
-  return [
-    { x:-30, y:0 },
-    { x:-20, y:0 },
+  const tAmp = rand(7, 14);
+  const tWidth = rand(24, 40);
 
-    /* P */
-    { x:-20 + pWidth * 0.35, y:-pAmp * 0.45 },
-    { x:-20 + pWidth * 0.70, y:-pAmp },
-    { x:-20 + pWidth,        y:0 },
+  const preFlat = rand(16, 28);
+  const prGap = rand(12, 18);
+  const qrsWidth = rand(14, 20);
+  const stGap = rand(18, 28);
+  const tail = rand(34, 54);
 
-    /* PR */
-    { x:-prGap, y:0 },
+  const points = [];
 
-    /* QRS */
-    { x:-2, y:qAmp },
-    { x:2,  y:-rAmp },
-    { x:7,  y:sAmp },
-    { x:11, y:0 },
+  /* 拍の前のフラット */
+  points.push({ x: -preFlat, y: 0 });
+  points.push({ x: -preFlat * 0.4, y: 0 });
 
-    /* ST */
-    { x:11 + stGap, y:rand(-0.6, 0.6) },
+  /* P波 */
+  points.push({ x: 0, y: 0 });
+  points.push({ x: pWidth * 0.30, y: -pAmp * 0.45 });
+  points.push({ x: pWidth * 0.60, y: -pAmp });
+  points.push({ x: pWidth, y: 0 });
 
-    /* T */
-    { x:11 + stGap + tWidth * 0.35, y:-tAmp * 0.55 },
-    { x:11 + stGap + tWidth * 0.70, y:-tAmp },
-    { x:11 + stGap + tWidth,        y:0 },
+  /* PR */
+  const prStart = pWidth + prGap;
+  points.push({ x: prStart, y: 0 });
 
-    /* tail */
-    { x:11 + stGap + tWidth + tail, y:0 }
-  ];
+  /* QRS */
+  const qx = prStart + qrsWidth * 0.18;
+  const rx = prStart + qrsWidth * 0.42;
+  const sx = prStart + qrsWidth * 0.70;
+  const qrsEnd = prStart + qrsWidth;
+
+  points.push({ x: qx, y: qAmp });
+  points.push({ x: rx, y: -rAmp });
+  points.push({ x: sx, y: sAmp });
+  points.push({ x: qrsEnd, y: 0 });
+
+  /* ST */
+  const stStart = qrsEnd + stGap * 0.25;
+  const stMid   = qrsEnd + stGap * 0.65;
+  const stEnd   = qrsEnd + stGap;
+
+  points.push({ x: stStart, y: stLift * 0.4 });
+  points.push({ x: stMid,   y: stLift });
+  points.push({ x: stEnd,   y: stLift * 0.2 });
+
+  /* T波 */
+  const tStart = stEnd;
+  points.push({ x: tStart + tWidth * 0.18, y: -tAmp * 0.28 });
+  points.push({ x: tStart + tWidth * 0.42, y: -tAmp * 0.78 });
+  points.push({ x: tStart + tWidth * 0.62, y: -tAmp });
+  points.push({ x: tStart + tWidth * 0.84, y: -tAmp * 0.35 });
+  points.push({ x: tStart + tWidth,        y: 0 });
+
+  /* 拍の後のフラット */
+  points.push({ x: tStart + tWidth + tail, y: 0 });
+
+  return points;
 }
 
 function buildRunningWavePath(baseY, headX, beatShape){
@@ -1986,7 +2011,7 @@ function buildRunningWavePath(baseY, headX, beatShape){
       const x = headX + p.x;
       const y = baseY + p.y;
 
-      if(x >= -30 && x <= ECG_WIDTH + 30){
+      if(x >= -40 && x <= ECG_WIDTH + 40){
         d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
       }
     }
@@ -2008,21 +2033,24 @@ function updateVitalWave(){
   ecgHeadX += ECG_SPEED;
   beatCooldown -= ECG_SPEED;
 
+  /* 新しい拍を出す */
   if(!activeBeat && beatCooldown <= 0){
     activeBeat = makeBeatShape();
   }
 
+  /* 拍が完全に右へ抜けたら次の待機へ */
   if(activeBeat){
     const beatEndX = ecgHeadX + activeBeat[activeBeat.length - 1].x;
 
-    if(beatEndX > ECG_WIDTH + 28){
+    if(beatEndX > ECG_WIDTH + 24){
       activeBeat = null;
-      beatCooldown = rand(65, 120);
+      beatCooldown = rand(70, 120);
     }
   }
 
+  /* 走査ヘッドを左へ戻す */
   if(ecgHeadX > ECG_RESET_X){
-    ecgHeadX = -60;
+    ecgHeadX = -90;
   }
 
   vitalWave.setAttribute(
@@ -2030,10 +2058,13 @@ function updateVitalWave(){
     buildRunningWavePath(ECG_BASE_Y, ecgHeadX, activeBeat)
   );
 
+  /* 残像っぽいサブ波形 */
   if(activeBeat){
-    const ghostBeat = activeBeat.map(p => ({
-      x: p.x - 1.5,
-      y: p.y * 0.42
+    const ghostBeat = activeBeat.map((p, i) => ({
+      x: p.x - 2.5,
+      y:
+        p.y * 0.46 +
+        Math.sin(i * 0.9) * 0.18
     }));
 
     vitalWave2.setAttribute(
