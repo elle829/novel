@@ -1843,7 +1843,7 @@ let vitalWave = document.getElementById("vitalWave");
 let vitalWave2 = document.getElementById("vitalWave2");
 
 let waveTime = 0;
-let nextBeatTime = 0;
+let nextBeatTime = rand(0.6, 1.4);
 
 function rand(min, max){
   return min + Math.random() * (max - min);
@@ -1863,7 +1863,7 @@ function createBeatPattern(){
   const pWidth = rand(7, 16);
 
   const qAmp = rand(2, 8);
-  const rAmp = rand(32, 52);
+  onst rAmp = rand(28, 46);
   const sAmp = rand(8, 24);
 
   const tAmp = rand(6, 18);
@@ -1918,15 +1918,15 @@ function createSubPattern(mainPattern){
 
 function buildVitalPath(width, baseY, pattern){
 
-  let d = `M0 ${baseY}`;
+  let d = `M0 ${(baseY + rand(-0.5, 0.5)).toFixed(1)}`;
 
   for(const p of pattern){
     const x = clamp(p.x, 0, width);
-    const y = baseY + p.y;
+    const y = baseY + p.y + rand(-0.35, 0.35);
     d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
   }
 
-  d += ` L ${width} ${baseY}`;
+  d += ` L ${width} ${(baseY + rand(-0.5, 0.5)).toFixed(1)}`;
 
   return d;
 }
