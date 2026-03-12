@@ -1135,7 +1135,7 @@ function updatePopupForHoveredMoon(moon){
      let bestX = popupX;
      let bestY = popupY;
      
-     for(let i=0;i<16;i++){
+     for(let i=0;i<32;i++){
      
        const angle = i / 16 * Math.PI * 2;
      
@@ -1146,7 +1146,7 @@ function updatePopupForHoveredMoon(moon){
          testX - popupHalfW > 0 &&
          testX + popupHalfW < window.innerWidth &&
          testY - popupHalfH > 0 &&
-         testY + popupHalfH < window.innerHeight
+         testY + popupHalfH < window.innerHeight;
      
        const dx = testX - fairyX;
        const dy = testY - fairyY;
@@ -1168,19 +1168,6 @@ function updatePopupForHoveredMoon(moon){
      popupX = bestX;
      popupY = bestY;
 
-    
- /* =========================================================
-   クランプ後もう一度妖精回避
-   ========================================================= */
-
-  fx = popupX - fairyX;
-  fy = popupY - fairyY;
-  fairyDist = Math.sqrt(fx * fx + fy * fy) || 0.0001;
-
-  if(fairyDist < fairySafeRadius){
-    popupX = fairyX + (fx / fairyDist) * fairySafeRadius;
-    popupY = fairyY + (fy / fairyDist) * fairySafeRadius;
-  }
      
   moonPopup.style.left = popupX + "px";
   moonPopup.style.top = popupY + "px";
