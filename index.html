@@ -1837,146 +1837,123 @@ popupY = bestY;
 
 /* ===============================
    vital wave animation
+   横スクロール式
    =============================== */
 
-let vitalWave = document.getElementById("vitalWave");
-let vitalWave2 = document.getElementById("vitalWave2");
+const vitalWave = document.getElementById("vitalWave");
+const vitalWave2 = document.getElementById("vitalWave2");
 
-let waveTime = 0;
-let nextBeatTime = rand(0.6, 1.4);
+const ECG_WIDTH = 360;
+const ECG_STEP = 2.4;          // 横スクロール速度
+const ECG_BASE_Y = 70;
+const ECG_BASE_Y2 = 75;
+
+let ecgOffset = 0;
+let ecgSeed = 0;
 
 function rand(min, max){
   return min + Math.random() * (max - min);
 }
 
-function clamp(value, min, max){
-  return Math.max(min, Math.min(max, value));
-}
+function makeBeatShape(startX){
+  const pAmp = rand(2, 6);
+  const pWidth = rand(8, 14);
 
-function createBeatPattern(){
+  const qAmp = rand(2, 6);
+  const rAmp = rand(30, 52);
+  const sAmp = rand(10, 22);
 
-  /* 拍の開始位置 */
-  const start = rand(110, 205);
+  const tAmp = rand(6, 16);
+  const tWidth = rand(18, 30);
 
-  /* 各波の個体差 */
-  const pAmp = rand(2, 7);
-  const pWidth = rand(7, 16);
-
-  const qAmp = rand(2, 8);
-  const rAmp = rand(28, 46);
-  const sAmp = rand(8, 24);
-
-  const tAmp = rand(6, 18);
-  const tWidth = rand(16, 34);
-
-  /* 区間の不規則さ */
-  const prGap = rand(8, 18);
-  const stGap = rand(10, 22);
-  const restTail = rand(20, 46);
-
-  /* ベースライン揺れ */
-  const baseDrift = rand(-1.5, 1.5);
+  const prGap = rand(8, 14);
+  const stGap = rand(10, 18);
+  const tail = rand(18, 36);
 
   return [
-    /* 左のフラット */
-    { x: start - 58, y: baseDrift },
-    { x: start - 44, y: baseDrift },
+    { x:startX - 42, y:0 },
+    { x:startX - 30, y:0 },
 
-    /* P波 */
-    { x: start - 44 + pWidth * 0.25, y: baseDrift - pAmp * 0.45 },
-    { x: start - 44 + pWidth * 0.5,  y: baseDrift - pAmp },
-    { x: start - 44 + pWidth,        y: baseDrift },
+    /* P wave */
+    { x:startX - 30 + pWidth * 0.35, y:-pAmp * 0.5 },
+    { x:startX - 30 + pWidth * 0.7,  y:-pAmp },
+    { x:startX - 30 + pWidth,        y:0 },
 
-    /* PR区間 */
-    { x: start - prGap, y: baseDrift },
+    /* PR */
+    { x:startX - prGap, y:0 },
 
     /* QRS */
-    { x: start - 4, y: baseDrift + qAmp },
-    { x: start + 3, y: baseDrift - rAmp },
-    { x: start + 10, y: baseDrift + sAmp },
-    { x: start + 18, y: baseDrift + rand(-1.2, 1.2) },
+    { x:startX - 3, y:qAmp },
+    { x:startX + 2, y:-rAmp },
+    { x:startX + 8, y:sAmp },
+    { x:startX + 14, y:0 },
 
-    /* ST区間 */
-    { x: start + 18 + stGap, y: baseDrift + rand(-2.0, 2.0) },
+    /* ST */
+    { x:startX + 14 + stGap, y:rand(-1.2, 1.2) },
 
-    /* T波 */
-    { x: start + 18 + stGap + tWidth * 0.35, y: baseDrift - tAmp * 0.55 },
-    { x: start + 18 + stGap + tWidth * 0.7,  y: baseDrift - tAmp },
-    { x: start + 18 + stGap + tWidth,        y: baseDrift + rand(-0.8, 0.8) },
+    /* T wave */
+    { x:startX + 14 + stGap + tWidth * 0.35, y:-tAmp * 0.55 },
+    { x:startX + 14 + stGap + tWidth * 0.7,  y:-tAmp },
+    { x:startX + 14 + stGap + tWidth,        y:0 },
 
-    /* 余韻 */
-    { x: start + 18 + stGap + tWidth + restTail, y: baseDrift + rand(-1.0, 1.0) }
+    /* Tail */
+    { x:startX + 14 + stGap + tWidth + tail, y:0 }
   ];
 }
 
-function createSubPattern(mainPattern){
-  return mainPattern.map((p, i) => ({
-    x: p.x + rand(-3, 3),
-    y: p.y * rand(0.22, 0.42) + (i % 4 === 0 ? rand(-1.2, 1.2) : 0)
-  }));
-}
+function buildScrollingECGPath(width, baseY, offset, seedShift = 0){
+  let d = `M 0 ${baseY}`;
 
-function buildVitalPath(width, baseY, pattern){
+  const spacingBase = 128;
+  const totalCycles = Math.ceil(width / spacingBase) + 4;
 
-  let d = `M0 ${(baseY + rand(-0.5, 0.5)).toFixed(1)}`;
+  for(let i = -2; i < totalCycles; i++){
+    const cycleSeed = i + ecgSeed + seedShift;
+    const jitter = Math.sin(cycleSeed * 12.9898) * 43758.5453;
+    const frac = jitter - Math.floor(jitter);
 
-  for(const p of pattern){
-    const x = clamp(p.x, 0, width);
-    const y = baseY + p.y + rand(-0.35, 0.35);
-    d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
+    const spacing = spacingBase + frac * 42 - 21;
+    const cycleStart = i * spacingBase - offset + frac * 18;
+
+    const beatX = cycleStart + spacing * 0.56;
+    const beat = makeBeatShape(beatX);
+
+    for(const p of beat){
+      if(p.x >= -40 && p.x <= width + 40){
+        d += ` L ${p.x.toFixed(1)} ${(baseY + p.y).toFixed(1)}`;
+      }
+    }
   }
 
-  d += ` L ${width} ${(baseY + rand(-0.5, 0.5)).toFixed(1)}`;
-
+  d += ` L ${width} ${baseY}`;
   return d;
 }
 
-function lerpPattern(current, target, amount){
-  return current.map((p, i) => ({
-    x: p.x + (target[i].x - p.x) * amount,
-    y: p.y + (target[i].y - p.y) * amount
-  }));
-}
-
-let currentPattern = createBeatPattern();
-let targetPattern = createBeatPattern();
-
-let currentPattern2 = createSubPattern(currentPattern);
-let targetPattern2 = createSubPattern(targetPattern);
-
 function updateVitalWave(){
-
   if(!vitalWave) return;
 
-  waveTime += 0.016;
+  ecgOffset += ECG_STEP;
 
-  /* 拍のタイミングも不規則 */
-  if(waveTime >= nextBeatTime){
-    targetPattern = createBeatPattern();
-    targetPattern2 = createSubPattern(targetPattern);
-
-    nextBeatTime = waveTime + rand(0.85, 2.2);
+  if(ecgOffset >= 128){
+    ecgOffset = 0;
+    ecgSeed += 1;
   }
-
-  /* 少し速めに補間して自然に変化 */
-  currentPattern = lerpPattern(currentPattern, targetPattern, 0.1);
-  currentPattern2 = lerpPattern(currentPattern2, targetPattern2, 0.1);
-
-  const width = 360;
 
   vitalWave.setAttribute(
     "d",
-    buildVitalPath(width, 70, currentPattern)
+    buildScrollingECGPath(ECG_WIDTH, ECG_BASE_Y, ecgOffset, 0)
   );
 
   if(vitalWave2){
     vitalWave2.setAttribute(
       "d",
-      buildVitalPath(width, 75, currentPattern2)
+      buildScrollingECGPath(ECG_WIDTH, ECG_BASE_Y2, ecgOffset * 0.92, 0.37)
     );
   }
 }
 
+
+     
 /* =========================================================
    13) アニメーション
    ========================================================= */
@@ -2148,17 +2125,15 @@ bootScreen.classList.add("hide");
   </g>
 
   <!-- 波形 -->
-  <path id="vitalWave" class="vital-wave"
-    d="M0 70 L 140 70 L 150 60 L 160 84 L 170 32 L 182 78 L 360 70">
-  </path>
+  <path id="vitalWave" class="vital-wave" d="M0 70 L360 70"></path>
 
-  <path id="vitalWave2"
-    stroke="#6ecbff"
-    stroke-width="1.5"
-    opacity="0.6"
-    fill="none"
-    d="M0 75 L 145 75 L 155 70 L 165 81 L 175 58 L 186 76 L 360 75">
-  </path>
+<path id="vitalWave2"
+  stroke="#6ecbff"
+  stroke-width="1.5"
+  opacity="0.6"
+  fill="none"
+  d="M0 75 L360 75">
+</path>
 </svg>
 </div>
 
