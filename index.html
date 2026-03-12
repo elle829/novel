@@ -1168,36 +1168,7 @@ function updatePopupForHoveredMoon(moon){
      popupX = bestX;
      popupY = bestY;
 
-    /* =========================================================
-        妖精回避
-        ========================================================= */
-     
-     const fairyWorld = new THREE.Vector3();
-     fairy.getWorldPosition(fairyWorld);
-     
-     const fairyScreen = fairyWorld.clone().project(camera);
-     
-     const fairyX = (fairyScreen.x * 0.5 + 0.5) * window.innerWidth;
-     const fairyY = (-fairyScreen.y * 0.5 + 0.5) * window.innerHeight;
-     
-     /* 妖精の安全半径 */
-     const fairyWidth = 220;   // 妖精画像の見た目半径
-     const popupRadius = moonPopup.offsetWidth * 0.5;
-     const fairySafeRadius = fairyWidth + popupRadius + 40;
-     
-     /* popup中心と妖精中心の距離 */
-     let fx = popupX - fairyX;
-     let fy = popupY - fairyY;
-     let fairyDist = Math.sqrt(fx * fx + fy * fy) || 0.0001;
-     
-     /* 妖精に近すぎたら、安全円の外周まで強制移動 */
-     if(fairyDist < fairySafeRadius){
-       popupX = fairyX + (fx / fairyDist) * fairySafeRadius;
-       popupY = fairyY + (fy / fairyDist) * fairySafeRadius;
-     }
-     
- 
-
+    
  /* =========================================================
    クランプ後もう一度妖精回避
    ========================================================= */
