@@ -950,7 +950,7 @@ const fairyMaterial = new THREE.SpriteMaterial({
   map:fairyTexture,
   transparent:true,
   depthWrite:false,
-  color:0xbfd4ff,
+  color:0x888888,
   blending:THREE.AdditiveBlending
 });
 
@@ -989,14 +989,14 @@ function createMoonTexture(phase){
     cx,cy,r*1.6
   );
 
-  g.addColorStop(0,"rgba(255,255,230,0.9)");
-  g.addColorStop(0.5,"rgba(255,230,180,0.35)");
+  g.addColorStop(0,"rgba(230,240,255,0.95)");
+  g.addColorStop(0.5,"rgba(200,220,255,0.35)");
   g.addColorStop(1,"rgba(255,230,180,0)");
 
   ctx.fillStyle=g;
   ctx.fillRect(0,0,size,size);
 
-  ctx.fillStyle="#fffdf3";
+  ctx.fillStyle="#e6f0ff";
 
   ctx.beginPath();
   ctx.arc(cx,cy,r,0,Math.PI*2);
