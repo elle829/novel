@@ -949,7 +949,9 @@ const fairyTexture = loader.load("./png/yousei3.png");
 const fairyMaterial = new THREE.SpriteMaterial({
   map:fairyTexture,
   transparent:true,
-  depthWrite:false
+  depthWrite:false,
+  color:0xbfd4ff,
+  blending:THREE.AdditiveBlending
 });
 
 const fairy = new THREE.Sprite(fairyMaterial);
