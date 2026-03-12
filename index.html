@@ -793,30 +793,13 @@ background-size:contain;
 pointer-events:none;
 z-index:3;
 
-opacity:.35;
-}
-
-.hud-frame img{
-
-position:absolute;
-top:50%;
-left:50%;
-
-transform:translate(-50%,-50%);
-
-width:100vw;
-height:100vh;
-
-object-fit:contain;
-
-opacity:.35;
+opacity:.45;
 
 filter:
-brightness(1.2)
-saturate(1.3)
 drop-shadow(0 0 12px rgba(120,180,255,.6))
-drop-shadow(0 0 30px rgba(120,180,255,.4))
-drop-shadow(0 0 80px rgba(120,180,255,.25));
+drop-shadow(0 0 30px rgba(120,180,255,.35))
+drop-shadow(0 0 80px rgba(120,180,255,.2));
+
 }
      
 </style>
@@ -1007,6 +990,56 @@ fairy.renderOrder = 10;
 
 scene.add(fairy);
 
+/* =========================================================
+   3.5) 観測HUDリング
+   ========================================================= */
+
+function createHudRing(radius){
+
+  const segments = 128;
+  const geometry = new THREE.BufferGeometry();
+
+  const vertices = [];
+
+  for(let i=0;i<=segments;i++){
+
+    const a = i / segments * Math.PI * 2;
+
+    const x = Math.cos(a) * radius;
+    const y = Math.sin(a) * radius;
+
+    vertices.push(x,y,0);
+
+  }
+
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(vertices,3)
+  );
+
+  const material = new THREE.LineBasicMaterial({
+
+    color:0x8fb8ff,
+    transparent:true,
+    opacity:0.35
+
+  });
+
+  const ring = new THREE.Line(geometry,material);
+
+  return ring;
+
+}
+
+const hudRing = createHudRing(3.2);
+
+hudRing.rotation.x = Math.PI / 2;
+
+hudRing.position.set(0,-0.1,-0.5);
+
+hudRing.renderOrder = 2;
+
+scene.add(hudRing);     
 
 
 /* =========================================================
@@ -1582,6 +1615,8 @@ function animate(){
 
   starsNear.rotation.y+=0.0005;
   starsFar.rotation.y+=0.0002;
+
+  hudRing.rotation.z += 0.002;
 
   renderer.render(scene,camera);
 
