@@ -771,6 +771,47 @@ opacity:1;
 transform:translateY(0) scale(1);
 }
 }
+
+/* ===============================
+   HUD FRAME
+   =============================== */
+
+.hud-frame{
+position:fixed;
+inset:40px;
+border:2px solid rgba(120,180,255,.35);
+border-radius:20px;
+pointer-events:none;
+z-index:3;
+box-shadow:
+0 0 30px rgba(80,150,255,.25),
+inset 0 0 60px rgba(60,120,255,.12);
+}
+
+.hud-frame::before,
+.hud-frame::after{
+
+content:"";
+position:absolute;
+width:80px;
+height:80px;
+border:3px solid rgba(120,200,255,.8);
+}
+
+.hud-frame::before{
+top:-3px;
+left:-3px;
+border-right:none;
+border-bottom:none;
+}
+
+.hud-frame::after{
+bottom:-3px;
+right:-3px;
+border-left:none;
+border-top:none;
+
+}
      
 </style>
 
@@ -978,42 +1019,20 @@ function createMoonTexture(phase){
 
   const cx = size/2;
   const cy = size/2;
-
-  const r = size*0.32;
-
-  /* =========================
-     外側ネオングロー
-  ========================= */
-
-  const glow = ctx.createRadialGradient(
-    cx,cy,0,
-    cx,cy,r*2.6
-  );
-
-  glow.addColorStop(0,"rgba(210,230,255,0.25)");
-  glow.addColorStop(0.3,"rgba(170,200,255,0.22)");
-  glow.addColorStop(0.6,"rgba(120,160,255,0.12)");
-  glow.addColorStop(1,"rgba(80,120,255,0)");
-
-  ctx.fillStyle = glow;
-  ctx.fillRect(0,0,size,size);
-
+  const r = size*0.34;
 
   /* =========================
      月本体
   ========================= */
-
-  ctx.shadowColor = "rgba(170,210,255,0.7)";
-  ctx.shadowBlur = 40;
 
   const body = ctx.createRadialGradient(
     cx,cy,0,
     cx,cy,r
   );
 
-  body.addColorStop(0,"rgba(235,245,255,1)");
-  body.addColorStop(0.6,"rgba(210,230,255,0.9)");
-  body.addColorStop(1,"rgba(200,220,255,0.6)");
+  body.addColorStop(0,"rgba(240,250,255,1)");
+  body.addColorStop(0.7,"rgba(220,235,255,0.95)");
+  body.addColorStop(1,"rgba(200,220,255,0.85)");
 
   ctx.fillStyle = body;
 
@@ -1023,42 +1042,42 @@ function createMoonTexture(phase){
 
 
   /* =========================
-     月食マスク
+     月相くり抜き
   ========================= */
 
-  ctx.globalCompositeOperation="destination-out";
+  ctx.globalCompositeOperation = "destination-out";
 
-  const offset=(phase-0.5)*r*2.1;
+  const offset = (phase-0.5)*r*2;
 
   ctx.beginPath();
-  ctx.arc(cx+offset,cy,r*0.95,0,Math.PI*2);
+  ctx.arc(cx+offset,cy,r,0,Math.PI*2);
   ctx.fill();
 
-  ctx.globalCompositeOperation="source-over";
+  ctx.globalCompositeOperation = "source-over";
 
 
   /* =========================
-     エッジぼかし
+     青ネオングロー
   ========================= */
 
-  const edge = ctx.createRadialGradient(
-    cx,cy,r*0.8,
-    cx,cy,r*1.4
+  const glow = ctx.createRadialGradient(
+    cx,cy,r*0.9,
+    cx,cy,r*2.2
   );
 
-  edge.addColorStop(0,"rgba(200,220,255,0)");
-  edge.addColorStop(1,"rgba(160,190,255,0.15)");
+  glow.addColorStop(0,"rgba(200,230,255,0.35)");
+  glow.addColorStop(0.5,"rgba(140,180,255,0.25)");
+  glow.addColorStop(1,"rgba(100,140,255,0)");
 
-  ctx.fillStyle = edge;
+  ctx.fillStyle = glow;
+
   ctx.beginPath();
-  ctx.arc(cx,cy,r*1.4,0,Math.PI*2);
+  ctx.arc(cx,cy,r*2.2,0,Math.PI*2);
   ctx.fill();
 
 
   return new THREE.CanvasTexture(canvas);
-
 }
-
 
 /* =========================================================
    5) 月データ
@@ -1556,6 +1575,8 @@ bootScreen.classList.add("hide");
 });
 
 </script>
+
+<div class="hud-frame"></div>
 
 </body>
 </html>
