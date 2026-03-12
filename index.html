@@ -1119,8 +1119,25 @@ width:360px;
 height:180px;
 opacity:.8;
 z-index:6;
+position:fixed;
+overflow:hidden;
 }
 
+/* ======================
+   ECG グリッド
+====================== */
+
+.ecg-grid line{
+stroke:#7fc6ff;
+stroke-width:0.5;
+opacity:0.15;
+}
+
+.ecg-grid line.major{
+stroke-width:1;
+opacity:0.25;
+}
+     
 /* 軸 */
 .axis{
 stroke:#7fc6ff;
@@ -1153,6 +1170,46 @@ opacity:.4;
   stroke:#6ecbff;
   stroke-width:1.5;
   opacity:0.6;
+}
+
+/* ======================
+   ECG スキャンライン
+====================== */
+
+.vital-graph::after{
+content:"";
+position:absolute;
+left:0;
+right:0;
+height:2px;
+background:
+linear-gradient(
+90deg,
+transparent,
+rgba(120,190,255,.9),
+transparent
+);
+box-shadow:
+0 0 8px rgba(120,190,255,.8),
+0 0 20px rgba(120,190,255,.5);
+animation:scanline 3s linear infinite;
+}
+
+@keyframes scanline{
+0%{
+top:0;
+opacity:0;
+}
+10%{
+opacity:1;
+}
+90%{
+opacity:1;
+}
+100%{
+top:180px;
+opacity:0;
+}
 }
      
 </style>
@@ -1854,7 +1911,7 @@ const vitalWave = document.getElementById("vitalWave");
 const vitalWave2 = document.getElementById("vitalWave2");
 
 const ECG_WIDTH = 360;
-const ECG_STEP = 0.18;          // 横スクロール速度
+const ECG_STEP = 0.12;          // 横スクロール速度
 const ECG_BASE_Y = 70;
 const ECG_BASE_Y2 = 75;
 
@@ -2135,6 +2192,22 @@ bootScreen.classList.add("hide");
 
 <div class="vital-graph">
 <svg viewBox="0 0 360 180">
+<g class="ecg-grid">
+<!-- 縦線 -->
+<line x1="40" y1="0" x2="40" y2="180"/>
+<line x1="80" y1="0" x2="80" y2="180"/>
+<line x1="120" y1="0" x2="120" y2="180"/>
+<line x1="160" y1="0" x2="160" y2="180"/>
+<line x1="200" y1="0" x2="200" y2="180"/>
+<line x1="240" y1="0" x2="240" y2="180"/>
+<line x1="280" y1="0" x2="280" y2="180"/>
+<line x1="320" y1="0" x2="320" y2="180"/>
+<!-- 横線 -->
+<line x1="0" y1="40" x2="360" y2="40"/>
+<line x1="0" y1="80" x2="360" y2="80"/>
+<line x1="0" y1="120" x2="360" y2="120"/>
+</g>
+     
   <!-- 軸 -->
   <line x1="0" y1="140" x2="360" y2="140" class="axis"/>
   <line x1="0" y1="0" x2="0" y2="140" class="axis"/>
