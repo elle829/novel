@@ -971,7 +971,6 @@ function createMoonTexture(phase){
   const size = 256;
 
   const canvas = document.createElement("canvas");
-
   canvas.width = size;
   canvas.height = size;
 
@@ -980,40 +979,85 @@ function createMoonTexture(phase){
   const cx = size/2;
   const cy = size/2;
 
-  const r = size*0.34;
+  const r = size*0.32;
 
-  const g = ctx.createRadialGradient(
+  /* =========================
+     外側ネオングロー
+  ========================= */
+
+  const glow = ctx.createRadialGradient(
     cx,cy,0,
-    cx,cy,r*1.6
+    cx,cy,r*2.6
   );
 
-  g.addColorStop(0,"rgba(235,245,255,1)");
-  g.addColorStop(0.45,"rgba(190,215,255,0.5)");
-  g.addColorStop(1,"rgba(120,160,255,0)");
-     
-  ctx.fillStyle=g;
+  glow.addColorStop(0,"rgba(210,230,255,0.25)");
+  glow.addColorStop(0.3,"rgba(170,200,255,0.22)");
+  glow.addColorStop(0.6,"rgba(120,160,255,0.12)");
+  glow.addColorStop(1,"rgba(80,120,255,0)");
+
+  ctx.fillStyle = glow;
   ctx.fillRect(0,0,size,size);
 
-  ctx.fillStyle="#e9f2ff";
+
+  /* =========================
+     月本体
+  ========================= */
+
+  ctx.shadowColor = "rgba(170,210,255,0.7)";
+  ctx.shadowBlur = 40;
+
+  const body = ctx.createRadialGradient(
+    cx,cy,0,
+    cx,cy,r
+  );
+
+  body.addColorStop(0,"rgba(235,245,255,1)");
+  body.addColorStop(0.6,"rgba(210,230,255,0.9)");
+  body.addColorStop(1,"rgba(200,220,255,0.6)");
+
+  ctx.fillStyle = body;
 
   ctx.beginPath();
   ctx.arc(cx,cy,r,0,Math.PI*2);
   ctx.fill();
 
+
+  /* =========================
+     月食マスク
+  ========================= */
+
   ctx.globalCompositeOperation="destination-out";
 
-  const offset=(phase-0.5)*r*2.2;
+  const offset=(phase-0.5)*r*2.1;
 
   ctx.beginPath();
-  ctx.arc(cx+offset,cy,r*0.98,0,Math.PI*2);
+  ctx.arc(cx+offset,cy,r*0.95,0,Math.PI*2);
   ctx.fill();
 
-  ctx.shadowColor="rgba(180,210,255,0.6)";
-  ctx.shadowBlur=30;
+  ctx.globalCompositeOperation="source-over";
+
+
+  /* =========================
+     エッジぼかし
+  ========================= */
+
+  const edge = ctx.createRadialGradient(
+    cx,cy,r*0.8,
+    cx,cy,r*1.4
+  );
+
+  edge.addColorStop(0,"rgba(200,220,255,0)");
+  edge.addColorStop(1,"rgba(160,190,255,0.15)");
+
+  ctx.fillStyle = edge;
+  ctx.beginPath();
+  ctx.arc(cx,cy,r*1.4,0,Math.PI*2);
+  ctx.fill();
+
 
   return new THREE.CanvasTexture(canvas);
-}
 
+}
 
 
 /* =========================================================
