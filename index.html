@@ -1914,13 +1914,17 @@ const vitalWave2 = document.getElementById("vitalWave2");
 const ECG_WIDTH = 360;
 const ECG_BASE_Y = 70;
 const ECG_BASE_Y2 = 75;
-
-let ecgHeadX = -28;
 const ECG_SPEED = 1.0;
 const ECG_RESET_X = ECG_WIDTH + 36;
 
+let ecgHeadX = -28;
 let beatCooldown = 0;
 let activeBeat = null;
+
+function rand(min, max){
+  return min + Math.random() * (max - min);
+}
+
 function makeBeatShape(){
   const pAmp = rand(2, 5);
   const pWidth = rand(8, 12);
@@ -1940,33 +1944,28 @@ function makeBeatShape(){
     { x:-36, y:0 },
     { x:-26, y:0 },
 
-    /* P */
     { x:-26 + pWidth * 0.35, y:-pAmp * 0.45 },
     { x:-26 + pWidth * 0.7,  y:-pAmp },
     { x:-26 + pWidth,        y:0 },
 
-    /* PR */
     { x:-prGap, y:0 },
 
-    /* QRS */
     { x:-3, y:qAmp },
     { x:2, y:-rAmp },
     { x:8, y:sAmp },
     { x:14, y:0 },
 
-    /* ST */
     { x:14 + stGap, y:rand(-1.0, 1.0) },
 
-    /* T */
     { x:14 + stGap + tWidth * 0.35, y:-tAmp * 0.55 },
     { x:14 + stGap + tWidth * 0.7,  y:-tAmp },
     { x:14 + stGap + tWidth,        y:0 },
 
-    /* tail */
     { x:14 + stGap + tWidth + tail, y:0 }
   ];
 }
 
+     
 function buildRunningWavePath(baseY, headX, beatShape){
   let d = `M 0 ${baseY}`;
 
