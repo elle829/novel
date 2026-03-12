@@ -181,11 +181,30 @@ html, body{
 
 .popup-tail{
   position:absolute;
-  left:-96px;
-  bottom:42px;
-  width:96px;
-  height:48px;
+  width:0;
+  height:2px;
+  background:var(--ui-accent);
+  transform-origin:left center;
   pointer-events:none;
+  z-index:0;
+  box-shadow:
+    0 0 6px rgba(122,143,216,.45),
+    0 0 16px rgba(122,143,216,.22);
+}
+
+/* 月側のノード */
+.popup-tail::before{
+  content:"";
+  position:absolute;
+  left:-6px;
+  top:-3px;
+  width:8px;
+  height:8px;
+  border:2px solid var(--ui-accent);
+  background:#050814;
+  transform:rotate(45deg);
+  box-shadow:
+    0 0 6px rgba(122,143,216,.5);
 }
 
 .tail-line{
@@ -927,10 +946,35 @@ function animate(){
       const screenX = (v.x * 0.5 + 0.5) * window.innerWidth;
       const screenY = (-v.y * 0.5 + 0.5) * window.innerHeight;
 
-      moonPopup.style.left = screenX + "px";
-
-      /* 上部プレートが付いたので、少し上へ持ち上げる */
-      moonPopup.style.top = (screenY - 70) + "px";
+      /* ポップアップ位置 */
+     
+     const popupX = screenX + 140
+     const popupY = screenY - 60
+     
+     moonPopup.style.left = popupX + "px"
+     moonPopup.style.top = popupY + "px"
+     
+     
+     /* 吹き出し線 */
+     
+     const tail = document.querySelector(".popup-tail")
+     
+     if(tail){
+     
+       const dx = popupX - screenX
+       const dy = popupY - screenY
+     
+       const angle = Math.atan2(dy, dx) * 180 / Math.PI
+       const dist = Math.sqrt(dx*dx + dy*dy)
+     
+       tail.style.left = screenX + "px"
+       tail.style.top = screenY + "px"
+     
+       tail.style.width = dist + "px"
+     
+       tail.style.transform = "rotate(" + angle + "deg)"
+     
+     }
     }
   });
 
