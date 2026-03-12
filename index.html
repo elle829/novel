@@ -1172,60 +1172,58 @@ window.addEventListener("click",()=>{
 
 function updatePopupForHoveredMoon(moon){
 
-  const v=moon.position.clone();
+  const v = moon.position.clone();
   v.project(camera);
 
-  const screenX=(v.x*0.5+0.5)*window.innerWidth;
-  const screenY=(-v.y*0.5+0.5)*window.innerHeight;
+  const screenX = (v.x * 0.5 + 0.5) * window.innerWidth;
+  const screenY = (-v.y * 0.5 + 0.5) * window.innerHeight;
 
-  let popupX=screenX+140;
-  let popupY=screenY-60;
+  let popupX = screenX + 140;
+  let popupY = screenY - 60;
+  let popupSide = "right";
 
-  let popupSide="right";
-
-  if(screenX>window.innerWidth/2){
-    popupX=screenX-260;
-    popupSide="left";
+  if(screenX > window.innerWidth / 2){
+    popupX = screenX - 260;
+    popupSide = "left";
   }
 
-  moonPopup.style.left=popupX+"px";
-  moonPopup.style.top=popupY+"px";
+  moonPopup.style.left = popupX + "px";
+  moonPopup.style.top = popupY + "px";
 
-  const rect=moonPopup.getBoundingClientRect();
+  const rect = moonPopup.getBoundingClientRect();
 
   let endX;
   let endY;
 
   if(popupSide === "right"){
-     endX = rect.left;
-     endY = rect.top + rect.height / 2;
+    endX = rect.left;
+    endY = rect.top + rect.height / 2;
   }else{
-     endX = rect.right;
-     endY = rect.top + rect.height / 2;
+    endX = rect.right;
+    endY = rect.top + rect.height / 2;
   }
 
-  const dx=endX-screenX;
-  const dy=endY-screenY;
+  const dx = endX - screenX;
+  const dy = endY - screenY;
 
-  const angleRad=Math.atan2(dy,dx);
-  const angleDeg=angleRad*180/Math.PI;
+  const angleRad = Math.atan2(dy, dx);
+  const angleDeg = angleRad * 180 / Math.PI;
 
-  const dist=Math.sqrt(dx*dx+dy*dy);
+  const moonRadius = moon.scale.x * 28;
 
-  const moonRadius = moon.scale.x * 30;
-
-  const startX = screenX + Math.cos(angleRad) * moonRadius; 
+  const startX = screenX + Math.cos(angleRad) * moonRadius;
   const startY = screenY + Math.sin(angleRad) * moonRadius;
 
-  tail.style.opacity=1;
+  const dist = Math.sqrt(
+    (endX - startX) * (endX - startX) +
+    (endY - startY) * (endY - startY)
+  );
 
-  tail.style.left=startX+"px";
-  tail.style.top=startY+"px";
-
-  tail.style.width=Math.max(0,dist-moonOffset)+"px";
-
-  tail.style.transform="rotate("+angleDeg+"deg)";
-
+  tail.style.opacity = 1;
+  tail.style.left = startX + "px";
+  tail.style.top = startY + "px";
+  tail.style.width = dist + "px";
+  tail.style.transform = "rotate(" + angleDeg + "deg)";
 }
 
 
