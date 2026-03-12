@@ -186,16 +186,22 @@ body{
 #moonPopup{
   position:absolute;
   pointer-events:none;
-  opacity:0;
-  transform:translate(-50%,-50%) scale(.95);
-  transform-origin:center center;
-  transition:
-    opacity .22s ease,
-    transform .22s ease;
   z-index:20;
-  width:fit-content;
+  opacity:0;
+  transform:
+  translate(-50%,-40%)
+  scale(.8);
+  transition:
+  opacity .25s ease,
+  transform .35s cubic-bezier(.2,.9,.3,1.2);
 }
 
+#moonPopup.show{
+  opacity:1;
+  transform:
+  translate(-50%,-50%)
+  scale(1);
+}
 
 
 /* =========================================================
@@ -233,6 +239,7 @@ body{
   width:auto;
   min-width:350px;
   max-width:520px;
+  display:inline-block;
   padding:50px 40px 48px;
   background:
   linear-gradient(
@@ -257,22 +264,25 @@ body{
   );
 }
 
+.console.flip{
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - 70px),
+    calc(100% - 70px) 100%,
+    0 100%
+  );
+}
+     
 .console::before{
-
   content:"";
-
   position:absolute;
-
   left:-10px;
   right:-10px;
   top:-18px;
-
   height:18px;
-
   background:#000;
-
   z-index:-1;
-
 }
 
 
@@ -1086,10 +1096,19 @@ function updatePopupForHoveredMoon(moon){
 
   /* 月から popup をどれだけ離すか */
   const popupDistance = 260;
+  let flip = false;
+
+  if (screenX > window.innerWidth * 0.5) {
+    flip = true;
+  }
 
   /* popup の中心位置 */
   let popupX = screenX + outwardX * popupDistance;
   let popupY = screenY + outwardY * popupDistance;
+
+  if(flip){
+    popupX = screenX - outwardX * popupDistance;
+  }
 
     /* =========================================================
         妖精回避
@@ -1194,6 +1213,12 @@ function updatePopupForHoveredMoon(moon){
     endX - startX
   ) * 180 / Math.PI;
 
+  const consoleBox = moonPopup.querySelector(".console");
+  if(flip){
+    consoleBox.classList.add("flip");
+  }else{
+    consoleBox.classList.remove("flip");
+  }
 
   /* 描画 */
 
@@ -1239,15 +1264,13 @@ function animate(){
     moonTitle.textContent=hovered.userData.title;
     moonSubtitle.innerHTML = hovered.userData.subtitle;
 
-    moonPopup.style.opacity=1;
-    moonPopup.style.transform="translate(-50%,-50%) scale(1)";
+    moonPopup.classList.add("show");
 
   }else{
 
     document.body.style.cursor="default";
 
-    moonPopup.style.opacity=0;
-    moonPopup.style.transform="translate(-50%,-50%) scale(.95)";
+    moonPopup.classList.remove("show");
 
     tail.style.opacity=0;
 
