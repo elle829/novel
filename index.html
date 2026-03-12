@@ -195,6 +195,40 @@ font-size:10px;
 
 }
 
+/* ===============================
+月ホバーポップアップ
+コンソール風UI
+=============================== */
+
+#moonPopup{
+position:absolute;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%) scale(.95);
+padding:10px 16px;
+background:rgba(10,15,40,0.85);
+border:1px solid rgba(255,255,255,0.15);
+border-radius:12px;
+backdrop-filter:blur(10px);
+pointer-events:none;
+opacity:0;
+transition:opacity .2s, transform .2s;
+box-shadow:0 8px 30px rgba(0,0,0,.6);
+text-align:center;
+z-index:10;
+}
+
+#moonTitle{
+font-size:15px;
+letter-spacing:.08em;
+}
+
+#moonSubtitle{
+font-size:12px;
+opacity:.7;
+margin-top:2px;
+}
+  
 </style>
 </head>
 
@@ -220,10 +254,13 @@ font-size:10px;
 
 </div>
 
-<div id="moonTitle"></div>
+<div id="moonPopup">
+  <div id="moonTitle"></div>
+  <div id="moonSubtitle"></div>
+</div>
 
 <div class="bottom">
-DAWN LIGHT / TEN MOONS IN ORBIT
+ABOUT YOU / MIRRORING LAB.
 </div>
 
 <div class="page-flip" id="pageFlip"></div>
@@ -339,16 +376,16 @@ return new THREE.CanvasTexture(canvas)
 =============================== */
 
 const moonData=[
-{title:"酒場にて",url:"story01.html"},
-{title:"舌戦",url:"story02.html"},
-{title:"甘いもの",url:"story03.html"},
-{title:"宴",url:"story04.html"},
-{title:"信仰",url:"story05.html"},
-{title:"似たもの",url:"story06.html"},
-{title:"家",url:"story07.html"},
-{title:"空想",url:"story08.html"},
-{title:"使命",url:"story09.html"},
-{title:"報告結果",url:"story10.html"}
+{title:"酒場にて",subtitle:"フラッグシップ/デミアン",url:"story01.html"},
+{title:"舌戦",subtitle:"秘聞の館/ネフェル、ヤフォダ",url:"story02.html"},
+{title:"甘いもの",subtitle:"カチャカチャクルムカケ工房/アイノ、イネファ",url:"story03.html"},
+{title:"宴",subtitle:"西風騎士団/ファルカ",url:"story04.html"},
+{title:"信仰",subtitle:"霜月の子/ラウマ",url:"story05.html"},
+{title:"似たもの",subtitle:"実験設計局/サンドローネ",url:"story06.html"},
+{title:"家",subtitle:"銀月の庭/コロンビーナ、旅人",url:"story07.html"},
+{title:"空想",subtitle:"魔女会/アルベド、ドゥリン",url:"story08.html"},
+{title:"使命",subtitle:"ライトキーパー/イルーガ、ニキータ",url:"story09.html"},
+{title:"報告結果",subtitle:"君へ",url:"story10.html"}
 ]
 
 const moonGroup=new THREE.Group()
@@ -449,6 +486,14 @@ mouseY=mouse.y
 })
 
 /* ===============================
+ポップアップUI取得
+=============================== */
+
+const moonPopup=document.getElementById("moonPopup")
+const moonTitle=document.getElementById("moonTitle")
+const moonSubtitle=document.getElementById("moonSubtitle")
+
+/* ===============================
 スクロール
 =============================== */
 
@@ -507,15 +552,20 @@ hovered=hit[0].object
 
 document.body.style.cursor="pointer"
 
-moonTitle.textContent=hovered.userData.title
+/* タイトル表示 */
 
-moonTitle.style.opacity=1
+moonTitle.textContent=hovered.userData.title
+moonSubtitle.textContent=hovered.userData.subtitle
+
+moonPopup.style.opacity=1
+moonPopup.style.transform="translate(-50%,-50%) scale(1)"
 
 }else{
 
 document.body.style.cursor="default"
 
-moonTitle.style.opacity=0
+moonPopup.style.opacity=0
+moonPopup.style.transform="translate(-50%,-50%) scale(.95)"
 
 }
 
@@ -548,6 +598,20 @@ moon.scale.set(scale,scale,1)
 moon.material.opacity=0.5+depth*0.5
 
 moon.renderOrder=z>0?5:15
+
+/* ===============================
+ポップアップ位置追従
+=============================== */
+
+if(moon===hovered){
+const v=moon.position.clone()
+v.project(camera)
+const x=(v.x*0.5+0.5)*window.innerWidth
+const y=(-v.y*0.5+0.5)*window.innerHeight
+moonPopup.style.left=x+"px"
+moonPopup.style.top=(y-40)+"px"
+
+}
 
 })
 
