@@ -193,6 +193,7 @@ body{
     opacity .22s ease,
     transform .22s ease;
   z-index:20;
+  width:fit-content;
 }
 
 
@@ -228,31 +229,24 @@ body{
    ========================================================= */
 
 .console{
-
   position:relative;
-
-  width:420px;
-
+  width:auto;
+  min-width:260px;
+  max-width:520px;
   padding:50px 40px 48px;
-
   background:
   linear-gradient(
     180deg,
     var(--ui-frame-bg-top),
     var(--ui-frame-bg-bottom)
   );
-
   border:2px solid var(--ui-accent);
-
   box-shadow:
-
   0 0 8px rgba(122,143,216,.35),
   0 0 18px rgba(122,143,216,.28),
   0 0 38px rgba(122,143,216,.22),
-
   inset 0 0 18px rgba(122,143,216,.08),
   inset 0 0 24px rgba(0,0,0,.55);
-
   clip-path:
   polygon(
     0 0,
@@ -261,7 +255,6 @@ body{
     70px 100%,
     0 calc(100% - 70px)
   );
-
 }
 
 .console::before{
@@ -380,6 +373,7 @@ body{
   padding-left:80px;
   padding-right:80px;
   text-align:center;
+  white-space:normal;
 }
 
 /* =========================================================
@@ -886,16 +880,16 @@ function createMoonTexture(phase){
 
 const moonData=[
 
-{title:"酒場にて",subtitle:"フラッグシップ / デミアン",url:"story01.html"},
-{title:"舌戦",subtitle:"秘聞の館 / ネフェル、ヤフォダ",url:"story02.html"},
-{title:"甘いもの",subtitle:"カチャカチャクルムカケ工房 / アイノ、イネファ",url:"story03.html"},
-{title:"宴",subtitle:"西風騎士団 / ファルカ",url:"story04.html"},
-{title:"信仰",subtitle:"霜月の子 / ラウマ",url:"story05.html"},
-{title:"似たもの",subtitle:"実験設計局 / サンドローネ",url:"story06.html"},
-{title:"家",subtitle:"銀月の庭 / コロンビーナ、旅人",url:"story07.html"},
-{title:"空想",subtitle:"魔女会 / アルベド、ドゥリン",url:"story08.html"},
-{title:"使命",subtitle:"ライトキーパー / イルーガ、ニキータ",url:"story09.html"},
-{title:"報告結果",subtitle:"君へ",url:"story10.html"}
+{title:"No.1 酒場にて",subtitle:"フラッグシップ<br>デミアン",url:"story01.html"},
+{title:"No.2 舌戦",subtitle:"秘聞の館<br>ネフェル、ヤフォダ",url:"story02.html"},
+{title:"No.3 甘いもの",subtitle:"カチャカチャクルムカケ工房<br>アイノ、イネファ",url:"story03.html"},
+{title:"No.4 宴",subtitle:"西風騎士団<br>ファルカ",url:"story04.html"},
+{title:"No.5 信仰",subtitle:"霜月の子<br>ラウマ",url:"story05.html"},
+{title:"No.6 似たもの",subtitle:"実験設計局<br>サンドローネ、壁炉の家",url:"story06.html"},
+{title:"No.7 家",subtitle:"銀月の庭<br>コロンビーナ、旅人",url:"story07.html"},
+{title:"No.8 空想",subtitle:"魔女会<br>アルベド、ドゥリン",url:"story08.html"},
+{title:"No.9 使命",subtitle:"ライトキーパー<br>イルーガ、ニキータ",url:"story09.html"},
+{title:"No.10 報告結果",subtitle:"君へ",url:"story10.html"}
 
 ];
 
@@ -1243,7 +1237,7 @@ function animate(){
     document.body.style.cursor="pointer";
 
     moonTitle.textContent=hovered.userData.title;
-    moonSubtitle.textContent=hovered.userData.subtitle;
+    moonSubtitle.innerHTML = hovered.userData.subtitle;
 
     moonPopup.style.opacity=1;
     moonPopup.style.transform="translate(-50%,-50%) scale(1)";
