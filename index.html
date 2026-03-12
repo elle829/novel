@@ -668,6 +668,109 @@ body{
   backdrop-filter:blur(8px);
   text-decoration:none;
 }
+
+/* =================================
+   起動画面
+   ================================= */
+
+#bootScreen{
+position:fixed;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+background:
+radial-gradient(circle at center,
+rgba(40,50,120,0.4),
+rgba(5,8,25,0.95));
+backdrop-filter:blur(6px);
+z-index:100;
+opacity:1;
+transition:opacity 1.2s ease;
+}
+
+/* パネル */
+.boot-panel{
+width:420px;
+max-width:80vw;
+padding:40px;
+border:1px solid rgba(122,143,216,.6);
+background:
+linear-gradient(
+180deg,
+rgba(20,25,60,.9),
+rgba(10,15,40,.95)
+);
+box-shadow:
+0 0 20px rgba(122,143,216,.35),
+0 0 60px rgba(122,143,216,.2),
+inset 0 0 30px rgba(122,143,216,.15);
+text-align:center;
+animation:bootAppear 1.6s ease;
+}
+
+/* タイトル */
+.boot-title{
+font-size:20px;
+letter-spacing:.25em;
+margin-bottom:24px;
+color:#dfe6ff;
+}
+
+/* テキスト */
+.boot-text{
+font-size:13px;
+line-height:1.8;
+opacity:.9;
+margin-bottom:28px;
+}
+
+/* ENTERボタン */
+#enterButton{
+padding:12px 28px;
+border:1px solid rgba(122,143,216,.7);
+background:
+linear-gradient(
+180deg,
+rgba(122,143,216,.35),
+rgba(20,25,60,.9)
+);
+color:#eef2ff;
+letter-spacing:.18em;
+cursor:pointer;
+box-shadow:
+0 0 10px rgba(122,143,216,.45),
+0 0 30px rgba(122,143,216,.25);
+transition:
+transform .2s,
+box-shadow .2s;
+}
+
+#enterButton:hover{
+transform:scale(1.05);
+box-shadow:
+0 0 20px rgba(122,143,216,.7),
+0 0 40px rgba(122,143,216,.45);
+}
+
+/* フェード */
+#bootScreen.hide{
+opacity:0;
+pointer-events:none;
+}
+
+/* パネル出現 */
+@keyframes bootAppear{
+0%{
+opacity:0;
+transform:translateY(20px) scale(.95);
+}
+
+100%{
+opacity:1;
+transform:translateY(0) scale(1);
+}
+}
      
 </style>
 
@@ -677,10 +780,28 @@ body{
 
 <body>
 
+<div id="bootScreen">
+<div class="boot-panel">
+<div class="boot-title">
+ARCHIVE ACCESS
+</div>
+
+<div class="boot-text">
+このサイトは二次創作作品を扱うファンサイトです。<br>
+公式とは関係ありません。<br><br>
+All characters and worlds belong to their original creators.
+</div>
+
+<button id="enterButton">
+ENTER
+</button>
+
+</div>
+
+</div>
+
+     
 <div id="scene"></div>
-
-
-
 <!-- =========================================================
      UI
      ========================================================= -->
@@ -1372,6 +1493,19 @@ window.addEventListener("resize",()=>{
   renderer.setPixelRatio(
     Math.min(window.devicePixelRatio,2)
   );
+
+});
+
+/* =================================
+   起動UI
+   ================================= */
+
+const bootScreen = document.getElementById("bootScreen");
+const enterButton = document.getElementById("enterButton");
+
+enterButton.addEventListener("click",()=>{
+
+bootScreen.classList.add("hide");
 
 });
 
