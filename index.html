@@ -1142,61 +1142,114 @@ window.addEventListener("click",()=>{
 
 function updatePopupForHoveredMoon(moon){
 
+  /* ---------- 月のワールド座標 ---------- */
+
   const worldPos = new THREE.Vector3();
   moon.getWorldPosition(worldPos);
 
-  const v = worldPos.clone();
-  v.project(camera);
+  const v = worldPos.clone().project(camera);
 
   const screenX = (v.x * 0.5 + 0.5) * window.innerWidth;
   const screenY = (-v.y * 0.5 + 0.5) * window.innerHeight;
 
-  let popupX = screenX + 140;
-  let popupY = screenY - 60;
+
+  /* ---------- popup位置 ---------- */
+
+  let popupX = screenX + 160;
+  let popupY = screenY - 70;
   let popupSide = "right";
 
-  if(screenX > window.innerWidth / 2){
-    popupX = screenX - 260;
+  if(screenX > window.innerWidth * 0.55){
+
+    popupX = screenX - 300;
     popupSide = "left";
+
   }
 
   moonPopup.style.left = popupX + "px";
   moonPopup.style.top = popupY + "px";
 
+
+  /* ---------- popup実サイズ取得 ---------- */
+
   const rect = moonPopup.getBoundingClientRect();
+
+
+  /* ---------- popup接続点（枠の端） ---------- */
 
   let endX;
   let endY;
 
   if(popupSide === "right"){
+
     endX = rect.left;
-    endY = rect.top + rect.height / 2;
+    endY = rect.top + rect.height * 0.5;
+
   }else{
+
     endX = rect.right;
-    endY = rect.top + rect.height / 2;
+    endY = rect.top + rect.height * 0.5;
+
   }
 
-  const dx = endX - screenX;
-  const dy = endY - screenY;
 
-  const angleRad = Math.atan2(dy, dx);
-  const angleDeg = angleRad * 180 / Math.PI;
+  /* ---------- 月 → popup ベクトル ---------- */
 
-  const spriteOffset = moon.scale.y * 18;
+  let dx = endX - screenX;
+  let dy = endY - screenY;
 
-  const startX = screenX;
-  const startY = screenY - spriteOffset;
+  const len = Math.sqrt(dx*dx + dy*dy) || 0.0001;
+
+  const dirX = dx / len;
+  const dirY = dy / len;
+
+
+  /* ---------- 月の半径 ---------- */
+
+  const moonRadius = moon.scale.x * 26;
+
+
+  /* ---------- 線の始点（月の縁） ---------- */
+
+  const startX = screenX + dirX * moonRadius;
+  const startY = screenY + dirY * moonRadius;
+
+
+  /* ---------- 線の終点（popupに重ならない位置） ---------- */
+
+  const endOffset = 10;
+
+  const finalEndX = endX - dirX * endOffset;
+  const finalEndY = endY - dirY * endOffset;
+
+
+  /* ---------- 距離 ---------- */
 
   const dist = Math.sqrt(
-    (endX - startX) * (endX - startX) +
-    (endY - startY) * (endY - startY)
+    (finalEndX - startX)*(finalEndX - startX) +
+    (finalEndY - startY)*(finalEndY - startY)
   );
 
+
+  /* ---------- 角度 ---------- */
+
+  const angle = Math.atan2(
+    finalEndY - startY,
+    finalEndX - startX
+  ) * 180 / Math.PI;
+
+
+  /* ---------- 描画 ---------- */
+
   tail.style.opacity = 1;
+
   tail.style.left = startX + "px";
   tail.style.top = startY + "px";
+
   tail.style.width = dist + "px";
-  tail.style.transform = "rotate(" + angleDeg + "deg)";
+
+  tail.style.transform = "rotate(" + angle + "deg)";
+
 }
 
 
