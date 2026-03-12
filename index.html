@@ -674,6 +674,34 @@ body{
 .help-button:hover + .help-popup{
   opacity:1;
 }
+
+/* =========================================================
+   SNSボタン
+   ========================================================= */
+
+.sns-buttons{
+  position:fixed;
+  left:28px;
+  bottom:28px;
+  display:flex;
+  gap:12px;
+  z-index:20;
+}
+
+.sns-button{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  color:#eef2ff;
+  backdrop-filter:blur(8px);
+  text-decoration:none;
+}
      
 </style>
 
@@ -704,6 +732,15 @@ body{
   ・クリック：ページ移動
 </div>
 
+<div class="sns-buttons">
+  <a class="sns-button" href="https://x.com/dousuru829" target="_blank">
+    X
+  </a>
+  <a class="sns-button" href="https://www.pixiv.net/en/users/93975402" target="_blank">
+    P
+  </a>
+</div>
+     
 <div class="popup-tail"></div>
 
 
