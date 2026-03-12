@@ -1123,7 +1123,9 @@ function updatePopupForHoveredMoon(moon){
      const fairyY = (-fairyScreen.y * 0.5 + 0.5) * window.innerHeight;
      
      /* 妖精の安全半径 */
-     const fairySafeRadius = 260;
+     const fairyWidth = 220;   // 妖精画像の見た目半径
+     const popupRadius = moonPopup.offsetWidth * 0.5;
+     const fairySafeRadius = fairyWidth + popupRadius + 40;
      
      /* popup中心と妖精中心の距離 */
      let fx = popupX - fairyX;
