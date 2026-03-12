@@ -1348,38 +1348,48 @@ function updatePopupForHoveredMoon(moon){
      
      /* 探索 */
      
-     let bestX = popupX;
-     let bestY = popupY;
-     
-     for(let i=0;i<32;i++){
-     
-       const angle = i / 16 * Math.PI * 2;
-     
-       const testX = screenX + Math.cos(angle) * popupDistance;
-       const testY = screenY + Math.sin(angle) * popupDistance;
-     
-       const insideScreen =
-         testX - popupHalfW > 0 &&
-         testX + popupHalfW < window.innerWidth &&
-         testY - popupHalfH > 0 &&
-         testY + popupHalfH < window.innerHeight;
-     
-       const dx = testX - fairyX;
-       const dy = testY - fairyY;
-     
-       const dist = Math.sqrt(dx*dx + dy*dy);
-     
-       const safeFairy = dist > fairyRadius;
-     
-       if(insideScreen && safeFairy){
-     
-         bestX = testX;
-         bestY = testY;
-         break;
-     
-       }
-     
-     }
+     /* 探索（妖精回避優先） */
+
+let bestX = popupX;
+let bestY = popupY;
+
+let bestScore = -Infinity;
+
+for(let i=0;i<32;i++){
+
+  const angle = i / 16 * Math.PI * 2;
+
+  const testX = screenX + Math.cos(angle) * popupDistance;
+  const testY = screenY + Math.sin(angle) * popupDistance;
+
+  const insideScreen =
+    testX - popupHalfW > 0 &&
+    testX + popupHalfW < window.innerWidth &&
+    testY - popupHalfH > 0 &&
+    testY + popupHalfH < window.innerHeight;
+
+  if(!insideScreen) continue;
+
+  const dx = testX - fairyX;
+  const dy = testY - fairyY;
+
+  const dist = Math.sqrt(dx*dx + dy*dy);
+
+  /* 妖精から遠いほどスコア高い */
+  const score = dist;
+
+  if(score > bestScore){
+
+    bestScore = score;
+    bestX = testX;
+    bestY = testY;
+
+  }
+
+}
+
+popupX = bestX;
+popupY = bestY;
      
      popupX = bestX;
      popupY = bestY;
