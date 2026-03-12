@@ -322,28 +322,8 @@ body{
 /* 月側ノード */
 
 .popup-tail::before{
-
-  content:"";
-
-  position:absolute;
-
-  left:-6px;
-  top:-3px;
-
-  width:8px;
-  height:8px;
-
-  border:2px solid var(--ui-accent);
-
-  background:#050814;
-
-  transform:rotate(45deg);
-
-  box-shadow:0 0 6px rgba(122,143,216,.5);
-
+  display:none;
 }
-
-
 
 /* =========================================================
    6) フレーム
@@ -1209,10 +1189,8 @@ function updatePopupForHoveredMoon(moon){
   const angleRad = Math.atan2(dy, dx);
   const angleDeg = angleRad * 180 / Math.PI;
 
-  const moonRadius = moon.scale.x * 28;
-
-  const startX = screenX + Math.cos(angleRad) * moonRadius;
-  const startY = screenY + Math.sin(angleRad) * moonRadius;
+  const startX = screenX;
+  const startY = screenY;
 
   const dist = Math.sqrt(
     (endX - startX) * (endX - startX) +
