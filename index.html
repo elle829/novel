@@ -1150,19 +1150,41 @@ function updatePopupForHoveredMoon(moon){
   const screenX = (v.x * 0.5 + 0.5) * window.innerWidth;
   const screenY = (-v.y * 0.5 + 0.5) * window.innerHeight;
 
+  /* =========================================================
+     popup を月軌道の外側に出す
+     ========================================================= */
 
-  /* popup配置 */
+  /* 軌道の中心（見た目上の中心） */
+  const orbitCenterX = window.innerWidth * 0.5;
+  const orbitCenterY = window.innerHeight * 0.5;
 
-  let popupX = screenX + 200;
-  let popupY = screenY - 90;
+  /* 軌道中心 → 月 の方向ベクトル */
+  let outwardX = screenX - orbitCenterX;
+  let outwardY = screenY - orbitCenterY;
 
-  if(screenX > window.innerWidth * 0.55){
-    popupX = screenX - 340;
-  }
+  /* ゼロ割り防止 */
+  const outwardLen = Math.sqrt(outwardX * outwardX + outwardY * outwardY) || 0.0001;
+
+  /* 正規化（長さ1にする） */
+  outwardX /= outwardLen;
+  outwardY /= outwardLen;
+
+  /* 月から popup をどれだけ離すか */
+  const popupDistance = 220;
+
+  /* popup の中心位置 */
+  let popupX = screenX + outwardX * popupDistance;
+  let popupY = screenY + outwardY * popupDistance;
+
+  /* 画面外にはみ出しにくくする */
+  const popupMarginX = 220;
+  const popupMarginY = 120;
+
+  popupX = Math.max(popupMarginX, Math.min(window.innerWidth - popupMarginX, popupX));
+  popupY = Math.max(popupMarginY, Math.min(window.innerHeight - popupMarginY, popupY));
 
   moonPopup.style.left = popupX + "px";
   moonPopup.style.top = popupY + "px";
-
 
   const rect = moonPopup.getBoundingClientRect();
 
