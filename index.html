@@ -1119,7 +1119,6 @@ width:360px;
 height:180px;
 opacity:.8;
 z-index:6;
-position:fixed;
 overflow:hidden;
 }
 
@@ -1182,6 +1181,8 @@ position:absolute;
 left:0;
 right:0;
 height:2px;
+z-index:10;
+pointer-events:none;
 background:
 linear-gradient(
 90deg,
@@ -1904,32 +1905,30 @@ popupY = bestY;
 
 /* ===============================
    vital wave animation
-   横スクロール式
+   左 → 右へ流れるECG
    =============================== */
 
 const vitalWave = document.getElementById("vitalWave");
 const vitalWave2 = document.getElementById("vitalWave2");
 
 const ECG_WIDTH = 360;
-const ECG_STEP = 0.12;          // 横スクロール速度
 const ECG_BASE_Y = 70;
 const ECG_BASE_Y2 = 75;
+const ECG_SPEED = 0.18;   // 小さくするともっと遅い
 
-let ecgOffset = 0;
-let ecgSeed = 0;
-const ecgBeatCacheMain = new Map();
-const ecgBeatCacheSub = new Map();
+const ecgBeats = [];
+let nextBeatX = -120;
 
 function rand(min, max){
   return min + Math.random() * (max - min);
 }
 
-function makeBeatShape(){
+function createBeatPoints(startX){
   const pAmp = rand(2, 6);
   const pWidth = rand(8, 14);
 
   const qAmp = rand(2, 6);
-  const rAmp = rand(30, 52);
+  const rAmp = rand(28, 52);
   const sAmp = rand(10, 22);
 
   const tAmp = rand(6, 16);
@@ -1940,99 +1939,109 @@ function makeBeatShape(){
   const tail = rand(18, 36);
 
   return [
-    { x:-42, y:0 },
-    { x:-30, y:0 },
+    { x:startX - 42, y:0 },
+    { x:startX - 30, y:0 },
 
-    { x:-30 + pWidth * 0.35, y:-pAmp * 0.5 },
-    { x:-30 + pWidth * 0.7,  y:-pAmp },
-    { x:-30 + pWidth,        y:0 },
+    { x:startX - 30 + pWidth * 0.35, y:-pAmp * 0.5 },
+    { x:startX - 30 + pWidth * 0.7,  y:-pAmp },
+    { x:startX - 30 + pWidth,        y:0 },
 
-    { x:-prGap, y:0 },
+    { x:startX - prGap, y:0 },
 
-    { x:-3, y:qAmp },
-    { x:2, y:-rAmp },
-    { x:8, y:sAmp },
-    { x:14, y:0 },
+    { x:startX - 3, y:qAmp },
+    { x:startX + 2, y:-rAmp },
+    { x:startX + 8, y:sAmp },
+    { x:startX + 14, y:0 },
 
-    { x:14 + stGap, y:rand(-1.2, 1.2) },
+    { x:startX + 14 + stGap, y:rand(-1.2, 1.2) },
 
-    { x:14 + stGap + tWidth * 0.35, y:-tAmp * 0.55 },
-    { x:14 + stGap + tWidth * 0.7,  y:-tAmp },
-    { x:14 + stGap + tWidth,        y:0 },
+    { x:startX + 14 + stGap + tWidth * 0.35, y:-tAmp * 0.55 },
+    { x:startX + 14 + stGap + tWidth * 0.7,  y:-tAmp },
+    { x:startX + 14 + stGap + tWidth,        y:0 },
 
-    { x:14 + stGap + tWidth + tail, y:0 }
+    { x:startX + 14 + stGap + tWidth + tail, y:0 }
   ];
 }
 
-function buildScrollingECGPath(width, baseY, offset, seedShift = 0, cacheMap){
+function createBeat(startX){
+  const points = createBeatPoints(startX);
+  return {
+    points,
+    startX: points[0].x,
+    endX: points[points.length - 1].x
+  };
+}
+
+function seedInitialBeats(){
+  ecgBeats.length = 0;
+
+  let x = -80;
+  while(x < ECG_WIDTH + 80){
+    const beat = createBeat(x);
+    ecgBeats.push(beat);
+    x = beat.endX + rand(42, 95);
+  }
+
+  nextBeatX = x;
+}
+
+function shiftBeats(dx){
+  for(const beat of ecgBeats){
+    for(const p of beat.points){
+      p.x += dx;
+    }
+    beat.startX += dx;
+    beat.endX += dx;
+  }
+}
+
+function pruneBeats(){
+  while(ecgBeats.length && ecgBeats[0].startX > ECG_WIDTH + 80){
+    ecgBeats.shift();
+  }
+}
+
+function spawnBeatsIfNeeded(){
+  while(nextBeatX < 60){
+    const beat = createBeat(nextBeatX);
+    ecgBeats.push(beat);
+    nextBeatX = beat.endX + rand(42, 95);
+  }
+}
+
+function buildWavePath(baseY, sub = false){
   let d = `M 0 ${baseY}`;
 
-  const spacingBase = 128;
-  const totalCycles = Math.ceil(width / spacingBase) + 4;
+  for(const beat of ecgBeats){
+    for(const p of beat.points){
+      if(p.x >= -60 && p.x <= ECG_WIDTH + 60){
+        const y = sub
+          ? baseY + p.y * 0.42
+          : baseY + p.y;
 
-  for(let i = -2; i < totalCycles; i++){
-    const cycleSeed = i + seedShift;
-
-    const jitter = Math.sin(cycleSeed * 12.9898) * 43758.5453;
-    const frac = jitter - Math.floor(jitter);
-
-    const spacing = spacingBase + frac * 42 - 21;
-    const cycleStart = i * spacingBase - offset + frac * 18;
-    const beatX = cycleStart + spacing * 0.56;
-
-    let beat = cacheMap.get(cycleSeed);
-
-    if(!beat){
-      beat = makeBeatShape(0);
-      cacheMap.set(cycleSeed, beat);
-    }
-
-    for(const p of beat){
-      const x = beatX + p.x;
-
-      if(x >= -40 && x <= width + 40){
-        d += ` L ${x.toFixed(1)} ${(baseY + p.y).toFixed(1)}`;
+        d += ` L ${p.x.toFixed(1)} ${y.toFixed(1)}`;
       }
     }
   }
 
-  d += ` L ${width} ${baseY}`;
+  d += ` L ${ECG_WIDTH} ${baseY}`;
   return d;
 }
 
-     
+seedInitialBeats();
+
 function updateVitalWave(){
   if(!vitalWave || !vitalWave2) return;
 
-  ecgOffset -= ECG_STEP;
+  shiftBeats(ECG_SPEED);
+  nextBeatX += ECG_SPEED;
 
-  if(ecgOffset <= -ECG_WIDTH){
-    ecgOffset += ECG_WIDTH;
-  }
+  pruneBeats();
+  spawnBeatsIfNeeded();
 
-  vitalWave.setAttribute(
-    "d",
-    buildScrollingECGPath(
-      ECG_WIDTH,
-      ECG_BASE_Y,
-      ecgOffset,
-      0,
-      ecgBeatCacheMain
-    )
-  );
-
-  vitalWave2.setAttribute(
-    "d",
-    buildScrollingECGPath(
-      ECG_WIDTH,
-      ECG_BASE_Y2,
-      ecgOffset,
-      0.5,
-      ecgBeatCacheSub
-    )
-  );
+  vitalWave.setAttribute("d", buildWavePath(ECG_BASE_Y, false));
+  vitalWave2.setAttribute("d", buildWavePath(ECG_BASE_Y2, true));
 }
-
      
 /* =========================================================
    13) アニメーション
