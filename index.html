@@ -1844,7 +1844,7 @@ const vitalWave = document.getElementById("vitalWave");
 const vitalWave2 = document.getElementById("vitalWave2");
 
 const ECG_WIDTH = 360;
-const ECG_STEP = 2.4;          // 横スクロール速度
+const ECG_STEP = 0.8;          // 横スクロール速度
 const ECG_BASE_Y = 70;
 const ECG_BASE_Y2 = 75;
 
@@ -1932,9 +1932,9 @@ function buildScrollingECGPath(width, baseY, offset, seedShift = 0){
 function updateVitalWave(){
   if(!vitalWave) return;
 
-  ecgOffset += ECG_STEP;
+  ecgOffset -= ECG_STEP;
 
-  if(ecgOffset >= 128){
+  if(ecgOffset <= -128){
     ecgOffset = 0;
     ecgSeed += 1;
   }
