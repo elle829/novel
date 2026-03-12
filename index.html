@@ -1113,11 +1113,11 @@ margin-right:6px;
 
 .vital-graph{
 position:fixed;
-right:320px;
-top:110px;
-width:260px;
-height:120px;
-opacity:.7;
+right:360px;
+top:90px;
+width:360px;
+height:180px;
+opacity:.8;
 z-index:6;
 }
 
@@ -1845,25 +1845,31 @@ let waveTime = 0;
 
 function updateVitalWave(){
   if(!vitalWave) return;
-  waveTime += 0.05;
-  const a = Math.sin(waveTime) * 20;
-  const b = Math.cos(waveTime) * 20;
-  const path1 =
-`M0 60
-C 30 ${60-a}, 60 ${60+a}, 90 60
-S 150 ${60-b}, 180 60
-S 240 ${60+a}, 260 60`;
-  vitalWave.setAttribute("d",path1);
+  waveTime += 0.02;
+  const t = waveTime * 42 % 360;
+  const path =
+`M0 70
+L ${t-40} 70
+L ${t-20} 70
+L ${t-10} 50
+L ${t} 90
+L ${t+10} 30
+L ${t+20} 70
+L 360 70`;
+  vitalWave.setAttribute("d", path);
   if(vitalWave2){
-    const c = Math.sin(waveTime*1.4) * 22;
+    const t2 = (waveTime * 38) % 360;
     const path2 =
-`M0 65
-C 30 ${65+c}, 60 ${65-c}, 90 65
-S 150 ${65+c*0.6}, 180 65
-S 240 ${65-c*0.6}, 260 65`;
-    vitalWave2.setAttribute("d",path2);
+`M0 75
+L ${t2-30} 75
+L ${t2-10} 65
+L ${t2} 85
+L ${t2+10} 60
+L ${t2+20} 75
+L 360 75`;
+    vitalWave2.setAttribute("d", path2);
   }
-}    
+}
 
 /* =========================================================
    13) アニメーション
@@ -2022,30 +2028,30 @@ bootScreen.classList.add("hide");
 </script>
 
 <div class="vital-graph">
-<svg viewBox="0 0 260 120">
+<svg viewBox="0 0 360 180">
 <!-- 軸 -->
-<line x1="0" y1="100" x2="260" y2="100" class="axis"/>
-<line x1="0" y1="0" x2="0" y2="100" class="axis"/>
+<line x1="0" y1="140" x2="360" y2="140" class="axis"/>
+<line x1="0" y1="0" x2="0" y2="140" class="axis"/>
 <!-- メモリ -->
 <g class="ticks">
-<line x1="50" y1="100" x2="50" y2="95"/>
-<line x1="100" y1="100" x2="100" y2="95"/>
-<line x1="150" y1="100" x2="150" y2="95"/>
-<line x1="200" y1="100" x2="200" y2="95"/>
+<line x1="70" y1="140" x2="70" y2="130"/>
+<line x1="140" y1="140" x2="140" y2="130"/>
+<line x1="210" y1="140" x2="210" y2="130"/>
+<line x1="280" y1="140" x2="280" y2="130"/>
 </g>
 <!-- 波形 -->
 <path id="vitalWave" class="vital-wave"
-d="M0 60
-C 30 40, 60 80, 90 60
-S 150 40, 180 60
-S 240 80, 260 60">
+d="M0 80
+C 40 60, 80 100, 120 80
+S 200 60, 240 80
+S 320 100, 360 80">
 </path>
 <path id="vitalWave2"
 stroke="#6ecbff"
 stroke-width="1.5"
 opacity="0.6"
 fill="none"
-d="M0 65 C 30 75, 60 45, 90 65 S 150 75, 180 65 S 240 45, 260 65"/>
+d="M0 75 L 360 75"/>
 </svg>
 </div>
 
