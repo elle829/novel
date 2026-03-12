@@ -961,8 +961,11 @@ function animate(){
      
      if(tail){
      
-       const dx = popupX - screenX
-       const dy = popupY - screenY
+       const targetX = popupX - 210
+       const targetY = popupY + 60
+          
+       const dx = targetX - screenX
+       const dy = targetY - screenY
      
        const angle = Math.atan2(dy, dx) * 180 / Math.PI
        const dist = Math.sqrt(dx*dx + dy*dy)
