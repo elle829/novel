@@ -1142,8 +1142,6 @@ window.addEventListener("click",()=>{
 
 function updatePopupForHoveredMoon(moon){
 
-  /* ---------- 月のワールド座標 ---------- */
-
   const worldPos = new THREE.Vector3();
   moon.getWorldPosition(worldPos);
 
@@ -1153,85 +1151,102 @@ function updatePopupForHoveredMoon(moon){
   const screenY = (-v.y * 0.5 + 0.5) * window.innerHeight;
 
 
-  /* ---------- popup位置 ---------- */
+  /* popup配置 */
 
   let popupX = screenX + 160;
   let popupY = screenY - 70;
-  let popupSide = "right";
 
   if(screenX > window.innerWidth * 0.55){
-
     popupX = screenX - 300;
-    popupSide = "left";
-
   }
 
   moonPopup.style.left = popupX + "px";
   moonPopup.style.top = popupY + "px";
 
 
-  /* ---------- popup実サイズ取得 ---------- */
-
   const rect = moonPopup.getBoundingClientRect();
 
 
-  /* ---------- popup接続点（枠の端） ---------- */
+  /* popup中心 */
+
+  const centerX = rect.left + rect.width * 0.5;
+  const centerY = rect.top + rect.height * 0.5;
+
+
+  /* popupとの方向 */
+
+  const dx = screenX - centerX;
+  const dy = screenY - centerY;
+
 
   let endX;
   let endY;
 
-  if(popupSide === "right"){
 
-    endX = rect.left;
-    endY = rect.top + rect.height * 0.5;
+  /* 接続面決定 */
+
+  if(Math.abs(dx) > Math.abs(dy)){
+
+    if(dx > 0){
+      endX = rect.right;
+      endY = centerY;
+    }else{
+      endX = rect.left;
+      endY = centerY;
+    }
 
   }else{
 
-    endX = rect.right;
-    endY = rect.top + rect.height * 0.5;
+    if(dy > 0){
+      endX = centerX;
+      endY = rect.bottom;
+    }else{
+      endX = centerX;
+      endY = rect.top;
+    }
 
   }
 
 
-  /* ---------- 月 → popup ベクトル ---------- */
+  /* 月方向 */
 
-  let dx = endX - screenX;
-  let dy = endY - screenY;
+  let vx = endX - screenX;
+  let vy = endY - screenY;
 
-  const len = Math.sqrt(dx*dx + dy*dy) || 0.0001;
+  const len = Math.sqrt(vx*vx + vy*vy) || 0.0001;
 
-  const dirX = dx / len;
-  const dirY = dy / len;
+  vx /= len;
+  vy /= len;
 
 
-  /* ---------- 月の半径 ---------- */
+  /* 月半径 */
 
   const moonRadius = moon.scale.x * 26;
 
 
-  /* ---------- 線の始点（月の縁） ---------- */
+  /* 線始点 */
 
-  const startX = screenX + dirX * moonRadius;
-  const startY = screenY + dirY * moonRadius;
-
-
-  /* ---------- 線の終点（popupに重ならない位置） ---------- */
-
-  const endOffset = 10;
-
-  const finalEndX = endX - dirX * endOffset;
-  const finalEndY = endY - dirY * endOffset;
+  const startX = screenX + vx * moonRadius;
+  const startY = screenY + vy * moonRadius;
 
 
-  /* ---------- 距離 ---------- */
+  /* popupに重ならない */
+
+  const offset = 10;
+
+  const finalEndX = endX - vx * offset;
+  const finalEndY = endY - vy * offset;
+
+
+  /* 距離 */
 
   const dist = Math.sqrt(
-    (finalEndX - startX)*(finalEndX - startX) +
-    (finalEndY - startY)*(finalEndY - startY)
+    (finalEndX - startX) * (finalEndX - startX) +
+    (finalEndY - startY) * (finalEndY - startY)
   );
 
 
-  /* ---------- 角度 ---------- */
+  /* 角度 */
 
   const angle = Math.atan2(
     finalEndY - startY,
@@ -1239,15 +1254,12 @@ function updatePopupForHoveredMoon(moon){
   ) * 180 / Math.PI;
 
 
-  /* ---------- 描画 ---------- */
+  /* 描画 */
 
   tail.style.opacity = 1;
-
   tail.style.left = startX + "px";
   tail.style.top = startY + "px";
-
   tail.style.width = dist + "px";
-
   tail.style.transform = "rotate(" + angle + "deg)";
 
 }
