@@ -137,7 +137,7 @@ body{
 
 
 /* =========================================================
-   2) 上部UI
+   2) 下部UI
    ========================================================= */
 
 
@@ -292,39 +292,25 @@ body{
    ========================================================= */
 
 .console-top-plate{
-
   position:absolute;
-
   left:-14px;
   right:-14px;
-
   top:-54px;
-
   height:52px;
-
   background:var(--ui-accent);
-
   box-shadow:0 8px 20px var(--ui-accent-glow);
-
   z-index:-2;
-
 }
 
 .console-top-plate::after{
-
   content:"";
-
   position:absolute;
-
   top:0;
   right:-34px;
-
   width:0;
   height:0;
-
   border-top:52px solid var(--ui-accent);
   border-left:34px solid transparent;
-
 }
 
 
@@ -334,28 +320,19 @@ body{
    ========================================================= */
 
 .console-dots{
-
   position:absolute;
-
   top:-42px;
   right:18px;
-
   display:flex;
   gap:16px;
-
 }
 
 .console-dots span{
-
   display:block;
-
   width:20px;
   height:20px;
-
   border-radius:50%;
-
   background:rgba(0,0,0,.28);
-
 }
 
 
@@ -391,22 +368,16 @@ body{
    ========================================================= */
 
 .corner{
-
   position:absolute;
-
   width:24px;
   height:24px;
-
   border-color:var(--ui-accent);
-
   z-index:1;
-
 }
 
 .tl{
   top:-2px;
   left:-2px;
-
   border-left:2px solid;
   border-top:2px solid;
 }
@@ -414,7 +385,6 @@ body{
 .tr{
   top:-2px;
   right:-2px;
-
   border-right:2px solid;
   border-top:2px solid;
 }
@@ -426,7 +396,6 @@ body{
 .br{
   bottom:-2px;
   right:-2px;
-
   border-right:2px solid;
   border-bottom:2px solid;
 }
@@ -438,18 +407,12 @@ body{
    ========================================================= */
 
 .scale{
-
   position:absolute;
-
   top:20px;
   bottom:20px;
-
   width:30px;
-
   opacity:.65;
-
   z-index:1;
-
   background:
   repeating-linear-gradient(
     to bottom,
@@ -458,12 +421,10 @@ body{
     var(--ui-accent) 9px,
     var(--ui-accent) 10px
   );
-
   filter:
   drop-shadow(
     0 0 4px rgba(122,143,216,.22)
   );
-
 }
 
 .scale.left{
@@ -481,53 +442,36 @@ body{
    ========================================================= */
 
 .cross{
-
   position:absolute;
-
   width:28px;
   height:28px;
-
   z-index:1;
-
 }
 
 .cross::before,
 .cross::after{
-
   content:"";
-
   position:absolute;
-
   background:var(--ui-accent);
-
   box-shadow:
   0 0 6px var(--ui-accent-soft),
   0 0 14px rgba(122,143,216,.18);
-
 }
 
 .cross::before{
-
   left:50%;
   top:0;
-
   width:2px;
   height:100%;
-
   transform:translateX(-50%);
-
 }
 
 .cross::after{
-
   top:50%;
   left:0;
-
   width:100%;
   height:2px;
-
   transform:translateY(-50%);
-
 }
 
 .cross-tl{top:36px; left:30px;}
@@ -548,11 +492,8 @@ body{
   }
 
   .console{
-
     width:min(84vw,360px);
-
     padding:30px 26px 28px;
-
     clip-path:
     polygon(
       0 0,
@@ -561,7 +502,6 @@ body{
       52px 100%,
       0 calc(100% - 52px)
     );
-
   }
 
   .console-top-plate{
@@ -597,9 +537,7 @@ body{
 
   .scale.left{left:8px;}
   .scale.right{right:8px;}
-
   .cross{width:20px;height:20px;}
-
   .cross-tl{top:28px; left:38px;}
   .cross-tr{top:28px; right:38px;}
   .cross-bl{bottom:28px; left:38px;}
@@ -612,7 +550,7 @@ body{
   top:22px;
   left:50%;
   transform:translateX(-50%);
-  font-size:28px;
+  font-size:32px;
   letter-spacing:.12em;
   color:#eef2ff;
   text-shadow:
