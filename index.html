@@ -1860,12 +1860,14 @@ const ECG_BASE_Y2 = 75;
 
 let ecgOffset = 0;
 let ecgSeed = 0;
+const ecgBeatCacheMain = new Map();
+const ecgBeatCacheSub = new Map();
 
 function rand(min, max){
   return min + Math.random() * (max - min);
 }
 
-function makeBeatShape(startX){
+function makeBeatShape(){
   const pAmp = rand(2, 6);
   const pWidth = rand(8, 14);
 
@@ -1881,56 +1883,58 @@ function makeBeatShape(startX){
   const tail = rand(18, 36);
 
   return [
-    { x:startX - 42, y:0 },
-    { x:startX - 30, y:0 },
+    { x:-42, y:0 },
+    { x:-30, y:0 },
 
-    /* P wave */
-    { x:startX - 30 + pWidth * 0.35, y:-pAmp * 0.5 },
-    { x:startX - 30 + pWidth * 0.7,  y:-pAmp },
-    { x:startX - 30 + pWidth,        y:0 },
+    { x:-30 + pWidth * 0.35, y:-pAmp * 0.5 },
+    { x:-30 + pWidth * 0.7,  y:-pAmp },
+    { x:-30 + pWidth,        y:0 },
 
-    /* PR */
-    { x:startX - prGap, y:0 },
+    { x:-prGap, y:0 },
 
-    /* QRS */
-    { x:startX - 3, y:qAmp },
-    { x:startX + 2, y:-rAmp },
-    { x:startX + 8, y:sAmp },
-    { x:startX + 14, y:0 },
+    { x:-3, y:qAmp },
+    { x:2, y:-rAmp },
+    { x:8, y:sAmp },
+    { x:14, y:0 },
 
-    /* ST */
-    { x:startX + 14 + stGap, y:rand(-1.2, 1.2) },
+    { x:14 + stGap, y:rand(-1.2, 1.2) },
 
-    /* T wave */
-    { x:startX + 14 + stGap + tWidth * 0.35, y:-tAmp * 0.55 },
-    { x:startX + 14 + stGap + tWidth * 0.7,  y:-tAmp },
-    { x:startX + 14 + stGap + tWidth,        y:0 },
+    { x:14 + stGap + tWidth * 0.35, y:-tAmp * 0.55 },
+    { x:14 + stGap + tWidth * 0.7,  y:-tAmp },
+    { x:14 + stGap + tWidth,        y:0 },
 
-    /* Tail */
-    { x:startX + 14 + stGap + tWidth + tail, y:0 }
+    { x:14 + stGap + tWidth + tail, y:0 }
   ];
 }
 
-function buildScrollingECGPath(width, baseY, offset, seedShift = 0){
+function buildScrollingECGPath(width, baseY, offset, seedShift = 0, cacheMap){
   let d = `M 0 ${baseY}`;
 
   const spacingBase = 128;
   const totalCycles = Math.ceil(width / spacingBase) + 4;
 
   for(let i = -2; i < totalCycles; i++){
-    const cycleSeed = i + ecgSeed + seedShift;
+    const cycleSeed = i + seedShift;
+
     const jitter = Math.sin(cycleSeed * 12.9898) * 43758.5453;
     const frac = jitter - Math.floor(jitter);
 
     const spacing = spacingBase + frac * 42 - 21;
     const cycleStart = i * spacingBase - offset + frac * 18;
-
     const beatX = cycleStart + spacing * 0.56;
-    const beat = makeBeatShape(beatX);
+
+    let beat = cacheMap.get(cycleSeed);
+
+    if(!beat){
+      beat = makeBeatShape(0);
+      cacheMap.set(cycleSeed, beat);
+    }
 
     for(const p of beat){
-      if(p.x >= -40 && p.x <= width + 40){
-        d += ` L ${p.x.toFixed(1)} ${(baseY + p.y).toFixed(1)}`;
+      const x = beatX + p.x;
+
+      if(x >= -40 && x <= width + 40){
+        d += ` L ${x.toFixed(1)} ${(baseY + p.y).toFixed(1)}`;
       }
     }
   }
@@ -1939,22 +1943,38 @@ function buildScrollingECGPath(width, baseY, offset, seedShift = 0){
   return d;
 }
 
+     
 function updateVitalWave(){
   if(!vitalWave || !vitalWave2) return;
+
   ecgOffset -= ECG_STEP;
+
   if(ecgOffset <= -ECG_WIDTH){
     ecgOffset += ECG_WIDTH;
   }
-  vitalWave.setAttribute(
-  "d",
-  buildScrollingECGPath(ECG_WIDTH, ECG_BASE_Y, ecgOffset, 0)
-);
-vitalWave2.setAttribute(
-  "d",
-  buildScrollingECGPath(ECG_WIDTH, ECG_BASE_Y2, ecgOffset, 0.5)
-);
-}
 
+  vitalWave.setAttribute(
+    "d",
+    buildScrollingECGPath(
+      ECG_WIDTH,
+      ECG_BASE_Y,
+      ecgOffset,
+      0,
+      ecgBeatCacheMain
+    )
+  );
+
+  vitalWave2.setAttribute(
+    "d",
+    buildScrollingECGPath(
+      ECG_WIDTH,
+      ECG_BASE_Y2,
+      ecgOffset,
+      0.5,
+      ecgBeatCacheSub
+    )
+  );
+}
 
      
 /* =========================================================
