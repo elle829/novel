@@ -987,14 +987,14 @@ function createMoonTexture(phase){
     cx,cy,r*1.6
   );
 
-  g.addColorStop(0,"rgba(230,240,255,0.95)");
-  g.addColorStop(0.5,"rgba(200,220,255,0.35)");
-  g.addColorStop(1,"rgba(255,230,180,0)");
-
+  g.addColorStop(0,"rgba(235,245,255,1)");
+  g.addColorStop(0.45,"rgba(190,215,255,0.5)");
+  g.addColorStop(1,"rgba(120,160,255,0)");
+     
   ctx.fillStyle=g;
   ctx.fillRect(0,0,size,size);
 
-  ctx.fillStyle="#dfe9ff";
+  ctx.fillStyle="#e9f2ff";
 
   ctx.beginPath();
   ctx.arc(cx,cy,r,0,Math.PI*2);
@@ -1008,8 +1008,10 @@ function createMoonTexture(phase){
   ctx.arc(cx+offset,cy,r*0.98,0,Math.PI*2);
   ctx.fill();
 
-  return new THREE.CanvasTexture(canvas);
+  ctx.shadowColor="rgba(180,210,255,0.6)";
+  ctx.shadowBlur=30;
 
+  return new THREE.CanvasTexture(canvas);
 }
 
 
