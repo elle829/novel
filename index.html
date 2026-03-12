@@ -1212,10 +1212,10 @@ function updatePopupForHoveredMoon(moon){
 
   const dist=Math.sqrt(dx*dx+dy*dy);
 
-  const moonOffset=35;
+  const moonRadius = moon.scale.x * 30;
 
-  const startX=screenX+Math.cos(angleRad)*moonOffset;
-  const startY=screenY+Math.sin(angleRad)*moonOffset;
+  const startX = screenX + Math.cos(angleRad) * moonRadius; 
+  const startY = screenY + Math.sin(angleRad) * moonRadius;
 
   tail.style.opacity=1;
 
