@@ -1167,56 +1167,21 @@ function updatePopupForHoveredMoon(moon){
   const rect = moonPopup.getBoundingClientRect();
 
 
-  /* popup中心 */
+  /* popupの最近接点 */
 
-  const centerX = rect.left + rect.width * 0.5;
-  const centerY = rect.top + rect.height * 0.5;
-
-
-  /* popupとの方向 */
-
-  const dx = screenX - centerX;
-  const dy = screenY - centerY;
-
-
-  let endX;
-  let endY;
-
-
-  /* 接続面決定 */
-
-  if(Math.abs(dx) > Math.abs(dy)){
-
-    if(dx > 0){
-      endX = rect.right;
-      endY = centerY;
-    }else{
-      endX = rect.left;
-      endY = centerY;
-    }
-
-  }else{
-
-    if(dy > 0){
-      endX = centerX;
-      endY = rect.bottom;
-    }else{
-      endX = centerX;
-      endY = rect.top;
-    }
-
-  }
+  const closestX = Math.max(rect.left, Math.min(screenX, rect.right));
+  const closestY = Math.max(rect.top, Math.min(screenY, rect.bottom));
 
 
   /* 月方向 */
 
-  let vx = endX - screenX;
-  let vy = endY - screenY;
+  let dx = closestX - screenX;
+  let dy = closestY - screenY;
 
-  const len = Math.sqrt(vx*vx + vy*vy) || 0.0001;
+  const len = Math.sqrt(dx*dx + dy*dy) || 0.0001;
 
-  vx /= len;
-  vy /= len;
+  const dirX = dx / len;
+  const dirY = dy / len;
 
 
   /* 月半径 */
@@ -1226,31 +1191,31 @@ function updatePopupForHoveredMoon(moon){
 
   /* 線始点 */
 
-  const startX = screenX + vx * moonRadius;
-  const startY = screenY + vy * moonRadius;
+  const startX = screenX + dirX * moonRadius;
+  const startY = screenY + dirY * moonRadius;
 
 
   /* popupに重ならない */
 
   const offset = 10;
 
-  const finalEndX = endX - vx * offset;
-  const finalEndY = endY - vy * offset;
+  const endX = closestX - dirX * offset;
+  const endY = closestY - dirY * offset;
 
 
   /* 距離 */
 
   const dist = Math.sqrt(
-    (finalEndX - startX) * (finalEndX - startX) +
-    (finalEndY - startY) * (finalEndY - startY)
+    (endX - startX) * (endX - startX) +
+    (endY - startY) * (endY - startY)
   );
 
 
   /* 角度 */
 
   const angle = Math.atan2(
-    finalEndY - startY,
-    finalEndX - startX
+    endY - startY,
+    endX - startX
   ) * 180 / Math.PI;
 
 
@@ -1263,7 +1228,6 @@ function updatePopupForHoveredMoon(moon){
   tail.style.transform = "rotate(" + angle + "deg)";
 
 }
-
 
 
 /* =========================================================
