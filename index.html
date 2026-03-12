@@ -944,14 +944,12 @@ scene.add(fairyLight);
 
 const loader = new THREE.TextureLoader();
 
-const fairyTexture = loader.load("./png/yousei3.png");
+const fairyTexture = loader.load("./png/yousei4.png");
 
 const fairyMaterial = new THREE.SpriteMaterial({
   map:fairyTexture,
   transparent:true,
   depthWrite:false,
-  color:0x888888,
-  blending:THREE.AdditiveBlending
 });
 
 const fairy = new THREE.Sprite(fairyMaterial);
@@ -996,7 +994,7 @@ function createMoonTexture(phase){
   ctx.fillStyle=g;
   ctx.fillRect(0,0,size,size);
 
-  ctx.fillStyle="#e6f0ff";
+  ctx.fillStyle="#dfe9ff";
 
   ctx.beginPath();
   ctx.arc(cx,cy,r,0,Math.PI*2);
