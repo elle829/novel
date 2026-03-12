@@ -47,11 +47,12 @@
    ========================================================= */
 :root{
   --ui-accent:#7a8fd8;
-  --ui-accent-glow:rgba(122,143,216,.35);
-  --ui-accent-soft:rgba(122,143,216,.20);
-  --ui-title:#e8eeff;
-  --ui-subtitle:#c7d0ff;
-  --ui-frame-bg-top:rgba(25,25,35,.90);
+  --ui-accent-glow:rgba(122,143,216,.48);
+  --ui-accent-soft:rgba(122,143,216,.24);
+  --ui-accent-strong:rgba(170,190,255,.95);
+  --ui-title:#eef2ff;
+  --ui-subtitle:#d1d9ff;
+  --ui-frame-bg-top:rgba(25,25,35,.88);
   --ui-frame-bg-bottom:rgba(18,18,25,.95);
 }
 
@@ -178,35 +179,86 @@ html, body{
   z-index:20;
 }
 
+.popup-tail{
+  position:absolute;
+  left:-96px;
+  bottom:42px;
+  width:96px;
+  height:48px;
+  pointer-events:none;
+}
+
+.tail-line{
+  position:absolute;
+  display:block;
+  height:2px;
+  background:var(--ui-accent);
+  box-shadow:
+    0 0 6px rgba(122,143,216,.45),
+    0 0 16px rgba(122,143,216,.22);
+}
+
+/* 最初の斜め線 */
+.tail-line-1{
+  left:0;
+  bottom:10px;
+  width:42px;
+  transform:rotate(-28deg);
+  transform-origin:left center;
+}
+
+/* 二本目の水平線 */
+.tail-line-2{
+  left:34px;
+  bottom:28px;
+  width:56px;
+}
+
+/* 先端のノード */
+.tail-node{
+  position:absolute;
+  left:-4px;
+  bottom:7px;
+  width:8px;
+  height:8px;
+  border:2px solid var(--ui-accent);
+  background:rgba(8,10,24,.85);
+  transform:rotate(45deg);
+  box-shadow:
+    0 0 6px rgba(122,143,216,.38),
+    0 0 12px rgba(122,143,216,.18);
+}
+     
 /* ---------------------------------------------------------
    本体フレーム
    clip-path で左下を斜めにカット
    --------------------------------------------------------- */
 .console{
-position:relative;
-width:420px;
+  position:relative;
+  width:420px;
+  padding:50px 40px 48px;
+  background:linear-gradient(
+    180deg,
+    var(--ui-frame-bg-top),
+    var(--ui-frame-bg-bottom)
+  );
+  border:2px solid var(--ui-accent);
 
-padding:50px 40px 48px;
+  /* ネオンっぽい外光 + 内側の薄い光 */
+  box-shadow:
+    0 0 8px rgba(122,143,216,.35),
+    0 0 18px rgba(122,143,216,.28),
+    0 0 38px rgba(122,143,216,.22),
+    inset 0 0 18px rgba(122,143,216,.08),
+    inset 0 0 24px rgba(0,0,0,.55);
 
-background:linear-gradient(
-180deg,
-rgba(25,25,35,.9),
-rgba(18,18,25,.95)
-);
-
-border:2px solid var(--ui-accent);
-     
-box-shadow:
-0 0 30px var(--ui-accent-glow),
-inset 0 0 20px rgba(0,0,0,.60);
-
-clip-path:polygon(
-0 0,
-100% 0,
-100% 100%,
-70px 100%,
-0 calc(100% - 70px)
-);
+  clip-path:polygon(
+    0 0,
+    100% 0,
+    100% 100%,
+    70px 100%,
+    0 calc(100% - 70px)
+  );
 }
 
 /* ---------------------------------------------------------
@@ -272,23 +324,27 @@ clip-path:polygon(
    タイトルとサブタイトル
    --------------------------------------------------------- */
 .popup-title{
-font-size:24px;
-letter-spacing:.1em;
-margin-top:4px;
-margin-bottom:16px;
-padding-left:70px;
-padding-right:70px;
-position:relative;
-z-index:3;
+  position:relative;
+  z-index:2;
+  font-size:24px;
+  letter-spacing:.10em;
+  margin-bottom:16px;
+  color:var(--ui-title);
+  text-shadow:
+    0 0 6px rgba(210,220,255,.18),
+    0 0 14px rgba(122,143,216,.18);
 }
 
 .popup-subtitle{
-font-size:12px;
-opacity:.85;
-padding-left:70px;
-padding-right:70px;
-position:relative;
-z-index:3;
+  position:relative;
+  z-index:2;
+  font-size:14px;
+  line-height:1.7;
+  letter-spacing:.05em;
+  color:var(--ui-subtitle);
+  opacity:.90;
+  text-shadow:
+    0 0 6px rgba(122,143,216,.12);
 }
 
 /* ---------------------------------------------------------
@@ -346,6 +402,7 @@ z-index:3;
       var(--ui-accent) 9px,
       var(--ui-accent) 10px
     );
+  filter:drop-shadow(0 0 4px rgba(122,143,216,.22));
 }
 
 .scale.left{
@@ -372,7 +429,9 @@ z-index:3;
   content:"";
   position:absolute;
   background:var(--ui-accent);
-  box-shadow:0 0 10px var(--ui-accent-soft);
+  box-shadow:
+    0 0 6px var(--ui-accent-soft),
+    0 0 14px rgba(122,143,216,.18);
 }
 
 .cross::before{
@@ -546,6 +605,11 @@ right:30px;
      - 上部プレート / 丸ボタン / クロスを追加
      ========================================================= -->
 <div id="moonPopup">
+  <div class="popup-tail">
+    <span class="tail-line tail-line-1"></span>
+    <span class="tail-line tail-line-2"></span>
+    <span class="tail-node"></span>
+  </div>
   <div class="console">
     <div class="console-top-plate"></div>
 
