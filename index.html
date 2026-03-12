@@ -1102,13 +1102,71 @@ function updatePopupForHoveredMoon(moon){
     flip = true;
   }
 
-  /* popup の中心位置 */
-  let popupX = screenX + outwardX * popupDistance;
-  let popupY = screenY + outwardY * popupDistance;
-
-  if(flip){
-    popupX = screenX - outwardX * popupDistance;
-  }
+  /* =========================================================
+   popup最適位置探索
+        ========================================================= */
+     
+     let popupX = screenX + outwardX * popupDistance;
+     let popupY = screenY + outwardY * popupDistance;
+     
+     /* popupサイズ取得 */
+     moonPopup.style.left = popupX + "px";
+     moonPopup.style.top = popupY + "px";
+     moonPopup.offsetWidth;
+     
+     const rectTemp = moonPopup.getBoundingClientRect();
+     const halfW = rectTemp.width * 0.5;
+     const halfH = rectTemp.height * 0.5;
+     
+     /* 妖精座標 */
+     
+     const fairyWorld = new THREE.Vector3();
+     fairy.getWorldPosition(fairyWorld);
+     
+     const fairyScreen = fairyWorld.clone().project(camera);
+     
+     const fairyX = (fairyScreen.x * 0.5 + 0.5) * window.innerWidth;
+     const fairyY = (-fairyScreen.y * 0.5 + 0.5) * window.innerHeight;
+     
+     const fairyRadius = 240;
+     
+     /* 探索 */
+     
+     let bestX = popupX;
+     let bestY = popupY;
+     
+     for(let i=0;i<16;i++){
+     
+       const angle = i / 16 * Math.PI * 2;
+     
+       const testX = screenX + Math.cos(angle) * popupDistance;
+       const testY = screenY + Math.sin(angle) * popupDistance;
+     
+       const insideScreen =
+         testX - halfW > 0 &&
+         testX + halfW < window.innerWidth &&
+         testY - halfH > 0 &&
+         testY + halfH < window.innerHeight;
+     
+       const dx = testX - fairyX;
+       const dy = testY - fairyY;
+     
+       const dist = Math.sqrt(dx*dx + dy*dy);
+     
+       const safeFairy = dist > fairyRadius;
+     
+       if(insideScreen && safeFairy){
+     
+         bestX = testX;
+         bestY = testY;
+         break;
+     
+       }
+     
+     }
+     
+     popupX = bestX;
+     popupY = bestY;
 
     /* =========================================================
         妖精回避
@@ -1138,12 +1196,7 @@ function updatePopupForHoveredMoon(moon){
        popupY = fairyY + (fy / fairyDist) * fairySafeRadius;
      }
      
-  /* 画面外にはみ出しにくくする */
-  const popupMarginX = 260;
-  const popupMarginY = 140;
-
-  popupX = Math.max(popupMarginX, Math.min(window.innerWidth - popupMarginX, popupX));
-  popupY = Math.max(popupMarginY, Math.min(window.innerHeight - popupMarginY, popupY));
+ 
 
  /* =========================================================
    クランプ後もう一度妖精回避
@@ -1161,8 +1214,25 @@ function updatePopupForHoveredMoon(moon){
   moonPopup.style.left = popupX + "px";
   moonPopup.style.top = popupY + "px";
 
-  const rect = moonPopup.getBoundingClientRect();
+  /* popupサイズ取得 */
+  moonPopup.offsetWidth;
 
+  let rect = moonPopup.getBoundingClientRect();
+
+  const halfW = rect.width * 0.5;
+  const halfH = rect.height * 0.5;
+
+  /* 画面クランプ */
+
+  popupX = Math.max(halfW + 20, Math.min(window.innerWidth - halfW - 20, popupX));
+  popupY = Math.max(halfH + 20, Math.min(window.innerHeight - halfH - 20, popupY));
+
+  moonPopup.style.left = popupX + "px";
+  moonPopup.style.top = popupY + "px";
+
+  /* rect 更新（これが重要） */
+  rect = moonPopup.getBoundingClientRect();
+  
 
   /* popupの最近接点 */
 
