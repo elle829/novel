@@ -1182,7 +1182,7 @@ transform:translate(-50%,-50%);
 
 .progress-container{
 position:fixed;
-top:370px;
+top:480px;
 left:220px;
 bottom:115px;
 width:420px;
@@ -1244,7 +1244,7 @@ animation:scan 2s linear infinite;
 .progress-text{
 position:fixed;
 left:220px;
-top:345px;
+top:455px;
 bottom:142px;
 font-size:13px;
 letter-spacing:.15em;
@@ -1809,6 +1809,8 @@ depthTest:false
 const nebula = new THREE.Sprite(mat);
 nebula.scale.set(120,120,1);
 nebula.position.set(0,3,-8);
+/* ←ここに入れる */
+nebula.renderOrder = -5;
 scene.add(nebula);
 }
 
