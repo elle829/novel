@@ -1185,7 +1185,7 @@ position:fixed;
 top:480px;
 left:220px;
 bottom:115px;
-width:420px;
+width:500px;
 height:22px;
 border:1px solid rgba(120,190,255,.8);
 background:
@@ -1244,7 +1244,7 @@ animation:scan 2s linear infinite;
 .progress-text{
 position:fixed;
 left:220px;
-top:455px;
+top:535px;
 bottom:142px;
 font-size:13px;
 letter-spacing:.15em;
@@ -1550,6 +1550,7 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 
+camera.position.set(0,0.2,9);   // ←ここ追加
 
 const renderer = new THREE.WebGLRenderer({
   antialias:true,
@@ -2386,8 +2387,10 @@ function animate(){
 
   orbitScroll+=(orbitTarget-orbitScroll)*0.08;
 
-  camera.position.x+=(mouseX*0.45-camera.position.x)*0.06;
-  camera.position.y+=(-mouseY*0.35-camera.position.y)*0.06;
+  /* パララックス */
+  starsNear.rotation.x += mouseY * 0.0006;
+  starsMid.rotation.x += mouseY * 0.0003;
+  starsFar.rotation.x += mouseY * 0.00015;
      
   camera.lookAt(0,0,0);
 
