@@ -1194,7 +1194,7 @@ left:180px;
 bottom:115px;
 width:420px;
 height:22px;
-border:1px solid rgba(120,190,255,.6);
+border:1px solid rgba(120,190,255,.8);
 background:
 linear-gradient(
 180deg,
@@ -1202,26 +1202,29 @@ rgba(10,20,50,.9),
 rgba(5,10,30,.9)
 );
 box-shadow:
-0 0 12px rgba(120,190,255,.7),
-0 0 30px rgba(120,190,255,.35),
+0 0 8px rgba(120,190,255,.6),
+0 0 22px rgba(120,190,255,.35),
 inset 0 0 12px rgba(120,190,255,.25);
 z-index:6;
+overflow:hidden;
 }
 
 .progress-bar{
 height:100%;
 width:0%;
+position:relative;
 background:
-linear-gradient(
+repeating-linear-gradient(
 90deg,
-#8fdcff,
-#d0f0ff
+rgba(150,220,255,.9) 0px,
+rgba(150,220,255,.9) 4px,
+transparent 4px,
+transparent 6px
 );
 box-shadow:
 0 0 10px rgba(120,190,255,.8),
 0 0 20px rgba(120,190,255,.5);
 transition:width .8s cubic-bezier(.2,.9,.3,1);
-position:relative;
 }
 
 .progress-bar::after{
