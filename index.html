@@ -1293,6 +1293,18 @@ color:white;
 cursor:pointer;
 }
 
+#resetBtn{
+border-color:#ff6b6b;
+box-shadow:0 0 10px rgba(255,80,80,.5);
+}
+
+#resetBtn:hover{
+background:#5a0f0f;
+box-shadow:
+0 0 10px rgba(255,80,80,.8),
+0 0 30px rgba(255,80,80,.4);
+}
+     
 
 /* =================================
    error popup
@@ -2185,6 +2197,7 @@ const progressBar = document.getElementById("progressBar");
 const progressText = document.getElementById("progressText");
 const rebootModal = document.getElementById("rebootModal");
 const rebootBtn = document.getElementById("rebootBtn");
+const resetBtn = document.getElementById("resetBtn");
 const STORY_TOTAL = 10;
 /* storyページが保存する */
 function getVisited(){
@@ -2210,6 +2223,16 @@ rebootModal.style.display="flex";
 updateProgress();
 /* reboot */
 rebootBtn.addEventListener("click",()=>{
+
+/* =========================
+   RESET
+========================= */
+
+resetBtn.addEventListener("click",()=>{
+localStorage.removeItem("moonStories");
+location.reload();
+});
+     
 rebootModal.style.display="none";
 let count = 0;
 const interval = setInterval(()=>{
@@ -2385,6 +2408,17 @@ window.addEventListener("resize",()=>{
 const bootScreen = document.getElementById("bootScreen");
 const enterButton = document.getElementById("enterButton");
 
+/* =========================
+   進捗チェック
+========================= */
+
+const visitedStories = JSON.parse(
+localStorage.getItem("moonStories") || "[]"
+);
+if(visitedStories.length > 0){
+bootScreen.style.display = "none";
+}
+     
 enterButton.addEventListener("click",()=>{
 
 bootScreen.classList.add("hide");
@@ -2456,10 +2490,10 @@ animate();
 </div>
 
 <!-- reboot popup -->
-<div class="reboot-modal" id="rebootModal">
 <div class="reboot-box">
 <div>再起動しますか？</div>
 <button class="reboot-button" id="rebootBtn">REBOOT</button>
+<button class="reboot-button" id="resetBtn">RESET</button>
 </div>
 </div>
      
