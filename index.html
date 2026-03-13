@@ -1782,7 +1782,8 @@ for(let i=0;i<10;i++){
 /* =========================================================
    Nebula
    ========================================================= */
-
+let nebula;
+     
 function createNebula(){
 
 const canvas = document.createElement("canvas");
@@ -1812,10 +1813,10 @@ opacity:0.6,
 depthWrite:false
 });
 
-const nebula = new THREE.Sprite(mat);
+nebula = new THREE.Sprite(mat);   // ←const削除
 
-nebula.scale.set(40,40,1);
-nebula.position.set(0,3,-15);
+nebula.scale.set(60,60,1);
+nebula.position.set(0,1,-6);
 nebula.renderOrder = -10;
 
 scene.add(nebula);
@@ -1824,6 +1825,7 @@ scene.add(nebula);
 
 createNebula();
 
+     
 /* =========================================================
    7) 星
    ========================================================= */
@@ -1865,7 +1867,40 @@ scene.add(starsNear);
 scene.add(starsMid);
 scene.add(starsFar);
 
+function createDriftStars(count){
 
+  const geo = new THREE.BufferGeometry();
+
+  const pos = new Float32Array(count*3);
+
+  for(let i=0;i<count;i++){
+
+    pos[i*3]   = (Math.random()-0.5)*120;
+    pos[i*3+1] = (Math.random()-0.5)*80;
+    pos[i*3+2] = -20 - Math.random()*40;
+
+  }
+
+  geo.setAttribute(
+    "position",
+    new THREE.BufferAttribute(pos,3)
+  );
+
+  return new THREE.Points(
+    geo,
+    new THREE.PointsMaterial({
+      color:0xaed6ff,
+      size:0.03,
+      transparent:true,
+      opacity:0.6
+    })
+  );
+
+}
+
+const driftStars = createDriftStars(600);
+
+scene.add(driftStars);
 
 /* =========================================================
    8) マウス
@@ -2400,6 +2435,22 @@ function animate(){
   starsNear.rotation.x += mouseY * 0.0006;
   starsMid.rotation.x += mouseY * 0.0003;
   starsFar.rotation.x += mouseY * 0.00015;
+
+  starsNear.position.x = mouseX * 0.8;
+  starsNear.position.y = mouseY * 0.5;
+
+  starsMid.position.x = mouseX * 0.4;
+  starsMid.position.y = mouseY * 0.25;
+
+  starsFar.position.x = mouseX * 0.15;
+  starsFar.position.y = mouseY * 0.1;
+
+  if(nebula){
+
+    nebula.position.x = mouseX * 0.08;
+    nebula.position.y = mouseY * 0.04;
+
+  }
      
   camera.lookAt(0,0,0);
 
@@ -2464,6 +2515,12 @@ function animate(){
   starsMid.rotation.y+=0.00035;
   starsFar.rotation.y+=0.00015;
 
+  driftStars.position.x += 0.002;
+
+  if(driftStars.position.x > 40){
+    driftStars.position.x = -40;
+  }
+     
   hudRing.rotation.y += 0.002;
 
 /* ===============================
