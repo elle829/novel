@@ -1161,6 +1161,110 @@ top:160px;
 opacity:0;
 }
 }
+
+/* =================================
+   ターゲットサークル
+================================= */
+
+.target-ring{
+position:fixed;
+width:260px;
+height:260px;
+pointer-events:none;
+z-index:6;
+opacity:.9;
+transform:translate(-50%,-50%);
+animation:ringPulse 3s infinite ease-in-out;
+}
+
+@keyframes ringPulse{
+0%{transform:translate(-50%,-50%) scale(.96);opacity:.7}
+50%{transform:translate(-50%,-50%) scale(1.04);opacity:1}
+100%{transform:translate(-50%,-50%) scale(.96);opacity:.7}
+}
+
+
+/* =================================
+   プログレスバー
+================================= */
+
+.progress-container{
+position:fixed;
+left:200px;
+bottom:120px;
+width:240px;
+height:8px;
+background:rgba(255,255,255,.1);
+border:1px solid rgba(120,190,255,.4);
+box-shadow:0 0 10px rgba(120,190,255,.5);
+z-index:6;
+}
+
+.progress-bar{
+height:100%;
+width:0%;
+background:#9edcff;
+box-shadow:0 0 12px rgba(120,190,255,.8);
+transition:width .6s ease;
+}
+
+.progress-text{
+position:fixed;
+left:200px;
+bottom:138px;
+font-size:11px;
+color:#d8ecff;
+z-index:6;
+}
+
+
+/* =================================
+   reboot popup
+================================= */
+
+.reboot-modal{
+position:fixed;
+inset:0;
+display:none;
+align-items:center;
+justify-content:center;
+background:rgba(0,0,0,.5);
+z-index:200;
+}
+
+.reboot-box{
+background:#11162a;
+border:1px solid rgba(120,190,255,.7);
+padding:40px;
+text-align:center;
+box-shadow:0 0 30px rgba(120,190,255,.5);
+}
+
+.reboot-button{
+margin-top:20px;
+padding:10px 24px;
+border:1px solid rgba(120,190,255,.7);
+background:#1b2a63;
+color:white;
+cursor:pointer;
+}
+
+
+/* =================================
+   error popup
+================================= */
+
+.error-popup{
+position:fixed;
+width:200px;
+background:#200;
+border:1px solid red;
+color:#ffbaba;
+padding:12px;
+font-size:12px;
+box-shadow:0 0 10px red;
+z-index:500;
+}
      
 </style>
 
@@ -2027,6 +2131,54 @@ function updateVitalWave(){
     );
   }
 }
+
+/* =========================================================
+   progress 管理
+========================================================= */
+const progressBar = document.getElementById("progressBar");
+const progressText = document.getElementById("progressText");
+const rebootModal = document.getElementById("rebootModal");
+const rebootBtn = document.getElementById("rebootBtn");
+const STORY_TOTAL = 10;
+/* storyページが保存する */
+const visited = JSON.parse(
+localStorage.getItem("moonStories") || "[]"
+);
+
+function updateProgress(){
+const percent = Math.floor(
+visited.length / STORY_TOTAL * 100
+);
+progressBar.style.width = percent + "%";
+progressText.textContent = "SYNC " + percent + "%";
+if(percent===100){
+setTimeout(()=>{
+rebootModal.style.display="flex";
+},800);
+}
+}
+     
+updateProgress();
+/* reboot */
+rebootBtn.addEventListener("click",()=>{
+rebootModal.style.display="none";
+let count = 0;
+const interval = setInterval(()=>{
+const e = document.createElement("div");
+e.className="error-popup";
+e.style.left=Math.random()*window.innerWidth+"px";
+e.style.top=Math.random()*window.innerHeight+"px";
+e.textContent="SYSTEM ERROR";
+document.body.appendChild(e);
+count++;
+if(count>25){
+clearInterval(interval);
+setTimeout(()=>{
+location.href="afterday.html";
+},1200);
+}
+},60);
+});
      
 /* =========================================================
    13) アニメーション
@@ -2234,6 +2386,40 @@ bootScreen.classList.add("hide");
      
 <div class="hud-frame"></div>
 
+
+<!-- ターゲットリング -->
+<img src="./png/target.png" class="target-ring" id="targetRing">
+
+<!-- progress -->
+<div class="progress-text" id="progressText">SYNC 0%</div>
+<div class="progress-container">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- reboot popup -->
+<div class="reboot-modal" id="rebootModal">
+<div class="reboot-box">
+<div>再起動しますか？</div>
+<button class="reboot-button" id="rebootBtn">REBOOT</button>
+</div>
+</div><!-- ターゲットリング -->
+<img src="./png/target.png" class="target-ring" id="targetRing">
+
+<!-- progress -->
+<div class="progress-text" id="progressText">SYNC 0%</div>
+<div class="progress-container">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- reboot popup -->
+<div class="reboot-modal" id="rebootModal">
+<div class="reboot-box">
+<div>再起動しますか？</div>
+<button class="reboot-button" id="rebootBtn">REBOOT</button>
+</div>
+</div>
+
+     
 <!-- ======================================
 UI ウィンドウ
 ====================================== -->
