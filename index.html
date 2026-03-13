@@ -77,28 +77,33 @@ body{
 
   background:
 
-     radial-gradient(
-     circle at 50% 78%,
-     rgba(120,150,255,0.18) 0%,
-     rgba(80,110,220,0.12) 16%,
-     rgba(10,14,40,0) 42%
-     ),
-     
-     linear-gradient(
-     to top,
-     #050711 0%,
-     #0a1230 28%,
-     #111c48 52%,
-     #0c173a 75%,
-     #03040b 100%
-     );
+radial-gradient(
+circle at 50% 78%,
+rgba(80,110,200,0.12) 0%,
+rgba(30,40,120,0.08) 16%,
+rgba(10,14,40,0) 42%
+),
+
+radial-gradient(
+circle at 50% 40%,
+rgba(40,60,160,0.15) 0%,
+rgba(20,30,80,0.05) 40%,
+rgba(0,0,0,0) 70%
+),
+
+linear-gradient(
+to top,
+#02030a 0%,
+#05071a 25%,
+#0a1230 45%,
+#060a1f 70%,
+#010203 100%
+);
 
   color:white;
 
   font-family:
-    "fot-tsukuaoldmin-pr6n",
-    "Hiragino Mincho ProN",
-    "Yu Mincho",
+    "fot-tsukubrdgothic-std",
     serif;
 
   font-weight:300;
@@ -543,9 +548,7 @@ body{
 }
 
 .win-title{
-font-family:
-"futura-pt",
-sans-serif;
+font-family:"eurostile",sans-serif;
 font-weight:500;
 font-size:13px;
 letter-spacing:.18em;
@@ -557,11 +560,9 @@ text-shadow:
 }
 
 .win-body{
+font-family:"fot-tsukubrdgothic-std",serif;
 font-size:14px;
 line-height:1.7;
-font-family:
-"fot-tsukuaoldmin-pr6n",
-serif;
 }
 
 .win-price{
@@ -879,7 +880,6 @@ font-size:14px;
 line-height:1.6;
 font-family:
 "fot-tsukuaoldmin-pr6n",
-"Yu Mincho",
 serif;
 pointer-events:none;
 }
@@ -909,6 +909,7 @@ transform:translateY(0);
    ========================================================= */
 
 .site-header{
+font-family:"orbitron",sans-serif;
 position:fixed;
 top:22px;
 left:50%;
@@ -1612,6 +1613,9 @@ const renderer = new THREE.WebGLRenderer({
   alpha:true
 });
 
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.85;
+     
 renderer.setSize(window.innerWidth,window.innerHeight);
 
 renderer.setPixelRatio(
@@ -1628,7 +1632,7 @@ document
    2) ライト
    ========================================================= */
 
-scene.add(new THREE.AmbientLight(0xaebcff,0.9));
+scene.add(new THREE.AmbientLight(0xaebcff,0.55));
 
 const fairyLight = new THREE.PointLight(
   0xa5f4ff,
@@ -1852,8 +1856,8 @@ const g = ctx.createRadialGradient(
 256,256,256
 );
 
-g.addColorStop(0,"rgba(120,160,255,0.45)");
-g.addColorStop(.4,"rgba(120,160,255,0.22)");
+g.addColorStop(0,"rgba(120,160,255,0.22)");
+g.addColorStop(.4,"rgba(120,160,255,0.12)");
 g.addColorStop(1,"rgba(0,0,0,0)");
 
 ctx.fillStyle = g;
@@ -1916,7 +1920,7 @@ function createStars(size,count){
     geo,
     new THREE.PointsMaterial({
       color:0xffffff,
-      size:0.025 * window.devicePixelRatio
+      size:0.006 * window.devicePixelRatio
     })
   );
 
@@ -1954,7 +1958,7 @@ function createWarpStars(count){
       color:0xcfe9ff,
       size:0.05,
       transparent:true,
-      opacity:0.35
+      opacity:0.18
     })
   );
 
@@ -1989,7 +1993,7 @@ function createDriftStars(count){
       color:0xaed6ff,
       size:0.03,
       transparent:true,
-      opacity:0.6
+      opacity:0.25
     })
   );
 
