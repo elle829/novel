@@ -1949,27 +1949,30 @@ function makeBeatShape(){
 
 function buildRunningWavePath(baseY, headX, beatShape){
   let d = "";
-  for(let x=0; x<=360; x+=1.5)
-    let y = baseY;
-    if(beatShape){
-      for(let i=0;i<beatShape.length-1;i++){
-        const p1 = beatShape[i];
-        const p2 = beatShape[i+1];
-        const x1 = headX + p1.x;
-        const x2 = headX + p2.x;
-        if(x >= x1 && x <= x2){
-          const t = (x - x1) / (x2 - x1);
-          const yy = p1.y + (p2.y - p1.y) * t;
-          y = baseY + yy + noise;
-          break;
-        }
+  for(let x=0; x<=360; x+=1.5){
+
+  let y = baseY;
+
+  if(beatShape){
+    for(let i=0;i<beatShape.length-1;i++){
+      const p1 = beatShape[i];
+      const p2 = beatShape[i+1];
+      const x1 = headX + p1.x;
+      const x2 = headX + p2.x;
+      if(x >= x1 && x <= x2){
+        const t = (x - x1) / (x2 - x1);
+        const yy = p1.y + (p2.y - p1.y) * t;
+        y = baseY + yy;
+        break;
       }
     }
-    if(x===0){
-      d += `M ${x} ${y}`;
-    }else{
-      d += ` L ${x} ${y}`;
-    }
+  }
+  if(x===0){
+    d += `M ${x} ${y}`;
+  }else{
+    d += ` L ${x} ${y}`;
+  }
+}
   }
   return d;
 }
