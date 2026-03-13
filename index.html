@@ -1910,6 +1910,21 @@ hudRing2.position.copy(hudHome);
 hudRing2.renderOrder = 2;
 scene.add(hudRing2);
 
+/* 回転が見えるマーカー */
+const markerGeo = new THREE.PlaneGeometry(0.05,0.55);
+const markerMat = new THREE.MeshBasicMaterial({
+color:0x9ecbff,
+transparent:true,
+opacity:0.9,
+blending:THREE.AdditiveBlending,
+depthWrite:false
+});
+const ringMarker = new THREE.Mesh(markerGeo,markerMat);
+
+/* リングの外周に配置 */
+ringMarker.position.y = 3.78;
+hudRing.add(ringMarker);
+
      
 /* =========================================================
    4) 月テクスチャ
@@ -2025,6 +2040,25 @@ for(let i=0;i<10;i++){
     url:moonData[i].url
   };
 
+/* 月の発光ハロー */
+
+const glowGeo = new THREE.CircleGeometry(1.2,64);
+
+const glowMat = new THREE.MeshBasicMaterial({
+  color:0xc86cff,
+  transparent:true,
+  opacity:0.25,
+  blending:THREE.AdditiveBlending,
+  depthWrite:false
+});
+
+const glow = new THREE.Mesh(glowGeo,glowMat);
+
+/* 月の少し後ろに配置 */
+glow.position.z = -0.01;
+
+moon.add(glow);
+     
   moonGroup.add(moon);
 
   moons.push(moon);
@@ -2821,10 +2855,20 @@ function animate(){
      }
      
      if(visited){
+
        moon.material.color.set(0xc86cff);
      
-       const pulse = 0.82 + Math.sin(performance.now() * 0.006 + moon.userData.index) * 0.18;
-       moon.material.opacity = Math.min(1, 0.78 + depth * 0.25 + pulse * 0.18);
+       /* ネオン発光 */
+       moon.material.blending = THREE.AdditiveBlending;
+       moon.material.depthWrite = false;
+     
+       const pulse =
+         0.9 +
+         Math.sin(performance.now()*0.004 + moon.userData.index) * 0.35;
+     
+       moon.material.opacity =
+         Math.min(1,0.85 + depth * 0.25 + pulse * 0.25);
+     
      }else{
        moon.material.color.set(0xffffff);
        moon.material.opacity = Math.min(1, 0.5 + depth * 0.5);
