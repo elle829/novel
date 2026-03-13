@@ -55,9 +55,9 @@
    ========================================================= */
 
 :root{
-  --ui-accent:#ff8c3a;
-  --ui-accent-glow:rgba(255,140,58,.45);
-  --ui-accent-soft:rgba(255,140,58,.25);
+  --ui-accent:#7a8fd8;
+  --ui-accent-glow:rgba(122,143,216,.48);
+  --ui-accent-soft:rgba(122,143,216,.24);
   --ui-title:#eef2ff;
   --ui-subtitle:#d1d9ff;
   --ui-frame-bg-top:rgba(25,25,35,.88);
@@ -438,7 +438,7 @@ to top,
   );
   filter:
   drop-shadow(
-    0 0 4px rgba(122,143,216,.22)
+  0 0 6px var(--ui-accent-soft)
   );
 }
 
@@ -467,10 +467,10 @@ to top,
 .cross::after{
   content:"";
   position:absolute;
-  background:var(--ui-accent);
+  background:#ff8c3a;
   box-shadow:
-  0 0 8px var(--ui-accent-soft),
-  0 0 18px var(--ui-accent-glow);
+  0 0 8px rgba(255,140,58,.4),
+  0 0 18px rgba(255,140,58,.6);
 }
 
 .cross::before{
