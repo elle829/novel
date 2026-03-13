@@ -1174,15 +1174,7 @@ pointer-events:none;
 z-index:6;
 opacity:.9;
 transform:translate(-50%,-50%);
-animation:ringPulse 3s infinite ease-in-out;
 }
-
-@keyframes ringPulse{
-0%{transform:translate(-50%,-50%) scale(.96);opacity:.7}
-50%{transform:translate(-50%,-50%) scale(1.04);opacity:1}
-100%{transform:translate(-50%,-50%) scale(.96);opacity:.7}
-}
-
 
 /* =================================
    SYNC HUD BAR
@@ -1190,7 +1182,8 @@ animation:ringPulse 3s infinite ease-in-out;
 
 .progress-container{
 position:fixed;
-left:180px;
+top:380px;
+left:220px;
 bottom:115px;
 width:420px;
 height:22px;
@@ -1250,7 +1243,8 @@ animation:scan 2s linear infinite;
 
 .progress-text{
 position:fixed;
-left:180px;
+left:220px;
+top:355px;
 bottom:142px;
 font-size:13px;
 letter-spacing:.15em;
@@ -1821,10 +1815,12 @@ function createStars(size,count){
 
 }
 
-const starsNear=createStars(40,400);
-const starsFar=createStars(60,400);
+const starsNear=createStars(40,800);
+const starsMid=createStars(80,800);
+const starsFar=createStars(120,800);
 
 scene.add(starsNear);
+scene.add(starsMid);
 scene.add(starsFar);
 
 
@@ -2358,8 +2354,9 @@ function animate(){
 
   orbitScroll+=(orbitTarget-orbitScroll)*0.08;
 
-  camera.position.x+=(mouseX*0.35-camera.position.x)*0.05;
-
+  camera.position.x+=(mouseX*0.45-camera.position.x)*0.06;
+  camera.position.y+=(-mouseY*0.35-camera.position.y)*0.06;
+     
   camera.lookAt(0,0,0);
 
   raycaster.setFromCamera(mouse,camera);
@@ -2419,8 +2416,9 @@ function animate(){
   fairyLight.position.x=mouseX*2;
   fairyLight.position.y=mouseY*-1;
 
-  starsNear.rotation.y+=0.0005;
-  starsFar.rotation.y+=0.0002;
+  starsNear.rotation.y+=0.0007;
+  starsMid.rotation.y+=0.00035;
+  starsFar.rotation.y+=0.00015;
 
   hudRing.rotation.y += 0.002;
 
@@ -2446,8 +2444,8 @@ const nodeBaseX = (v.x * 0.5 + 0.5) * window.innerWidth;
 const nodeBaseY = (-v.y * 0.5 + 0.5) * window.innerHeight;
 
 /* ノード中心位置を少し妖精にかぶせる */
-const nodeOffsetX = 6;
-const nodeOffsetY = -4;
+const nodeOffsetX = -40;
+const nodeOffsetY = -30;
 
 const nodeX = nodeBaseX + nodeOffsetX;
 const nodeY = nodeBaseY + nodeOffsetY;
