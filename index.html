@@ -103,7 +103,7 @@ to top,
   color:white;
 
   font-family:
-    "fot-tsukubrdgothic-std",
+    "fot-tsukuaoldmin-pr6n",
     serif;
 
   font-weight:300;
@@ -819,6 +819,38 @@ drop-shadow(0 0 80px rgba(120,180,255,.2));
 
 }
 
+/* =================================
+   HUD SCAN LIGHT
+================================= */
+
+.hud-scan{
+position:fixed;
+inset:0;
+pointer-events:none;
+z-index:4;
+background:
+linear-gradient(
+180deg,
+rgba(120,190,255,0) 0%,
+rgba(120,190,255,0.05) 40%,
+rgba(120,190,255,0.18) 50%,
+rgba(120,190,255,0.05) 60%,
+rgba(120,190,255,0) 100%
+);
+opacity:.35;
+animation:hudScanMove 8s linear infinite;
+mix-blend-mode:screen;
+}
+
+@keyframes hudScanMove{
+0%{
+transform:translateY(-120%);
+}
+100%{
+transform:translateY(120%);
+}
+}
+
 /* ======================================
 UIレイヤー
 ====================================== */
@@ -1207,6 +1239,14 @@ pointer-events:none;
 z-index:6;
 opacity:.9;
 transform:translate(-50%,-50%);
+mix-blend-mode:screen;
+filter:
+hue-rotate(210deg)
+saturate(1.2)
+brightness(1.2)
+drop-shadow(0 0 10px rgba(120,190,255,.8))
+drop-shadow(0 0 25px rgba(120,190,255,.55))
+drop-shadow(0 0 60px rgba(120,190,255,.35));
 }
 
 /* =================================
@@ -1215,9 +1255,8 @@ transform:translate(-50%,-50%);
 
 .progress-container{
 position:fixed;
-top:480px;
 left:220px;
-bottom:115px;
+bottom:240px;
 width:500px;
 height:22px;
 border:1px solid rgba(120,190,255,.8);
@@ -1277,8 +1316,7 @@ animation:scan 2s linear infinite;
 .progress-text{
 position:fixed;
 left:220px;
-top:535px;
-bottom:142px;
+bottom:210px;
 font-size:13px;
 letter-spacing:.15em;
 color:#cfe7ff;
@@ -1348,6 +1386,20 @@ font-size:12px;
 box-shadow:0 0 10px red;
 z-index:500;
 }
+
+/* =================================
+   英語・数字フォント
+================================= */
+
+.en{
+font-family:"eurostile",sans-serif;
+letter-spacing:.12em;
+}
+
+.num{
+font-family:"eurostile",sans-serif;
+letter-spacing:.08em;
+}
      
 </style>
 
@@ -1369,7 +1421,7 @@ ARCHIVE ACCESS
 All characters and worlds belong to their original creators.
 </div>
 
-<button id="enterButton">
+<button id="enterButton" class="en">
 ENTER
 </button>
 
@@ -1519,12 +1571,13 @@ ELLE / MIRRORING LAB.
      
 <div class="hud-frame"></div>
 
+<div class="hud-scan"></div>
 
 <!-- ターゲットリング -->
 <img src="./png/target.png" class="target-ring" id="targetRing">
 
 <!-- progress -->
-<div class="progress-text" id="progressText">SYNC 0%</div>
+<div class="progress-text en" id="progressText">SYNC 0%</div>
 <div class="progress-container">
 <div class="progress-bar" id="progressBar"></div>
 </div>
@@ -1549,7 +1602,7 @@ UI ウィンドウ
 
 <div class="window-text">
 
-<div class="win-title">
+<div class="win-title en">
 INFORMATION
 </div>
 
@@ -1560,7 +1613,7 @@ A5フルカラー / 78P / butterfly binding<br>
 </div>
 
 <div class="win-price">
-3,500JPY
+<span class="num">3,500 JPY</span>
 </div>
 
 </div>
@@ -1574,7 +1627,7 @@ A5フルカラー / 78P / butterfly binding<br>
 
 <div class="window-text">
 
-<div class="win-title">
+<div class="win-title en">
 DESCRIPTION
 </div>
 
@@ -2627,6 +2680,11 @@ function animate(){
   starsMid.rotation.y+=0.00035;
   starsFar.rotation.y+=0.00015;
 
+  const t = performance.now() * 0.001;
+  starsNear.material.opacity = 0.75 + Math.sin(t*2.3) * 0.08;
+  starsMid.material.opacity  = 0.65 + Math.sin(t*1.8) * 0.07;
+  starsFar.material.opacity  = 0.55 + Math.sin(t*1.4) * 0.06;
+     
   const pos = warpStars.geometry.attributes.position.array;
 
   for(let i=0;i<pos.length;i+=3){
