@@ -51,7 +51,7 @@
 <style>
 
 /* =========================================================
-   0) 共通カラー
+   0) 共通カラー, フォント
    ========================================================= */
 
 :root{
@@ -64,7 +64,23 @@
   --ui-frame-bg-bottom:rgba(18,18,25,.95);
 }
 
+/* 日本語 */
+@font-face{
+font-family:"UI-JP";
+src:local("fot-tsukuaoldmin-pr6n");
+unicode-range:
+U+3000-30FF,
+U+4E00-9FFF,
+U+FF00-FFEF;
+}
 
+/* 英語・数字 */
+@font-face{
+font-family:"UI-EN";
+src:local("eurostile");
+unicode-range:
+U+0000-00FF;
+}
 
 /* =========================================================
    1) 背景
@@ -107,8 +123,9 @@ to top,
   color:white;
 
   font-family:
-    "fot-tsukuaoldmin-pr6n",
-    serif;
+  "UI-JP",
+  "UI-EN",
+  serif;
 
   font-weight:300;
   letter-spacing:0.05em;
@@ -334,6 +351,10 @@ to top,
 .popup-title{
   position:relative;
   z-index:3;
+  font-family:
+  "UI-JP",
+  "UI-EN",
+  serif;
   font-size:22px;
   letter-spacing:.10em;
   margin-bottom:16px;
@@ -345,6 +366,10 @@ to top,
 .popup-subtitle{
   position:relative;
   z-index:3;
+  font-family:
+  "UI-JP",
+  "UI-EN",
+  serif;
   font-size:12px;
   line-height:1.7;
   padding-left:80px;
