@@ -12,47 +12,32 @@
 <script>
 
 (function(d){
-
   var config = {
     kitId: "iuw1frp",
     scriptTimeout: 3000,
     async: true
   },
-
   h = d.documentElement,
-
   t = setTimeout(function(){
     h.className = h.className.replace(/\bwf-loading\b/g,"") + " wf-inactive";
   }, config.scriptTimeout),
-
   tk = d.createElement("script"),
   f = false,
   s = d.getElementsByTagName("script")[0],
   a;
-
   h.className += " wf-loading";
-
   tk.src = "https://use.typekit.net/" + config.kitId + ".js";
   tk.async = true;
-
   tk.onload = tk.onreadystatechange = function(){
-
     a = this.readyState;
-
     if (f || (a && a !== "complete" && a !== "loaded")) return;
-
     f = true;
-
     clearTimeout(t);
-
     try{
       Typekit.load(config);
     }catch(e){}
-
   };
-
   s.parentNode.insertBefore(tk, s);
-
 })(document);
      
 </script>
@@ -66,17 +51,13 @@
    ========================================================= */
 
 :root{
-
   --ui-accent:#7a8fd8;
   --ui-accent-glow:rgba(122,143,216,.48);
   --ui-accent-soft:rgba(122,143,216,.24);
-
   --ui-title:#eef2ff;
   --ui-subtitle:#d1d9ff;
-
   --ui-frame-bg-top:rgba(25,25,35,.88);
   --ui-frame-bg-bottom:rgba(18,18,25,.95);
-
 }
 
 
@@ -856,53 +837,39 @@ animation:hudGlow 4s infinite;
 /* テキスト */
 
 .window-text{
-
 position:absolute;
-
 top:70px;
 left:40px;
 right:40px;
 bottom:40px;
-
 color:#cfe7ff;
-
 font-size:14px;
 line-height:1.6;
-
 font-family:
 "fot-tsukuaoldmin-pr6n",
 "Yu Mincho",
 serif;
-
 pointer-events:none;
-
 }
 
 
 /* 出現アニメ */
-
 @keyframes uiAppear{
-
 0%{
 opacity:0;
 transform:translateY(30px);
 }
-
 100%{
 opacity:1;
 transform:translateY(0);
 }
-
 }
 
 /* HUD光 */
-
 @keyframes hudGlow{
-
 0%{opacity:.6}
 50%{opacity:1}
 100%{opacity:.6}
-
 }
 
 /* =========================================================
@@ -910,23 +877,17 @@ transform:translateY(0);
    ========================================================= */
 
 .site-header{
-
 position:fixed;
 top:22px;
 left:50%;
 transform:translateX(-50%);
-
 font-size:32px;
 letter-spacing:0.15em;
-
 color:#d8ecff;
-
 z-index:10;
 
 /* 背景プレート */
-
 padding:8px 28px;
-
 background:
 linear-gradient(
 90deg,
@@ -935,35 +896,24 @@ rgba(5,10,25,.65),
 rgba(5,10,25,.65),
 rgba(5,10,25,0)
 );
-
 backdrop-filter:blur(4px);
-
 border-radius:6px;
 
 /* ネオン */
-
 text-shadow:
 0 0 6px rgba(180,220,255,.8),
 0 0 14px rgba(120,190,255,.6),
 0 0 26px rgba(120,190,255,.45);
-
 }
 
 /* HUDライン */
-
 .site-header::before{
-
 content:"";
-
 position:absolute;
-
 left:-120px;
 right:-120px;
-
 top:50%;
-
 height:1px;
-
 background:
 linear-gradient(
 90deg,
@@ -971,9 +921,7 @@ transparent,
 rgba(120,190,255,.35),
 transparent
 );
-
 transform:translateY(-50%);
-
 z-index:-1;
 
 }
@@ -2029,7 +1977,7 @@ function updateVitalWave(){
   if(!vitalWave || !vitalWave2) return;
 
   ecgHeadX += ECG_SPEED;
-  beatCooldown += ECG_SPEED;
+  beatCooldown -= ECG_SPEED;
 
   /* 新しい拍を出す */
   if(!activeBeat && beatCooldown <= 0){
