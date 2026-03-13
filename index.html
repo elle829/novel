@@ -965,61 +965,80 @@ transform:translateY(0);
 100%{opacity:.6}
 }
 
-/* =========================================================
-   ヘッダー
-   ========================================================= */
+/* =================================
+   HUD HEADER
+================================= */
 
 .site-header{
-font-family:"orbitron",sans-serif;
 position:fixed;
-top:22px;
+top:40px;
 left:50%;
 transform:translateX(-50%);
-font-size:32px;
-letter-spacing:0.15em;
-color:#d8ecff;
-z-index:10;
-
-/* 背景プレート */
-padding:8px 28px;
-background:
-linear-gradient(
-90deg,
-rgba(5,10,25,0),
-rgba(5,10,25,.65),
-rgba(5,10,25,.65),
-rgba(5,10,25,0)
-);
-backdrop-filter:blur(4px);
-border-radius:6px;
-
-/* ネオン */
-text-shadow:
-0 0 6px rgba(180,220,255,.8),
-0 0 14px rgba(120,190,255,.6),
-0 0 26px rgba(120,190,255,.45);
+z-index:20;
+pointer-events:none;
 }
 
-/* HUDライン */
-.site-header::before{
-content:"";
+/* 横ライン */
+.hud-header-line{
 position:absolute;
-left:-120px;
-right:-120px;
-top:50%;
+left:-420px;
+right:-420px;
+top:18px;
 height:1px;
 background:
 linear-gradient(
 90deg,
 transparent,
 rgba(120,190,255,.35),
+rgba(120,190,255,.55),
+rgba(120,190,255,.35),
 transparent
 );
-transform:translateY(-50%);
-z-index:-1;
-
+filter:
+drop-shadow(0 0 6px rgba(120,190,255,.6))
+drop-shadow(0 0 18px rgba(120,190,255,.4));
 }
 
+/* メイン */
+.hud-header{
+display:flex;
+align-items:center;
+gap:40px;
+}
+
+/* タイトル */
+.hud-title{
+font-family:"fot-tsukuaoldmin-pr6n",serif;
+font-size:28px;
+letter-spacing:.18em;
+color:#d8ecff;
+text-shadow:
+0 0 6px rgba(180,220,255,.9),
+0 0 18px rgba(120,190,255,.7),
+0 0 40px rgba(120,190,255,.45);
+}
+
+/* スケール */
+.hud-scale{
+font-family:"eurostile",sans-serif;
+font-size:14px;
+letter-spacing:.18em;
+color:#9edcff;
+opacity:.9;
+text-shadow:
+0 0 6px rgba(120,190,255,.7);
+}
+
+/* 左右位置 */
+.hud-scale.left{
+margin-right:10px;
+}
+
+.hud-scale.right{
+margin-left:10px;
+}
+
+     
 /* =================================
    オーディオ波形
    ================================= */
@@ -1285,7 +1304,7 @@ drop-shadow(0 0 60px rgba(120,190,255,.35));
 .progress-container{
 position:fixed;
 left:220px;
-bottom:240px;
+bottom:270px;
 width:500px;
 height:22px;
 border:1px solid rgba(120,190,255,.8);
@@ -1345,7 +1364,7 @@ animation:scan 2s linear infinite;
 .progress-text{
 position:fixed;
 left:220px;
-bottom:210px;
+bottom:240px;
 font-size:13px;
 letter-spacing:.15em;
 color:#cfe7ff;
@@ -1465,7 +1484,14 @@ ENTER
      ========================================================= -->
 
 <header class="site-header">
-  君について知っている10のこと
+<div class="hud-header-line"></div>
+<div class="hud-header">
+<div class="hud-scale left">-10</div>
+<div class="hud-title">
+君について知っている10のこと
+</div>
+<div class="hud-scale right">+10</div>
+</div>
 </header>
      
 <div class="ui-buttons-left"> 
