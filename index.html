@@ -1998,39 +1998,36 @@ function makeBeatShape(){
 }
 
 function buildRunningWavePath(baseY, headX, beatShape){
-  let d = `M 0 ${baseY}`;
-
-  const beatStartX = beatShape ? headX + beatShape[0].x : headX;
-
-  if(beatStartX > 0){
-    d += ` L ${beatStartX.toFixed(1)} ${baseY}`;
-  }
-
-  if(beatShape){
-    for(const p of beatShape){
-      const x = headX + p.x;
-      const y = baseY + p.y;
-
-      if(x >= -40 && x <= ECG_WIDTH + 40){
-        d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
+  let d = "";
+  for(let x=0; x<=ECG_WIDTH; x+=3){
+    let y = baseY;
+    if(beatShape){
+      for(let i=0;i<beatShape.length-1;i++){
+        const p1 = beatShape[i];
+        const p2 = beatShape[i+1];
+        const x1 = headX + p1.x;
+        const x2 = headX + p2.x;
+        if(x >= x1 && x <= x2){
+          const t = (x - x1) / (x2 - x1);
+          const yy = p1.y + (p2.y - p1.y) * t;
+          y = baseY + yy;
+          break;
+        }
       }
     }
-
-    const beatEndX = headX + beatShape[beatShape.length - 1].x;
-    if(beatEndX < ECG_WIDTH){
-      d += ` L ${ECG_WIDTH} ${baseY}`;
+    if(x===0){
+      d += `M ${x} ${y}`;
+    }else{
+      d += ` L ${x} ${y}`;
     }
-  }else{
-    d += ` L ${ECG_WIDTH} ${baseY}`;
   }
-
   return d;
 }
 
 function updateVitalWave(){
   if(!vitalWave || !vitalWave2) return;
 
-  ecgHeadX += ECG_SPEED;
+  ecgHeadX -= ECG_SPEED;
   beatCooldown -= ECG_SPEED;
 
   /* 新しい拍を出す */
@@ -2049,8 +2046,8 @@ function updateVitalWave(){
   }
 
   /* 走査ヘッドを左へ戻す */
-  if(ecgHeadX > ECG_RESET_X){
-    ecgHeadX = -90;
+  if(ecgHeadX < -ECG_RESET_X){
+    ecgHeadX = ECG_WIDTH + 60;
   }
 
   vitalWave.setAttribute(
