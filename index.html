@@ -1182,7 +1182,7 @@ transform:translate(-50%,-50%);
 
 .progress-container{
 position:fixed;
-top:380px;
+top:420px;
 left:220px;
 bottom:115px;
 width:420px;
@@ -1244,7 +1244,7 @@ animation:scan 2s linear infinite;
 .progress-text{
 position:fixed;
 left:220px;
-top:355px;
+top:395px;
 bottom:142px;
 font-size:13px;
 letter-spacing:.15em;
@@ -1780,7 +1780,37 @@ for(let i=0;i<10;i++){
 
 }
 
+/* =========================================================
+   Nebula
+   ========================================================= */
 
+function createNebula(){
+const canvas = document.createElement("canvas");
+canvas.width = 512;
+canvas.height = 512;
+const ctx = canvas.getContext("2d");
+const g = ctx.createRadialGradient(
+256,256,20,
+256,256,256
+);
+g.addColorStop(0,"rgba(120,160,255,0.35)");
+g.addColorStop(.4,"rgba(120,160,255,0.15)");
+g.addColorStop(1,"rgba(0,0,0,0)");
+ctx.fillStyle = g;
+ctx.fillRect(0,0,512,512);
+const texture = new THREE.CanvasTexture(canvas);
+const mat = new THREE.SpriteMaterial({
+map:texture,
+transparent:true,
+depthWrite:false
+});
+const nebula = new THREE.Sprite(mat);
+nebula.scale.set(60,60,1);
+nebula.position.set(0,5,-25);
+scene.add(nebula);
+}
+
+createNebula();
 
 /* =========================================================
    7) 星
@@ -2444,8 +2474,8 @@ const nodeBaseX = (v.x * 0.5 + 0.5) * window.innerWidth;
 const nodeBaseY = (-v.y * 0.5 + 0.5) * window.innerHeight;
 
 /* ノード中心位置を少し妖精にかぶせる */
-const nodeOffsetX = -40;
-const nodeOffsetY = -30;
+const nodeOffsetX = -28;
+const nodeOffsetY = -40;
 
 const nodeX = nodeBaseX + nodeOffsetX;
 const nodeY = nodeBaseY + nodeOffsetY;
