@@ -1185,35 +1185,76 @@ animation:ringPulse 3s infinite ease-in-out;
 
 
 /* =================================
-   プログレスバー
+   SYNC HUD BAR
 ================================= */
 
 .progress-container{
 position:fixed;
-left:200px;
-bottom:120px;
-width:240px;
-height:8px;
-background:rgba(255,255,255,.1);
-border:1px solid rgba(120,190,255,.4);
-box-shadow:0 0 10px rgba(120,190,255,.5);
+left:180px;
+bottom:115px;
+width:420px;
+height:22px;
+border:1px solid rgba(120,190,255,.6);
+background:
+linear-gradient(
+180deg,
+rgba(10,20,50,.9),
+rgba(5,10,30,.9)
+);
+box-shadow:
+0 0 12px rgba(120,190,255,.7),
+0 0 30px rgba(120,190,255,.35),
+inset 0 0 12px rgba(120,190,255,.25);
 z-index:6;
 }
 
 .progress-bar{
 height:100%;
 width:0%;
-background:#9edcff;
-box-shadow:0 0 12px rgba(120,190,255,.8);
-transition:width .6s ease;
+background:
+linear-gradient(
+90deg,
+#8fdcff,
+#d0f0ff
+);
+box-shadow:
+0 0 10px rgba(120,190,255,.8),
+0 0 20px rgba(120,190,255,.5);
+transition:width .8s cubic-bezier(.2,.9,.3,1);
+position:relative;
+}
+
+.progress-bar::after{
+content:"";
+position:absolute;
+top:0;
+bottom:0;
+width:30px;
+background:
+linear-gradient(
+90deg,
+transparent,
+rgba(255,255,255,.9),
+transparent
+);
+animation:scan 2s linear infinite;
+}
+
+@keyframes scan{
+0%{left:-30px}
+100%{left:100%}
 }
 
 .progress-text{
 position:fixed;
-left:200px;
-bottom:138px;
-font-size:11px;
-color:#d8ecff;
+left:180px;
+bottom:142px;
+font-size:13px;
+letter-spacing:.15em;
+color:#cfe7ff;
+text-shadow:
+0 0 6px rgba(120,190,255,.8),
+0 0 14px rgba(120,190,255,.4);
 z-index:6;
 }
 
@@ -1719,6 +1760,8 @@ const pageFlip=document.getElementById("pageFlip");
 const vitalNode = document.querySelector(".vital-node");
 const vitalLine = document.querySelector(".vital-line");
 
+const targetRing = document.getElementById("targetRing");
+const vitalGraph = document.querySelector(".vital-graph");
 
 
 /* =========================================================
@@ -2141,11 +2184,14 @@ const rebootModal = document.getElementById("rebootModal");
 const rebootBtn = document.getElementById("rebootBtn");
 const STORY_TOTAL = 10;
 /* storyページが保存する */
-const visited = JSON.parse(
+function getVisited(){
+return JSON.parse(
 localStorage.getItem("moonStories") || "[]"
 );
+}
 
 function updateProgress(){
+const visited = getVisited();
 const percent = Math.floor(
 visited.length / STORY_TOTAL * 100
 );
@@ -2256,6 +2302,18 @@ function animate(){
 
   hudRing.rotation.y += 0.002;
 
+/* ===============================
+   ターゲットリング追従
+=============================== */
+
+const fairyWorld2 = new THREE.Vector3();
+fairy.getWorldPosition(fairyWorld2);
+const v2 = fairyWorld2.clone().project(camera);
+const x2 = (v2.x * 0.5 + 0.5) * window.innerWidth;
+const y2 = (-v2.y * 0.5 + 0.5) * window.innerHeight;
+targetRing.style.left = x2 + "px";
+targetRing.style.top = y2 + "px";
+
 /* ノードを妖精位置に */
 const fairyWorld = new THREE.Vector3();
 fairy.getWorldPosition(fairyWorld);
@@ -2277,8 +2335,7 @@ vitalNode.style.left = (nodeX - 6) + "px";
 vitalNode.style.top = (nodeY - 6) + "px";
 
 /* ノード → グラフ線 */
-const graph = document.querySelector(".vital-graph");
-const rect = graph.getBoundingClientRect();
+const rect = vitalGraph.getBoundingClientRect();
 
 const graphX = rect.left;
 const graphY = rect.top + rect.height/2;
@@ -2299,9 +2356,6 @@ vitalLine.style.transform = "rotate(" + angle + "deg)";
   renderer.render(scene,camera);
 
 }
-
-animate();
-
 
 
 /* =========================================================
@@ -2333,6 +2387,8 @@ enterButton.addEventListener("click",()=>{
 bootScreen.classList.add("hide");
 
 });
+
+animate();
 
 </script>
 
@@ -2402,23 +2458,7 @@ bootScreen.classList.add("hide");
 <div>再起動しますか？</div>
 <button class="reboot-button" id="rebootBtn">REBOOT</button>
 </div>
-</div><!-- ターゲットリング -->
-<img src="./png/target.png" class="target-ring" id="targetRing">
-
-<!-- progress -->
-<div class="progress-text" id="progressText">SYNC 0%</div>
-<div class="progress-container">
-<div class="progress-bar" id="progressBar"></div>
 </div>
-
-<!-- reboot popup -->
-<div class="reboot-modal" id="rebootModal">
-<div class="reboot-box">
-<div>再起動しますか？</div>
-<button class="reboot-button" id="rebootBtn">REBOOT</button>
-</div>
-</div>
-
      
 <!-- ======================================
 UI ウィンドウ
