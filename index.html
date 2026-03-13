@@ -969,73 +969,28 @@ transform:translateY(0);
    HUD HEADER
 ================================= */
 
-.site-header{
+/* ===============================
+HUD TITLE
+=============================== */
+
+.hud-title{
 position:fixed;
-top:40px;
+top:62px;
 left:50%;
 transform:translateX(-50%);
-z-index:20;
-pointer-events:none;
-}
-
-/* 横ライン */
-.hud-header-line{
-position:absolute;
-left:-420px;
-right:-420px;
-top:18px;
-height:1px;
-background:
-linear-gradient(
-90deg,
-transparent,
-rgba(120,190,255,.35),
-rgba(120,190,255,.55),
-rgba(120,190,255,.35),
-transparent
-);
-filter:
-drop-shadow(0 0 6px rgba(120,190,255,.6))
-drop-shadow(0 0 18px rgba(120,190,255,.4));
-}
-
-/* メイン */
-.hud-header{
-display:flex;
-align-items:center;
-gap:40px;
-}
-
-/* タイトル */
-.hud-title{
 font-family:"fot-tsukuaoldmin-pr6n",serif;
-font-size:28px;
+font-size:26px;
 letter-spacing:.18em;
-color:#d8ecff;
+color:#dfe9ff;
+z-index:6;
+
+/* HUDっぽい発光 */
 text-shadow:
-0 0 6px rgba(180,220,255,.9),
-0 0 18px rgba(120,190,255,.7),
-0 0 40px rgba(120,190,255,.45);
-}
+0 0 6px rgba(180,220,255,.8),
+0 0 18px rgba(120,190,255,.55),
+0 0 38px rgba(120,190,255,.35);
+opacity:.92;
 
-/* スケール */
-.hud-scale{
-font-family:"eurostile",sans-serif;
-font-size:14px;
-letter-spacing:.18em;
-color:#9edcff;
-opacity:.9;
-text-shadow:
-0 0 6px rgba(120,190,255,.7);
-}
-
-/* 左右位置 */
-.hud-scale.left{
-margin-right:10px;
-}
-
-.hud-scale.right{
-margin-left:10px;
 }
 
      
@@ -1448,6 +1403,61 @@ letter-spacing:.12em;
 font-family:"eurostile",sans-serif;
 letter-spacing:.08em;
 }
+
+/* ===============================
+GLITCH EFFECT
+=============================== */
+
+.glitch{
+position:relative;
+}
+
+/* 赤ズレ */
+.glitch::before,
+.glitch::after{
+content:attr(data-text);
+position:absolute;
+left:0;
+top:0;
+opacity:0;
+}
+
+.glitch::before{
+color:#ff4e7a;
+transform:translate(2px,0);
+mix-blend-mode:screen;
+}
+
+.glitch::after{
+color:#00e1ff;
+transform:translate(-2px,0);
+mix-blend-mode:screen;
+}
+
+/* 発動 */
+.glitch.active::before,
+.glitch.active::after{
+opacity:.8;
+animation:glitchMove .18s steps(2,end);
+}
+
+@keyframes glitchMove{
+0%{
+transform:translate(0,0);
+}
+25%{
+transform:translate(-2px,1px);
+}
+50%{
+transform:translate(2px,-1px);
+}
+75%{
+transform:translate(-1px,-1px);
+}
+100%{
+transform:translate(0,0);
+}
+}
      
 </style>
 
@@ -1483,15 +1493,8 @@ ENTER
      UI
      ========================================================= -->
 
-<header class="site-header">
-<div class="hud-header-line"></div>
-<div class="hud-header">
-<div class="hud-scale left">-10</div>
-<div class="hud-title">
+<header class="hud-title glitch" data-text="君について知っている10のこと">
 君について知っている10のこと
-</div>
-<div class="hud-scale right">+10</div>
-</div>
 </header>
      
 <div class="ui-buttons-left"> 
@@ -2865,6 +2868,20 @@ enterButton.addEventListener("click",()=>{
 bootScreen.classList.add("hide");
 
 });
+
+/* ===============================
+HEADER GLITCH
+=============================== */
+
+const headerGlitch = document.querySelector(".glitch");
+setInterval(()=>{
+if(Math.random() < 0.25){
+headerGlitch.classList.add("active");
+setTimeout(()=>{
+headerGlitch.classList.remove("active");
+},180);
+}
+},2200);
 
 animate();
 
