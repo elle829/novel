@@ -1860,7 +1860,7 @@ popupY = bestY;
 const vitalWave = document.getElementById("vitalWave");
 const vitalWave2 = document.getElementById("vitalWave2");
 
-const ECG_WIDTH = 360;
+const ECG_WIDTH = 520;
 const ECG_BASE_Y = 90;
 const ECG_BASE_Y2 = 90;
 
@@ -1882,12 +1882,13 @@ function makeBeatShape(){
   const pWidth = rand(10, 16);
 
   const qAmp = rand(2.5, 5.0);
-  const rAmp = rand(36, 56);
+  const rAmp = rand(60, 90);
+  const noise = rand(-0.5,0.5);
   const sAmp = rand(10, 18);
 
   const stLift = rand(-0.5, 0.8);
 
-  const tAmp = rand(9, 17);
+  const tAmp = rand(20, 34);
   const tWidth = rand(30, 52);
 
   const preFlat = rand(16, 28);
@@ -1948,7 +1949,7 @@ function makeBeatShape(){
 
 function buildRunningWavePath(baseY, headX, beatShape){
   let d = "";
-  for(let x=0; x<=ECG_WIDTH; x+=3){
+  for(let x=0; x<=360; x+=1.5)
     let y = baseY;
     if(beatShape){
       for(let i=0;i<beatShape.length-1;i++){
@@ -1959,7 +1960,7 @@ function buildRunningWavePath(baseY, headX, beatShape){
         if(x >= x1 && x <= x2){
           const t = (x - x1) / (x2 - x1);
           const yy = p1.y + (p2.y - p1.y) * t;
-          y = baseY + yy;
+          y = baseY + yy + noise;
           break;
         }
       }
