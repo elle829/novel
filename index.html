@@ -1361,16 +1361,37 @@ color:white;
 cursor:pointer;
 }
 
-#resetBtn{
+/* ===============================
+REBOOT 警告ボタン（赤）
+=============================== */
+
+#rebootBtn{
 border-color:#ff6b6b;
 box-shadow:0 0 10px rgba(255,80,80,.5);
 }
 
-#resetBtn:hover{
+#rebootBtn:hover{
 background:#5a0f0f;
 box-shadow:
 0 0 10px rgba(255,80,80,.8),
 0 0 30px rgba(255,80,80,.4);
+}
+
+
+/* ===============================
+RESET 通常ボタン（青）
+=============================== */
+
+#resetBtn{
+border-color:rgba(120,190,255,.7);
+box-shadow:0 0 10px rgba(120,190,255,.5);
+}
+
+#resetBtn:hover{
+background:#1b2a63;
+box-shadow:
+0 0 10px rgba(120,190,255,.8),
+0 0 30px rgba(120,190,255,.4);
 }
      
 
@@ -1471,6 +1492,61 @@ animation:noiseFlash .12s steps(2,end);
 50%{opacity:.8;}
 100%{opacity:0;}
 }
+
+/* ===============================
+BLOCK GLITCH
+=============================== */
+
+.hud-title.block-glitch{
+position:relative;
+}
+.hud-title.block-glitch::before,
+.hud-title.block-glitch::after{
+content:attr(data-text);
+position:absolute;
+left:0;
+top:0;
+width:100%;
+height:100%;
+pointer-events:none;
+}
+
+/* 上ブロック */
+.hud-title.block-glitch::before{
+clip-path:polygon(
+0 0,
+100% 0,
+100% 40%,
+0 40%
+);
+transform:translate(3px,-2px);
+opacity:.9;
+}
+
+/* 下ブロック */
+.hud-title.block-glitch::after{
+clip-path:polygon(
+0 60%,
+100% 60%,
+100% 100%,
+0 100%
+);
+transform:translate(-3px,2px);
+opacity:.9;
+}
+
+/* 動き */
+.hud-title.block-glitch{
+animation:blockGlitch .16s steps(2,end);
+}
+
+@keyframes blockGlitch{
+0%{transform:translate(0,0);}
+40%{transform:translate(-2px,0);}
+80%{transform:translate(2px,0);}
+100%{transform:translate(0,0);}
+}
+     
      
 </style>
 
@@ -1506,7 +1582,7 @@ ENTER
      UI
      ========================================================= -->
 
-<header class="hud-title">
+<header class="hud-title" data-text="君について知っている10のこと">
 君について知っている10のこと
 </header>
      
@@ -1656,7 +1732,7 @@ ELLE / MIRRORING LAB.
 <!-- reboot popup -->
 <div class="reboot-modal" id="rebootModal">
 <div class="reboot-box">
-<div>再起動しますか？</div>
+<div>対象を再起動しますか？</div>
 <button class="reboot-button" id="rebootBtn">REBOOT</button>
 <button class="reboot-button" id="resetBtn">RESET</button>
 </div>
@@ -1674,17 +1750,17 @@ UI ウィンドウ
 <div class="window-text">
 
 <div class="win-title en">
-INFORMATION
+[ BIOMETRIC PROFILE ]
 </div>
 
 <div class="win-body">
-『君について知っている10のこと』<br>
-A5フルカラー / 78P / butterfly binding<br>
-ハードカバー＋ブックケース付き
-</div>
-
-<div class="win-price">
-<span class="num">3,500 JPY</span>
+Kyryll Chudomirovich Flins<br>
+— Fae of ◾︎◾︎◾︎<br>
+— Kyryll the Azure Flame<br>
+— Lightkeeper<br>
+<br>
+Status: Sleep Mode<br>
+Boot Authorization: Granted
 </div>
 
 </div>
@@ -1699,13 +1775,15 @@ A5フルカラー / 78P / butterfly binding<br>
 <div class="window-text">
 
 <div class="win-title en">
-DESCRIPTION
+[ SYSTEM ]
 </div>
 
 <div class="win-body">
-「君のこと、もっと教えてください」<br>
-どうかこの本のページが溢れかえってしまう前に、<br>
-君の一番柔らかいところに触れることができたらいいけれど。
+『物語』を回収してください。<br>
+『物語』が不足しています。<br>
+再起動には十分な『物語』が必要です。<br>
+『物語』を回収してください。<br>
+『物語』を回収してください。
 </div>
 
 </div>
@@ -2890,22 +2968,36 @@ const header = document.querySelector(".hud-title");
 
 setInterval(()=>{
 
-if(Math.random() < 0.35){
+const r = Math.random();
+
+/* 通常グリッチ */
+
+if(r < 0.28){
 
 header.classList.add("glitch-active");
 header.classList.add("noise-active");
 
 setTimeout(()=>{
-
 header.classList.remove("glitch-active");
 header.classList.remove("noise-active");
-
 },180);
+
+}
+
+/* ブロックグリッチ */
+else if(r < 0.38){
+
+header.classList.add("block-glitch");
+
+setTimeout(()=>{
+header.classList.remove("block-glitch");
+},160);
 
 }
 
 },2200);
 
+     
 animate();
 
 </script>
