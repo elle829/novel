@@ -1885,53 +1885,43 @@ scene.add(fairy);
    ========================================================= */
 
 function createHudRing(radius){
-
-  const segments = 128;
-  const geometry = new THREE.BufferGeometry();
-
+  const segments = 120;
+  const visibleArc = Math.PI * 1.6; // 全周じゃなくする
+  const geo = new THREE.BufferGeometry();
   const vertices = [];
-
   for(let i=0;i<=segments;i++){
-
-    const a = i / segments * Math.PI * 2;
-
-    const x = Math.cos(a) * radius;
-    const y = Math.sin(a) * radius;
-
+    const a = -visibleArc/2 + (i/segments)*visibleArc;
+    const x = Math.cos(a)*radius;
+    const y = Math.sin(a)*radius;
     vertices.push(x,y,0);
-
   }
-
-  geometry.setAttribute(
+  geo.setAttribute(
     "position",
     new THREE.Float32BufferAttribute(vertices,3)
   );
-
-  const material = new THREE.LineBasicMaterial({
-
-    color:0x8fb8ff,
+  const mat = new THREE.LineBasicMaterial({
+    color:0x9ecbff,
     transparent:true,
-    opacity:0.35
-
+    opacity:.65
   });
-
-  const ring = new THREE.Line(geometry,material);
-
-  return ring;
-
+  return new THREE.Line(geo,mat);
 }
-
+     
 const hudRing = createHudRing(3.8);
-
 hudRing.rotation.x = Math.PI / 2;
-
+hudRing.rotation.y += 0.0009;
 hudRing.position.set(0,-0.1,-0.5);
-
 hudRing.renderOrder = 2;
-
 scene.add(hudRing);     
 
+const hudRing2 = createHudRing(4.1);
+hudRing2.rotation.x = Math.PI/2;
+hudRing2.rotation.y -= 0.0005;
+hudRing2.position.set(0,-0.1,-0.5);
+hudRing2.material.opacity = 0.18;
+scene.add(hudRing2);
 
+     
 /* =========================================================
    4) 月テクスチャ
    ========================================================= */
