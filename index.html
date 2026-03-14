@@ -1658,7 +1658,7 @@ ACCESS
 </div>
 
 <div class="help-popup">
-操作<br><br>
+CONTROL<br><br>
 ・スクロール：月公転<br>
 ・月ホバー：タイトル表示<br>
 ・クリック：ページ移動
@@ -1842,9 +1842,10 @@ Boot Authorization: Granted
 
 <div class="win-body">
 <br>
+再起動に必要な『物語』が不足しています。<br>
+月相には『物語』が記録されています。<br>
 『物語』を回収してください。<br>
-『物語』が不足しています。<br>
-再起動には十分な『物語』が必要です。<br>
+『物語』を回収してください。<br>
 『物語』を回収してください。<br>
 『物語』を回収してください。<br>
 『物語』を回収してください。
@@ -2205,7 +2206,7 @@ function createStars(size,count){
   const material = new THREE.PointsMaterial({
     map: starTexture,
     color: 0xdfe9ff,
-    size: 0.035,
+    size: 0.055,
     transparent: true,
     opacity: 0.9,
     sizeAttenuation: true,
@@ -2998,8 +2999,8 @@ const targetY = y2;
 ringX += (targetX - ringX) * 0.12;
 ringY += (targetY - ringY) * 0.12;
 
-targetRing.style.left = ringX + "px";
-targetRing.style.top  = ringY + "px";
+targetRing.style.left = ringX + mouseX * 4 + "px";
+targetRing.style.top  = ringY + mouseY * 2.5 + "px";
      
 /* ノードを妖精位置に */
 fairy.getWorldPosition(tmpVec3b);
