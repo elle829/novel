@@ -378,41 +378,23 @@ animation:petalWind linear infinite;
 @keyframes petalWind{
 
 0%{
-
 transform:
-translateX(-10vw)
-translateY(0)
+translate(0,0)
 rotate(0deg)
 scale(0.8);
-
 opacity:0;
-
 }
 
 10%{
 opacity:0.6;
 }
 
-50%{
-
-transform:
-translateX(50vw)
-translateY(-20px)
-rotate(25deg)
-scale(0.9);
-
-}
-
 100%{
-
 transform:
-translateX(110vw)
-translateY(10px)
+translate(var(--x), var(--y))
 rotate(40deg)
 scale(0.7);
-
 opacity:0;
-
 }
 
 }
@@ -508,20 +490,29 @@ opacity:0;
 
 
 /* 花びらjs */
-const container=document.querySelector(".petals");
+const container = document.querySelector(".petals");
 
-for(let i=0;i<10;i++){
+for(let i=0;i<12;i++){
 
-const petal=document.createElement("div");
+const petal = document.createElement("div");
 petal.className="petal";
 
-petal.style.top=Math.random()*70+"vh";
+/* 初期位置 */
+petal.style.top = Math.random()*90 + "vh";
+petal.style.left = (-10 + Math.random()*20) + "vw";
 
-petal.style.animationDuration=25+Math.random()*25+"s";
+/* 移動量をランダム */
+petal.style.setProperty("--x", (60 + Math.random()*80) + "vw");
+petal.style.setProperty("--y", (-40 + Math.random()*80) + "px");
 
-petal.style.animationDelay=Math.random()*30+"s";
+/* 速度 */
+petal.style.animationDuration = 25 + Math.random()*30 + "s";
 
-petal.style.transform=`scale(${0.6+Math.random()*0.5})`;
+/* 開始タイミング */
+petal.style.animationDelay = Math.random()*40 + "s";
+
+/* サイズ */
+petal.style.transform = `scale(${0.5 + Math.random()*0.6})`;
 
 container.appendChild(petal);
 
