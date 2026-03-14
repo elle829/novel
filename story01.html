@@ -621,58 +621,78 @@ location.href="index.html";
 星
 ========================= */
 
-const canvas=document.getElementById("stars");
-const ctx=canvas.getContext("2d");
+const canvas = document.getElementById("stars");
+const ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = false;
 
 const stars = [];
 
 function resizeCanvas(){
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 }
 
 resizeCanvas();
+
+/* 星生成 */
+
+function createStars(){
+
+stars.length = 0;
 
 for(let i=0;i<160;i++){
 stars.push({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
 s:Math.random()*2,
-a:0.4 + Math.random()*0.6
+a:0.4 + Math.random()*0.6,
+v:0.05 + Math.random()*0.15
 });
 }
+
+}
+
+createStars();
 
 window.addEventListener("resize",()=>{
 resizeCanvas();
-
-stars.length=0;
-
-for(let i=0;i<160;i++){
-stars.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-s:Math.random()*2,
-a:0.4 + Math.random()*0.6
+createStars();
 });
-}
 
-});
+/* 描画 */
 
 function drawStars(){
+
 ctx.clearRect(0,0,canvas.width,canvas.height);
 ctx.fillStyle="white";
 
 for(const s of stars){
+
 ctx.globalAlpha = s.a;
-ctx.fillRect(s.x,s.y,s.s,s.s);
+
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.s,0,Math.PI*2);
+ctx.fill();
+
+/* 星移動 */
+
+s.y += s.v;
+
+if(s.y > canvas.height){
+s.y = 0;
+s.x = Math.random()*canvas.width;
 }
 
+}
+
+/* 30fps */
+
 setTimeout(()=>requestAnimationFrame(drawStars),33);
+
 }
 
 drawStars();
-
+  
 updatePage();
 
 </script>
