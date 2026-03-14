@@ -55,21 +55,24 @@
 /* 日本語 */
 @font-face{
 font-family:"UI-JP";
-src:local("fot-tsukuaoldmin-pr6n");
+src:local("Tsukushi A Old Mincho Pr6N"),
+    local("tsukushi-a-old-mincho-pr6n");
 unicode-range:
 U+3000-30FF,
 U+4E00-9FFF,
 U+FF00-FFEF;
 }
 
-/* 英語・数字 */
+/* 英数字 */
 @font-face{
 font-family:"UI-EN";
-src:local("eurostile");
+src:local("Eurostile"),
+    local("Eurostile LT Std");
 unicode-range:
-U+0000-00FF;
+U+0000-024F,
+U+2000-26FF;
 }
-
+  
 /* =========================
 背景
 ========================= */
@@ -207,23 +210,21 @@ transform:translate(-50%,-55%) scale(1);
 操作
 ========================= */
 
-.controls{
+#prev,
+#next{
 position:absolute;
-left:50%;
-bottom:90px;
-transform:translateX(-50%);
-display:flex;
-align-items:center;
-gap:28px;
+top:50%;
+transform:translateY(-50%);
 z-index:6;
 }
 
 #prev{
-justify-self:start;
+left:6vw;
 }
 #next{
-justify-self:end;
+right:6vw;
 }
+  
 #pageCounter{
 font-size:14px;
 letter-spacing:.18em;
@@ -423,11 +424,8 @@ animation:saveProgress 2s linear forwards;
 
 <img id="pageImage" class="page">
 
-<div class="controls">
-  <button id="prev">◀</button>
-  <div id="pageCounter"></div>
-  <button id="next">▶</button>
-</div>
+<button id="prev">&#9664;</button>
+<button id="next">&#9654;</button>
 
 <button id="saveButton">SAVE</button>
 
@@ -463,7 +461,6 @@ DOM
 ========================= */
 
 const img=document.getElementById("pageImage");
-const counter=document.getElementById("pageCounter");
 
 const prev=document.getElementById("prev");
 const next=document.getElementById("next");
@@ -485,7 +482,6 @@ img.classList.remove("out");
 img.classList.add("in");
 };
 img.src = newSrc;
-counter.textContent = page+" / "+TOTAL_PAGES;
 
 /* ボタン状態 */
 prev.disabled = (page === 1);
