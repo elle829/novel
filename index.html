@@ -1945,13 +1945,11 @@ function createHudRing(radius, thickness = 0.02, opacity = 0.55){
 const hudHome = new THREE.Vector3(0,0,0);
 
 const hudRing = createHudRing(3.78, 0.035, 0.58);
-hudRing.rotation.y = Math.PI / 2;
 hudRing.position.copy(hudHome);
 hudRing.renderOrder = 2;
 fairy.add(hudRing);
 
 const hudRing2 = createHudRing(4.12, 0.018, 0.22);
-hudRing2.rotation.y = Math.PI / 2;
 hudRing2.position.copy(hudHome);
 hudRing2.renderOrder = 2;
 fairy.add(hudRing2);
@@ -2751,22 +2749,21 @@ localStorage.getItem("moonStories") || "[]"
 
 function updateProgress(){
   const visited = [...new Set(
-    getVisited().map(v=>Number(v))
-  )]
+    getVisited().map(v => Number(v))
+  )];
   const percent = Math.floor(
     visited.length / STORY_TOTAL * 100
   );
-
   progressBar.style.width = percent + "%";
   progressText.textContent = "SYNC " + percent + "%";
-
   if(percent === 100){
     setTimeout(()=>{
       rebootModal.style.display = "flex";
     },800);
   }
+     
 }
-
+     
 function isMoonVisited(index){
   const visited = getVisited();
   return visited.includes(index) || visited.includes(String(index));
@@ -2774,10 +2771,12 @@ function isMoonVisited(index){
 
 function markMoonVisited(index){
   const visited = getVisited();
-
-  if(!visited.includes(index) && !visited.includes(String(index))){
+  if(!visited.includes(index)){
     visited.push(index);
-    localStorage.setItem("moonStories", JSON.stringify(visited));
+    localStorage.setItem(
+      "moonStories",
+      JSON.stringify(visited)
+    );
   }
 }
      
