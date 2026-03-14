@@ -71,7 +71,7 @@ background-image:url("./png/dayafter.png");
 background-size:cover;
 background-position:center;
 background-repeat:no-repeat;
-
+transition:transform 1s ease-out;
 }
 
 /* 少し霧を重ねる */
@@ -111,11 +111,13 @@ text-shadow:
 
 .title h1{
 
-font-size:36px;
+font-size:42px;
 font-weight:400;
 line-height:1.5;
 margin:0;
-
+text-shadow:
+0 2px 6px rgba(0,0,0,0.35),
+0 0 12px rgba(255,255,255,0.18);
 letter-spacing:0.14em;
 white-space:nowrap;
 }
@@ -130,6 +132,17 @@ ruby-position:over;
 
 font-size:11px;
 letter-spacing:0.1em;
+
+}
+
+.title-divider{
+
+width:120px;
+height:1px;
+
+background:rgba(255,255,255,0.35);
+
+margin:18px 0;
 
 }
 
@@ -168,7 +181,7 @@ gap:24px;
 /* ウィンドウ */
 
 .link-window{
-
+position:relative;
 padding:20px;
 
 background:rgba(255,255,255,0.14);
@@ -178,8 +191,16 @@ border:1px solid rgba(255,255,255,0.45);
 backdrop-filter:blur(8px);
 
 transition:all 0.3s;
-
+animation:uiFloat 8s ease-in-out infinite;
 cursor:pointer;
+overflow:hidden;
+}
+
+@keyframes uiFloat{
+
+0%{transform:translateY(0)}
+50%{transform:translateY(-4px)}
+100%{transform:translateY(0)}
 
 }
 
@@ -190,6 +211,34 @@ cursor:pointer;
 background:rgba(255,255,255,0.22);
 
 transform:translateY(-2px);
+
+}
+
+.link-window::after{
+
+content:"";
+position:absolute;
+top:-120%;
+left:-120%;
+
+width:200%;
+height:200%;
+
+background:linear-gradient(
+120deg,
+transparent,
+rgba(255,255,255,0.25),
+transparent
+);
+
+transform:rotate(25deg);
+transition:0.6s;
+}
+
+.link-window:hover::after{
+
+top:-40%;
+left:-40%;
 
 }
 
@@ -491,11 +540,50 @@ margin-left:0;
 
 }
 
+/* ===============================
+墓石
+=============================== */
+  
+.stone-light{
+
+position:absolute;
+
+left:28%;
+top:60%;
+
+width:420px;
+height:420px;
+
+background:radial-gradient(
+circle,
+rgba(255,240,180,0.20),
+rgba(255,240,180,0.08),
+transparent 70%
+);
+
+filter:blur(80px);
+
+pointer-events:none;
+
+animation:stoneGlow 6s ease-in-out infinite;
+
+}
+
+@keyframes stoneGlow{
+
+0%{opacity:0.5}
+50%{opacity:0.8}
+100%{opacity:0.5}
+
+}
+
 </style>
 </head>
 
 <body>
 
+<div class="stone-light"></div>
+  
 <div class="petals"></div>
   
 <div class="mist mist0"></div>
@@ -513,8 +601,10 @@ margin-left:0;
 いくつかのこと
 </h1>
 
+<div class="title-divider"></div>
+
 <div class="subtitle">
-夜が明けました。<br>
+夜が明けました──<br>
 あなたたちのいない、夜明けです。
 </div>
 
@@ -581,7 +671,7 @@ margin-left:0;
 /* 花びらjs */
 const container = document.querySelector(".petals");
 
-for(let i=0;i<30;i++){
+for(let i=0;i<36;i++){
 
 const petal=document.createElement("div");
 petal.className="petal";
@@ -632,6 +722,17 @@ petal.style.animationDelay=Math.random()*60+"s";
 container.appendChild(petal);
 
 }
+
+/* カメラ */
+document.addEventListener("mousemove",(e)=>{
+
+const x=(e.clientX/window.innerWidth-0.5)*10;
+const y=(e.clientY/window.innerHeight-0.5)*10;
+
+document.body.style.transform=
+`translate(${x}px,${y}px)`;
+
+});
 
 </script>
 
