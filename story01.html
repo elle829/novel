@@ -562,9 +562,19 @@ saveButton.classList.add("active");
 }else{
 saveButton.classList.remove("active");
 }
+preloadNext();
 
 }
 
+function preloadNext(){
+if(page < TOTAL_PAGES){
+const nextImg = new Image();
+nextImg.src =
+`archive/story${STORY_ID}/page${String(page+1).padStart(2,"0")}.png`;
+}
+
+}
+  
   
 /* =========================
 操作
@@ -574,6 +584,7 @@ prev.onclick=()=>{
 if(page>1){
 page--;
 updatePage();
+preloadNext();
 }
 };
 next.onclick=()=>{
