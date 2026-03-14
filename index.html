@@ -1942,47 +1942,49 @@ fairyPivot.add(fairy);
    ========================================================= */
 
 /* =========================================================
-   妖精リング
+   3.5) 観測HUDリング
    ========================================================= */
 
-function createFairyRing(radius, tube, opacity){
-  const geo = new THREE.TorusGeometry(
-    radius,
-    tube,
-    16,
-    120
+function createHudRing(radius, opacity = 0.42){
+  const segments = 180;
+  const geometry = new THREE.BufferGeometry();
+  const vertices = [];
+
+  for(let i = 0; i <= segments; i++){
+    const a = (i / segments) * Math.PI * 2;
+    const x = Math.cos(a) * radius;
+    const y = Math.sin(a) * radius;
+    vertices.push(x, y, 0);
+  }
+
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(vertices, 3)
   );
-  const mat = new THREE.MeshBasicMaterial({
+
+  const material = new THREE.LineBasicMaterial({
     color:0x9ecbff,
     transparent:true,
     opacity:opacity,
     blending:THREE.AdditiveBlending,
     depthWrite:false
   });
-  const mesh = new THREE.Mesh(geo,mat);
-  mesh.rotation.x = Math.PI * 0.53;
-  return mesh;
+
+  const ring = new THREE.Line(geometry, material);
+  ring.rotation.x = Math.PI * 0.53;
+  ring.renderOrder = 12;
+
+  return ring;
 }
 
-const fairyRing1 = createFairyRing(
-  3.2,
-  0.015,
-  0.75
-);
+const fairyRing1 = createHudRing(3.2, 0.72);
+const fairyRing2 = createHudRing(3.45, 0.30);
 
-const fairyRing2 = createFairyRing(
-  3.45,
-  0.012,
-  0.35
-);
-
-fairyRing1.position.z = -0.15;
-fairyRing2.position.z = 0.15;
+fairyRing1.position.z = -0.12;
+fairyRing2.position.z =  0.12;
 
 fairyPivot.add(fairyRing1);
 fairyPivot.add(fairyRing2);
-
-
 
 /* =========================================================
    4) 月テクスチャ
@@ -3027,6 +3029,9 @@ vitalLine.style.transform = "rotate(" + angle + "deg)";
      
   updateVitalWave();
 
+  fairyRing1.rotation.z += 0.0028;
+  fairyRing2.rotation.z -= 0.0016;
+     
   renderer.render(scene,camera);
 
 }
