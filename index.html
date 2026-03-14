@@ -1858,1248 +1858,314 @@ Boot Authorization: Granted
 import * as THREE from
 "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
 
-
 /* =========================================================
    1) 基本
    ========================================================= */
 
 const scene = new THREE.Scene();
-/* 再利用Vector */
+
 const tmpVec3 = new THREE.Vector3();
 const tmpVec3b = new THREE.Vector3();
+const tmpVec3c = new THREE.Vector3();
 
 const camera = new THREE.PerspectiveCamera(
-  55,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  100
+55,
+window.innerWidth / window.innerHeight,
+0.1,
+100
 );
 
-camera.position.set(0,0.2,9);   // ←ここ追加
+camera.position.set(0,0.2,9);
 
 const renderer = new THREE.WebGLRenderer({
-  antialias:true,
-  alpha:true
+antialias:true,
+alpha:true,
+powerPreference:"high-performance"
 });
 
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.sortObjects = true;
-     
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.85;
-     
+
 renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 
-renderer.setPixelRatio(
-  Math.min(window.devicePixelRatio,2)
-);
-
-document
-.getElementById("scene")
+document.getElementById("scene")
 .appendChild(renderer.domElement);
 
 
-
 /* =========================================================
-   2) ライト
+   ライト
    ========================================================= */
 
 scene.add(new THREE.AmbientLight(0xaebcff,0.55));
 
-const fairyLight = new THREE.PointLight(
-  0xa5f4ff,
-  2,
-  20
-);
-
+const fairyLight = new THREE.PointLight(0xa5f4ff,2,20);
 scene.add(fairyLight);
 
 
-
 /* =========================================================
-   3) 妖精
+   テクスチャローダー
    ========================================================= */
 
 const loader = new THREE.TextureLoader();
 
+
+/* =========================================================
+   妖精
+   ========================================================= */
+
 const fairyTexture = loader.load("./png/yousei5.png");
 
 const fairyMaterial = new THREE.SpriteMaterial({
-  map:fairyTexture,
-  transparent:true,
-  depthWrite:false,
+map:fairyTexture,
+transparent:true,
+depthWrite:false
 });
 
 const fairy = new THREE.Sprite(fairyMaterial);
-
 fairy.scale.set(4.2,5.4,1);
-
 fairy.renderOrder = 10;
 
 const fairyPivot = new THREE.Group();
 scene.add(fairyPivot);
 fairyPivot.add(fairy);
 
-/* =========================================================
-   3.5) 観測HUDリング
-   ========================================================= */
 
 /* =========================================================
-   3.5) 観測HUDリング
-   ========================================================= */
-
-function createHudRing(radius, opacity = 0.42){
-  const segments = 180;
-  const geometry = new THREE.BufferGeometry();
-  const vertices = [];
-
-  for(let i = 0; i <= segments; i++){
-    const a = (i / segments) * Math.PI * 2;
-    const x = Math.cos(a) * radius;
-    const y = Math.sin(a) * radius;
-    vertices.push(x, y, 0);
-  }
-
-  geometry.setAttribute(
-    "position",
-    new THREE.Float32BufferAttribute(vertices, 3)
-  );
-
-  const material = new THREE.LineBasicMaterial({
-    color:0x9ecbff,
-    transparent:true,
-    opacity:opacity,
-    blending:THREE.AdditiveBlending,
-    depthWrite:false
-  });
-
-  const ring = new THREE.Line(geometry, material);
-  ring.rotation.x = Math.PI * 0.53;
-  ring.renderOrder = 12;
-
-  return ring;
-}
-
-
-/* =========================================================
-   4) 月テクスチャ
+   月テクスチャ
    ========================================================= */
 
 function createMoonTexture(phase){
 
-  const size = 256;
+const size = 256;
+const canvas = document.createElement("canvas");
+canvas.width = size;
+canvas.height = size;
 
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
+const ctx = canvas.getContext("2d");
 
-  const ctx = canvas.getContext("2d");
+const cx = size/2;
+const cy = size/2;
+const r = size*0.34;
 
-  const cx = size / 2;
-  const cy = size / 2;
-  const r = size * 0.34;
+const glow = ctx.createRadialGradient(
+cx,cy,0,
+cx,cy,r*1.6
+);
 
-  /* 外側のやわらかい光 */
-  const glow = ctx.createRadialGradient(
-    cx, cy, 0,
-    cx, cy, r * 1.6
-  );
+glow.addColorStop(0,"rgba(230,240,255,0.9)");
+glow.addColorStop(.5,"rgba(200,220,255,0.35)");
+glow.addColorStop(1,"rgba(200,220,255,0)");
 
-  glow.addColorStop(0, "rgba(230,240,255,0.9)");
-  glow.addColorStop(0.5, "rgba(200,220,255,0.35)");
-  glow.addColorStop(1, "rgba(200,220,255,0)");
+ctx.fillStyle = glow;
+ctx.fillRect(0,0,size,size);
 
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, size, size);
+ctx.filter="blur(1.2px)";
+ctx.fillStyle="#dfe9ff";
 
-  /* 月本体 */
-  ctx.filter = "blur(1.2px)"; 
-  ctx.fillStyle = "#dfe9ff";
+ctx.beginPath();
+ctx.arc(cx,cy,r,0,Math.PI*2);
+ctx.fill();
 
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fill();
+ctx.filter="none";
 
-  ctx.filter = "none";
-     
+ctx.globalCompositeOperation="destination-out";
 
-  /* 月相をくり抜く */
-  ctx.globalCompositeOperation = "destination-out";
+const offset=(phase-0.5)*r*2.2;
 
-  const offset = (phase - 0.5) * r * 2.2;
+ctx.beginPath();
+ctx.arc(cx+offset,cy,r*0.98,0,Math.PI*2);
+ctx.fill();
 
-  ctx.beginPath();
-  ctx.arc(cx + offset, cy, r * 0.98, 0, Math.PI * 2);
-  ctx.fill();
+ctx.globalCompositeOperation="source-over";
 
-  ctx.globalCompositeOperation = "source-over";
+const texture=new THREE.CanvasTexture(canvas);
+texture.colorSpace = THREE.SRGBColorSpace;
 
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-
-  return texture;
+return texture;
 }
 
-     
-/* =========================================================
-   5) 月データ
-   ========================================================= */
-
-const moonData=[
-
-{title:"No.1 酒場にて",subtitle:"フラッグシップ<br>デミアン",url:"story01.html"},
-{title:"No.2 舌戦",subtitle:"秘聞の館<br>ネフェル、ヤフォダ",url:"story02.html"},
-{title:"No.3 甘いもの",subtitle:"カチャカチャクルムカケ工房<br>アイノ、イネファ",url:"story03.html"},
-{title:"No.4 宴",subtitle:"西風騎士団<br>ファルカ",url:"story04.html"},
-{title:"No.5 信仰",subtitle:"霜月の子<br>ラウマ",url:"story05.html"},
-{title:"No.6 似たもの",subtitle:"実験設計局<br>サンドローネ、壁炉の家",url:"story06.html"},
-{title:"No.7 家",subtitle:"銀月の庭<br>コロンビーナ、旅人",url:"story07.html"},
-{title:"No.8 空想",subtitle:"魔女会<br>アルベド、ドゥリン",url:"story08.html"},
-{title:"No.9 使命",subtitle:"ライトキーパー<br>イルーガ、ニキータ",url:"story09.html"},
-{title:"No.10 報告結果",subtitle:"君へ",url:"story10.html"}
-
-];
-
-
 
 /* =========================================================
-   6) 月グループ
+   月
    ========================================================= */
 
 const moonGroup=new THREE.Group();
-
 moonGroup.rotation.x=-2.1;
 moonGroup.rotation.z=0.35;
 
 scene.add(moonGroup);
 
 const moons=[];
-
 const radiusX=4.5;
 const radiusY=1.9;
 
 for(let i=0;i<10;i++){
 
-  const tex=createMoonTexture(i/9);
+const tex=createMoonTexture(i/9);
 
-  const mat=new THREE.SpriteMaterial({
-    map:tex,
-    transparent:true,
-    depthWrite:false,
-  });
-     
-  const moon=new THREE.Sprite(mat);
-
-  moon.userData={
-    index:i,
-    angle:i/10*Math.PI*2,
-    title:moonData[i].title,
-    subtitle:moonData[i].subtitle,
-    url:moonData[i].url
-  };
- 
-  moonGroup.add(moon);
-
-  moons.push(moon);
-
-}
-
-     
-/* =========================================================
-   Nebula
-   ========================================================= */
-let nebula;
-     
-function createNebula(){
-
-const canvas = document.createElement("canvas");
-canvas.width = 512;
-canvas.height = 512;
-
-const ctx = canvas.getContext("2d");
-
-const g = ctx.createRadialGradient(
-256,256,20,
-256,256,256
-);
-
-g.addColorStop(0,"rgba(120,160,255,0.22)");
-g.addColorStop(.4,"rgba(120,160,255,0.12)");
-g.addColorStop(1,"rgba(0,0,0,0)");
-
-ctx.fillStyle = g;
-ctx.fillRect(0,0,512,512);
-
-const texture = new THREE.CanvasTexture(canvas);
-
-const mat = new THREE.SpriteMaterial({
-map:texture,
+const mat=new THREE.SpriteMaterial({
+map:tex,
 transparent:true,
-opacity:0.45,
 depthWrite:false
 });
 
-nebula = new THREE.Sprite(mat);   // ←const削除
+const moon=new THREE.Sprite(mat);
 
-nebula.scale.set(85,85,1);
-nebula.position.set(0,0,-4);
-nebula.renderOrder = -10;
+moon.userData={
+index:i,
+angle:i/10*Math.PI*2
+};
 
-scene.add(nebula);
+moonGroup.add(moon);
+moons.push(moon);
 
-const nebula2 = nebula.clone();
-
-nebula2.position.set(-6,2,-6);
-nebula2.scale.set(70,70,1);
-nebula2.material.opacity = 0.55;
-
-scene.add(nebula2);
-     
 }
 
-createNebula();
 
-     
 /* =========================================================
-   7) 星
+   星
    ========================================================= */
 
 function createStars(size,count){
 
-  const geo = new THREE.BufferGeometry();
-  const pos = new Float32Array(count * 3);
+const geo = new THREE.BufferGeometry();
+const pos = new Float32Array(count*3);
 
-  for(let i=0; i<count; i++){
-    pos[i * 3]     = (Math.random() - 0.5) * size;
-    pos[i * 3 + 1] = (Math.random() - 0.5) * size;
-    pos[i * 3 + 2] = (Math.random() - 0.5) * size;
-  }
+for(let i=0;i<count;i++){
 
-  geo.setAttribute(
-    "position",
-    new THREE.BufferAttribute(pos, 3)
-  );
+const i3=i*3;
 
-  const material = new THREE.PointsMaterial({
-  color: 0xdfe9ff,
-  size: 0.035,
-  transparent: true,
-  opacity: 0.9,
-  sizeAttenuation: true,
-  depthWrite: false
-});
-
-  return new THREE.Points(geo, material);
-}
-const starsNear = createStars(40, 900);
-const starsMid  = createStars(80, 700);
-const starsFar  = createStars(120, 500);
-     
-scene.add(starsNear);
-scene.add(starsMid);
-scene.add(starsFar);
-
-function createWarpStars(count){
-
-  const geo = new THREE.BufferGeometry();
-  const pos = new Float32Array(count*3);
-
-  for(let i=0;i<count;i++){
-
-    pos[i*3]   = (Math.random()-0.5)*40;
-    pos[i*3+1] = (Math.random()-0.5)*30;
-    pos[i*3+2] = -Math.random()*80;
-
-  }
-
-  geo.setAttribute(
-    "position",
-    new THREE.BufferAttribute(pos,3)
-  );
-
-  return new THREE.Points(
-    geo,
-    new THREE.PointsMaterial({
-    color:0xbfd8ff,
-    size:0.028,
-    transparent:true,
-    opacity:0.12,
-    sizeAttenuation:true,
-    depthWrite:false
-  })
-  );
+pos[i3]=(Math.random()-0.5)*size;
+pos[i3+1]=(Math.random()-0.5)*size;
+pos[i3+2]=(Math.random()-0.5)*size;
 
 }
 
-const warpStars = createWarpStars(420);
-scene.add(warpStars);
+geo.setAttribute(
+"position",
+new THREE.BufferAttribute(pos,3)
+);
 
-const warpPositions =
-warpStars.geometry.attributes.position.array;
-     
-function createDriftStars(count){
-
-  const geo = new THREE.BufferGeometry();
-
-  const pos = new Float32Array(count*3);
-
-  for(let i=0;i<count;i++){
-
-    pos[i*3]   = (Math.random()-0.5)*120;
-    pos[i*3+1] = (Math.random()-0.5)*80;
-    pos[i*3+2] = -20 - Math.random()*40;
-
-  }
-
-  geo.setAttribute(
-    "position",
-    new THREE.BufferAttribute(pos,3)
-  );
-
-  return new THREE.Points(
-    geo,
-    new THREE.PointsMaterial({
-    color:0xaed6ff,
-    size:0.02,
-    transparent:true,
-    opacity:0.16,
-    sizeAttenuation:true,
-    depthWrite:false
-  })
-  );
+return new THREE.Points(
+geo,
+new THREE.PointsMaterial({
+color:0xdfe9ff,
+size:0.035,
+transparent:true,
+opacity:0.9,
+sizeAttenuation:true,
+depthWrite:false
+})
+);
 
 }
 
-const driftStars = createDriftStars(280);
-scene.add(driftStars);
+const starsNear = createStars(40,900);
+const starsMid  = createStars(80,700);
+const starsFar  = createStars(120,500);
 
-starsNear.renderOrder = -5;
-starsMid.renderOrder = -6;
-starsFar.renderOrder = -7;
-warpStars.renderOrder = -8;
-driftStars.renderOrder = -9;
+scene.add(starsNear,starsMid,starsFar);
+
 
 /* =========================================================
-   8) マウス
+   マウス
    ========================================================= */
 
 const raycaster=new THREE.Raycaster();
-
 const mouse=new THREE.Vector2();
-
-let hovered=null;
 
 let mouseX=0;
 let mouseY=0;
 
-window.addEventListener("pointermove",e=>{
+window.addEventListener("pointermove",(e)=>{
 
-  mouse.x=(e.clientX/window.innerWidth)*2-1;
-  mouse.y=-(e.clientY/window.innerHeight)*2+1;
+const x = e.clientX / window.innerWidth;
+const y = e.clientY / window.innerHeight;
 
-  mouseX=mouse.x;
-  mouseY=mouse.y;
+mouse.x = x*2-1;
+mouse.y = -(y*2-1);
+
+mouseX = mouse.x;
+mouseY = mouse.y;
 
 });
 
 
-
 /* =========================================================
-   9) DOM取得
-   ========================================================= */
-
-const moonPopup=document.getElementById("moonPopup");
-const moonTitle=document.getElementById("moonTitle");
-const moonSubtitle=document.getElementById("moonSubtitle");
-
-const tail=document.querySelector(".popup-tail");
-
-const pageFlip=document.getElementById("pageFlip");
-const vitalNode = document.querySelector(".vital-node");
-const vitalLine = document.querySelector(".vital-line");
-
-const targetRing = document.getElementById("targetRing");
-const vitalGraph = document.querySelector(".vital-graph");
-let ringX = 0;
-let ringY = 0;
-
-const consoleBox =
-document.querySelector("#moonPopup .console");
-
-/* =========================================================
-   10) 公転
+   アニメーション
    ========================================================= */
 
 let orbitTarget=0;
 let orbitScroll=0;
 
 window.addEventListener("wheel",e=>{
-  orbitTarget += Math.sign(e.deltaY) * 0.12;
+orbitTarget += Math.sign(e.deltaY)*0.12;
 });
 
-
-/* =========================================================
-   11) クリック遷移
-   ========================================================= */
-
-window.addEventListener("click",()=>{
-
-  if(hovered){
-
-    markMoonVisited(hovered.userData.index);
-
-    pageFlip.classList.add("active");
-
-    setTimeout(()=>{
-      location.href = hovered.userData.url;
-    },600);
-
-  }
-
-});
-
-
-/* =========================================================
-   12) popup位置
-   ========================================================= */
-
-function updatePopupForHoveredMoon(moon){
-
-  moon.getWorldPosition(tmpVec3);
-  const v = tmpVec3.clone().project(camera);
-
-  const screenX = (v.x * 0.5 + 0.5) * window.innerWidth;
-  const screenY = (-v.y * 0.5 + 0.5) * window.innerHeight;
-
-  /* =========================================================
-     popup を月軌道の外側に出す
-     ========================================================= */
-
-  /* 軌道の中心（見た目上の中心） */
-  const orbitCenterX = window.innerWidth * 0.5;
-  const orbitCenterY = window.innerHeight * 0.5;
-
-  /* 軌道中心 → 月 の方向ベクトル */
-  let outwardX = screenX - orbitCenterX;
-  let outwardY = screenY - orbitCenterY;
-
-  /* ゼロ割り防止 */
-  const outwardLen = Math.hypot(outwardX,outwardY) || 0.0001;
-     
-  /* 正規化（長さ1にする） */
-  outwardX /= outwardLen;
-  outwardY /= outwardLen;
-
-  /* 月から popup をどれだけ離すか */
-  const popupDistance = 260;
-  let flip = false;
-
-  if (screenX > window.innerWidth * 0.5) {
-    flip = true;
-  }
-
-  /* =========================================================
-   popup最適位置探索
-        ========================================================= */
-     
-     let popupX = screenX + outwardX * popupDistance;
-     let popupY = screenY + outwardY * popupDistance;
-     
-     /* popupサイズ取得 */
-     moonPopup.style.left = popupX + "px";
-     moonPopup.style.top = popupY + "px";
-     
-     let rect = moonPopup.getBoundingClientRect();
-     const popupHalfW = rect.width * 0.5;
-     const popupHalfH = rect.height * 0.5;
-     
-     /* 妖精座標 */
-     
-     fairy.getWorldPosition(tmpVec3b);
-     const fairyScreen = tmpVec3b.clone().project(camera);
-     
-     const fairyX = (fairyScreen.x * 0.5 + 0.5) * window.innerWidth;
-     const fairyY = (-fairyScreen.y * 0.5 + 0.5) * window.innerHeight;
-     
-     /* 探索 */
-     
-     /* 探索（妖精回避優先） */
-
-let bestX = popupX;
-let bestY = popupY;
-
-let bestScore = -Infinity;
-
-for(let i=0;i<32;i++){
-
-  const angle = i / 32 * Math.PI * 2;
-
-  const testX = screenX + Math.cos(angle) * popupDistance;
-  const testY = screenY + Math.sin(angle) * popupDistance;
-
-  const insideScreen =
-    testX - popupHalfW > 0 &&
-    testX + popupHalfW < window.innerWidth &&
-    testY - popupHalfH > 0 &&
-    testY + popupHalfH < window.innerHeight;
-
-  if(!insideScreen) continue;
-
-  const dx = testX - fairyX;
-  const dy = testY - fairyY;
-
-  const dist = Math.hypot(dx,dy);
-
-  /* 妖精から遠いほどスコア高い */
-  const score = dist;
-
-  if(score > bestScore){
-
-    bestScore = score;
-    bestX = testX;
-    bestY = testY;
-
-  }
-
-}
-
-popupX = bestX;
-popupY = bestY;
-     
-  moonPopup.style.left = popupX + "px";
-  moonPopup.style.top = popupY + "px";
-
-  /* popupサイズ取得 */
-  const halfW = rect.width * 0.5;
-  const halfH = rect.height * 0.5;
-
-  /* 画面クランプ */
-  popupX = Math.max(halfW + 20, Math.min(window.innerWidth - halfW - 20, popupX));
-  popupY = Math.max(halfH + 20, Math.min(window.innerHeight - halfH - 20, popupY));
-
-  moonPopup.style.left = popupX + "px";
-  moonPopup.style.top = popupY + "px";
-
-  /* popupの最近接点 */
-
-  const closestX = Math.max(rect.left, Math.min(screenX, rect.right));
-  const closestY = Math.max(rect.top, Math.min(screenY, rect.bottom));
-
-
-  /* 月方向 */
-
-  let dx = closestX - screenX;
-  let dy = closestY - screenY;
-
-  const len = Math.hypot(dx,dy) || 0.0001;
-
-  const dirX = dx / len;
-  const dirY = dy / len;
-
-
-  /* 月半径 */
-
-  const moonRadius = moon.scale.x * 26;
-
-
-  /* 線始点 */
-
-  const startX = screenX + dirX * moonRadius;
-  const startY = screenY + dirY * moonRadius;
-
-
-  /* popupに重ならない */
-
-  const offset = 10;
-
-  const endX = closestX - dirX * offset;
-  const endY = closestY - dirY * offset;
-
-
-  /* 距離 */
-  const dist = Math.hypot(
-    endX - startX,
-    endY - startY
-  );
-
-
-  /* 角度 */
-  const angle = Math.atan2(
-    endY - startY,
-    endX - startX
-  ) * 180 / Math.PI;
-  if(flip){
-    consoleBox.classList.add("flip");
-  }else{
-    consoleBox.classList.remove("flip");
-  }
-
-  /* 描画 */
-  tail.style.opacity = 1;
-  tail.style.left = startX + "px";
-  tail.style.top = startY + "px";
-  tail.style.width = dist + "px";
-  tail.style.transform = "rotate(" + angle + "deg)";
-
-  const safeDistance = 120;
-  if(dist < safeDistance){
-    tail.style.opacity = 0;
-    return;
-  }
-
-}
-
-
-/* ===============================
-   vital wave animation
-   よりリアルで、広がりのあるECG
-   =============================== */
-
-const vitalWave = document.getElementById("vitalWave");
-const vitalWave2 = document.getElementById("vitalWave2");
-
-const ECG_WIDTH = 520;
-const ECG_BASE_Y = 90;
-const ECG_BASE_Y2 = 90;
-
-const ECG_SPEED = 0.95;      // 左→右
-const ECG_RESET_X = ECG_WIDTH + 60;
-
-let ecgHeadX = -90;
-let beatCooldown = 52;
-let activeBeat = null;
-
-function rand(min, max){
-  return min + Math.random() * (max - min);
-}
-
-/* 拍を広めに、実際の心電図っぽく作る */
-function makeBeatShape(){
-
-  const pAmp = rand(1.8, 4.2);
-  const pWidth = rand(10, 16);
-
-  const qAmp = rand(2.5, 5.0);
-  const rAmp = rand(60, 90);
-  const noise = rand(-0.5,0.5);
-  const sAmp = rand(10, 18);
-
-  const stLift = rand(-0.5, 0.8);
-
-  const tAmp = rand(20, 34);
-  const tWidth = rand(30, 52);
-
-  const preFlat = rand(16, 28);
-  const prGap = rand(12, 18);
-  const qrsWidth = rand(14, 20);
-  const stGap = rand(22, 34);
-  const tail = rand(42, 68);
-
-  const points = [];
-
-  /* 拍の前のフラット */
-  points.push({ x: -preFlat, y: 0 });
-  points.push({ x: -preFlat * 0.4, y: 0 });
-
-  /* P波 */
-  points.push({ x: 0, y: 0 });
-  points.push({ x: pWidth * 0.30, y: -pAmp * 0.45 });
-  points.push({ x: pWidth * 0.60, y: -pAmp });
-  points.push({ x: pWidth, y: 0 });
-
-  /* PR */
-  const prStart = pWidth + prGap;
-  points.push({ x: prStart, y: 0 });
-
-  /* QRS */
-  const qx = prStart + qrsWidth * 0.18;
-  const rx = prStart + qrsWidth * 0.42;
-  const sx = prStart + qrsWidth * 0.70;
-  const qrsEnd = prStart + qrsWidth;
-
-  points.push({ x: qx, y: qAmp });
-  points.push({ x: rx, y: -rAmp });
-  points.push({ x: sx, y: sAmp });
-  points.push({ x: qrsEnd, y: 0 });
-
-  /* ST */
-  const stStart = qrsEnd + stGap * 0.25;
-  const stMid   = qrsEnd + stGap * 0.65;
-  const stEnd   = qrsEnd + stGap;
-
-  points.push({ x: stStart, y: stLift * 0.4 });
-  points.push({ x: stMid,   y: stLift });
-  points.push({ x: stEnd,   y: stLift * 0.2 });
-
-  /* T波 */
-  const tStart = stEnd;
-  points.push({ x: tStart + tWidth * 0.18, y: -tAmp * 0.28 });
-  points.push({ x: tStart + tWidth * 0.42, y: -tAmp * 0.78 });
-  points.push({ x: tStart + tWidth * 0.62, y: -tAmp });
-  points.push({ x: tStart + tWidth * 0.84, y: -tAmp * 0.35 });
-  points.push({ x: tStart + tWidth,        y: 0 });
-
-  /* 拍の後のフラット */
-  points.push({ x: tStart + tWidth + tail, y: 0 });
-
-  return points;
-}
-
-function buildRunningWavePath(baseY, headX, beatShape){
-  let d = "";
-  for(let x=0; x<=360; x+=1.5){
-
-  let y = baseY;
-
-  if(beatShape){
-    for(let i=0;i<beatShape.length-1;i++){
-      const p1 = beatShape[i];
-      const p2 = beatShape[i+1];
-      const x1 = headX + p1.x;
-      const x2 = headX + p2.x;
-      if(x >= x1 && x <= x2){
-        const t = (x - x1) / (x2 - x1);
-        const yy = p1.y + (p2.y - p1.y) * t;
-        y = baseY + yy;
-        break;
-      }
-    }
-  }
-  if(x===0){
-    d += `M ${x} ${y}`;
-  }else{
-    d += ` L ${x} ${y}`;
-  }
-}
-  return d;
-}
-
-function updateVitalWave(){
-  if(!vitalWave || !vitalWave2) return;
-
-  ecgHeadX += ECG_SPEED;
-  beatCooldown -= ECG_SPEED;
-
-  /* 新しい拍を出す */
-  if(!activeBeat && beatCooldown <= 0){
-    activeBeat = makeBeatShape();
-  }
-
-  /* 拍が完全に右へ抜けたら次の待機へ */
-  if(activeBeat){
-    const beatEndX = ecgHeadX + activeBeat[activeBeat.length - 1].x;
-
-    if(beatEndX > ECG_WIDTH + 24){
-      activeBeat = null;
-      beatCooldown = rand(58, 138);
-    }
-  }
-
-  /* 走査ヘッドを左へ戻す */
-  if(ecgHeadX > ECG_WIDTH + 60){
-    ecgHeadX = -90;
-  }
-
-  vitalWave.setAttribute(
-    "d",
-    buildRunningWavePath(ECG_BASE_Y, ecgHeadX, activeBeat)
-  );
-
-  /* 残像っぽいサブ波形 */
-  if(activeBeat){
-    const ghostBeat = activeBeat.map((p, i) => ({
-      x: p.x - 2.5,
-      y:
-        p.y * 0.46 +
-        Math.sin(i * 0.9) * 0.18
-    }));
-
-    vitalWave2.setAttribute(
-      "d",
-      buildRunningWavePath(ECG_BASE_Y2, ecgHeadX, ghostBeat)
-    );
-  }else{
-    vitalWave2.setAttribute(
-      "d",
-      `M 0 ${ECG_BASE_Y2} L ${ECG_WIDTH} ${ECG_BASE_Y2}`
-    );
-  }
-}
-
-/* =========================================================
-   progress 管理
-========================================================= */
-
-const progressBar = document.getElementById("progressBar");
-const progressText = document.getElementById("progressText");
-const rebootModal = document.getElementById("rebootModal");
-const rebootBtn = document.getElementById("rebootBtn");
-const resetBtn = document.getElementById("resetBtn");
-     
-/* =========================
-   RESET
-========================= */
-if(resetBtn){
-resetBtn.addEventListener("click",()=>{
-localStorage.removeItem("moonStories");
-location.reload();
-});
-}
-
-const STORY_TOTAL = 10;
-/* storyページが保存する */
-function getVisited(){
-return JSON.parse(
-localStorage.getItem("moonStories") || "[]"
-);
-}
-
-function updateProgress(){
-  const visited = [...new Set(
-    getVisited().map(v => Number(v))
-  )];
-  const percent = Math.floor(
-    visited.length / STORY_TOTAL * 100
-  );
-  progressBar.style.width = percent + "%";
-  progressText.textContent = "SYNC " + percent + "%";
-  if(percent === 100){
-    setTimeout(()=>{
-      rebootModal.style.display = "flex";
-    },800);
-  }
-     
-}
-     
-function isMoonVisited(index){
-  const visited = getVisited();
-  return visited.includes(index) || visited.includes(String(index));
-}
-
-function markMoonVisited(index){
-  const visited = getVisited();
-  if(!visited.includes(index)){
-    visited.push(index);
-    localStorage.setItem(
-      "moonStories",
-      JSON.stringify(visited)
-    );
-  }
-}
-     
-updateProgress();
-/* reboot */
-rebootBtn.addEventListener("click",()=>{
-     
-rebootModal.style.display="none";
-let count = 0;
-const interval = setInterval(()=>{
-const e = document.createElement("div");
-e.className="error-popup";
-e.style.left=Math.random()*window.innerWidth+"px";
-e.style.top=Math.random()*window.innerHeight+"px";
-e.innerHTML = `
-<div class="error-title">LOADING ERROR</div>
-<div class="error-code">
-ERROR_CODE: 466c696e73<br>
-[RECORD_CONNECTION_DENY]
-</div>
-<div class="error-box">
-RE-LINK LEYLINE...
-</div>
-`;
-document.body.appendChild(e);
-count++;
-if(count>25){
-clearInterval(interval);
-setTimeout(()=>{
-location.href="afterday.html";
-},1200);
-}
-},60);
-});
-     
-/* =========================================================
-   13) アニメーション
-   ========================================================= */
+let hovered=null;
 
 function animate(){
 
-  requestAnimationFrame(animate);
+requestAnimationFrame(animate);
 
-  orbitScroll+=(orbitTarget-orbitScroll)*0.08;
+orbitScroll+=(orbitTarget-orbitScroll)*0.08;
 
-  /* パララックス */
-  starsNear.rotation.x += mouseY * 0.0006;
-  starsMid.rotation.x += mouseY * 0.0003;
-  starsFar.rotation.x += mouseY * 0.00015;
+starsNear.rotation.x += mouseY * 0.0006;
+starsMid.rotation.x += mouseY * 0.0003;
+starsFar.rotation.x += mouseY * 0.00015;
 
-  starsNear.position.x = mouseX * 1.2;
-  starsNear.position.y = mouseY * 0.8;
+camera.lookAt(0,0,0);
 
-  starsMid.position.x = mouseX * 0.6;
-  starsMid.position.y = mouseY * 0.35;
+raycaster.setFromCamera(mouse,camera);
 
-  starsFar.position.x = mouseX * 0.2;
-  starsFar.position.y = mouseY * 0.15;
+const hit = raycaster.intersectObjects(moons,false);
+hovered = hit.length>0 ? hit[0].object : null;
 
-  if(nebula){
+for(const moon of moons){
 
-    nebula.position.x = mouseX * 0.18;
-    nebula.position.y = mouseY * 0.12;
+const a = moon.userData.angle + orbitScroll;
 
-  }
-     
-  camera.lookAt(0,0,0);
+const x = Math.cos(a)*radiusX;
+const y = Math.sin(a)*radiusY;
+const z = Math.sin(a)*2;
 
-  raycaster.setFromCamera(mouse,camera);
+moon.position.set(x,y,z);
 
-  const hit = raycaster.intersectObjects(moons,false);
+const depth=(z+2)/4;
+const scale=0.6+depth*0.6;
 
-  hovered=hit.length>0 ? hit[0].object : null;
+moon.scale.set(scale,scale,1);
 
-  if(hovered){
-
-  document.body.style.cursor = "pointer";
-
-  moonTitle.textContent = hovered.userData.title;
-  moonSubtitle.innerHTML = hovered.userData.subtitle;
-
-  moonPopup.classList.add("show");
-
-}else{
-
-  document.body.style.cursor = "default";
-
-  moonPopup.classList.remove("show");
-  tail.style.opacity = 0;
+moon.renderOrder = z>0 ? 5 : 15;
 
 }
 
-  for(const moon of moons){
+fairyLight.position.x = mouseX*2;
+fairyLight.position.y = mouseY*-1;
 
-    const a=moon.userData.angle+orbitScroll;
-
-    const x=Math.cos(a)*radiusX;
-    const y=Math.sin(a)*radiusY;
-    const z=Math.sin(a)*2;
-
-    moon.position.set(x,y,z);
-
-    const depth=(z+2)/4;
-    const scale=0.6+depth*0.6;
-
-    const visited = isMoonVisited(moon.userData.index);
-
-     if(moon === hovered){
-       moon.scale.set(scale * 1.28, scale * 1.28, 1);
-     }else if(visited){
-       moon.scale.set(scale * 1.18, scale * 1.18, 1);
-     }else{
-       moon.scale.set(scale * 1.1, scale * 1.1, 1);
-     }
-     
-     if(visited){
-
-       moon.material.color.set(0xc86cff);
-     
-       moon.material.blending = THREE.AdditiveBlending;
-       moon.material.depthWrite = false;
-     
-       const pulse =
-         0.9 +
-         Math.sin(performance.now()*0.004 + moon.userData.index) * 0.35;
-     
-       moon.material.opacity =
-         Math.min(1,0.85 + depth * 0.25 + pulse * 0.25);
-     
-     }else{
-     
-       moon.material.color.set(0xffffff);
-       moon.material.opacity = Math.min(1, 0.5 + depth * 0.5);
-     
-     }
-     
-     moon.renderOrder = z > 0 ? 5 : 15;
-
-  }
-
-  if(hovered){
-    updatePopupForHoveredMoon(hovered);
-  }
-
-  fairyLight.position.x=mouseX*2;
-  fairyLight.position.y=mouseY*-1;
-
-  starsNear.rotation.y+=0.0007;
-  starsMid.rotation.y+=0.00035;
-  starsFar.rotation.y+=0.00015;
-
-     const t = performance.now() * 0.001;
-     const s1 = Math.sin(t*2.3);
-     const s2 = Math.sin(t*1.8);
-     const s3 = Math.sin(t*1.4);
-     starsNear.material.opacity = 0.75 + s1 * 0.08;
-     starsMid.material.opacity  = 0.65 + s2 * 0.07;
-     starsFar.material.opacity  = 0.55 + s3 * 0.06;
-     
-  for(let i=0;i<warpPositions.length;i+=3){
-  warpPositions[i+2] += 0.25;
-  if(warpPositions[i+2] > 5){
-  warpPositions[i+2] = -80;
-  }
-  }
-
-  warpStars.geometry.attributes.position.needsUpdate = true;
-
-  driftStars.position.x += 0.002;
-
-  if(driftStars.position.x > 40){
-    driftStars.position.x = -40;
-  }
-
-
-
-/* ===============================
-   ターゲットリング追従
-=============================== */
-
-fairy.getWorldPosition(tmpVec3);
-const v2 = tmpVec3.clone().project(camera);
-const x2 = (v2.x * 0.5 + 0.5) * window.innerWidth;
-const y2 = (-v2.y * 0.5 + 0.5) * window.innerHeight;
-const targetX = x2;
-const targetY = y2;
-
-/* 少し遅れて追従 */
-ringX += (targetX - ringX) * 0.12;
-ringY += (targetY - ringY) * 0.12;
-
-targetRing.style.left = ringX + mouseX * 4 + "px";
-targetRing.style.top  = ringY + mouseY * 2.5 + "px";
-     
-/* ノードを妖精位置に */
-fairy.getWorldPosition(tmpVec3b);
-const v = tmpVec3b.clone().project(camera);
-
-const nodeBaseX = (v.x * 0.5 + 0.5) * window.innerWidth;
-const nodeBaseY = (-v.y * 0.5 + 0.5) * window.innerHeight;
-
-/* ノード中心位置を少し妖精にかぶせる */
-const nodeOffsetX = -28;
-const nodeOffsetY = -48;
-
-const nodeX = nodeBaseX + nodeOffsetX;
-const nodeY = nodeBaseY + nodeOffsetY;
-
-/* ノード自体は中央合わせで配置 */
-vitalNode.style.left = (nodeX - 6) + "px";
-vitalNode.style.top = (nodeY - 6) + "px";
-
-/* ノード → グラフ線 */
-const rect = vitalGraph.getBoundingClientRect();
-
-const graphX = rect.left;
-const graphY = rect.top + rect.height/2;
-
-const dx = graphX - nodeX;
-const dy = graphY - nodeY;
-
-const length = Math.hypot(dx,dy);
-const angle = Math.atan2(dy,dx) * 180 / Math.PI;
-
-vitalLine.style.left = nodeX + "px";
-vitalLine.style.top = nodeY + "px";
-vitalLine.style.width = length + "px";
-vitalLine.style.transform = "rotate(" + angle + "deg)";
-     
-  updateVitalWave();
-     
-  renderer.render(scene,camera);
+renderer.render(scene,camera);
 
 }
+
+animate();
 
 
 /* =========================================================
-   14) リサイズ
+   resize
    ========================================================= */
 
 window.addEventListener("resize",()=>{
 
-  camera.aspect=window.innerWidth/window.innerHeight;
-  camera.updateProjectionMatrix();
+camera.aspect=window.innerWidth/window.innerHeight;
+camera.updateProjectionMatrix();
 
-  renderer.setSize(window.innerWidth,window.innerHeight);
-
-  renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio,2)
-  );
+renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 
 });
-
-/* =================================
-   起動UI
-   ================================= */
-
-const bootScreen = document.getElementById("bootScreen");
-const enterButton = document.getElementById("enterButton");
-
-/* =========================
-   進捗チェック
-========================= */
-
-const visitedStories = [...new Set(getVisited())];
-if(visitedStories.length > 0){
-  bootScreen.style.display = "none";
-}
-     
-enterButton.addEventListener("click",()=>{
-
-bootScreen.classList.add("hide");
-
-});
-
-/* ===============================
-HEADER GLITCH
-=============================== */
-
-const header = document.querySelector(".hud-title");
-
-setInterval(()=>{
-
-const r = Math.random();
-
-/* 通常グリッチ */
-
-if(r < 0.28){
-
-header.classList.add("glitch-active");
-header.classList.add("noise-active");
-
-setTimeout(()=>{
-header.classList.remove("glitch-active");
-header.classList.remove("noise-active");
-},180);
-
-}
-
-/* ブロックグリッチ */
-else if(r < 0.38){
-
-header.classList.add("block-glitch");
-
-setTimeout(()=>{
-header.classList.remove("block-glitch");
-},160);
-
-}
-
-},2200);
-
-     
-
-     
-animate();
 
 </script>
      
