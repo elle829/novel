@@ -1964,17 +1964,20 @@ function createFairyRing(radius, tube, opacity){
 }
 
 const fairyRing1 = createFairyRing(
-  3.75,
+  3.2,
   0.015,
   0.75
 );
 
 const fairyRing2 = createFairyRing(
-  4.05,
+  3.45,
   0.012,
   0.35
 );
 
+fairyRing1.position.z = -0.15;
+fairyRing2.position.z = 0.15;
+     
 scene.add(fairyRing1);
 scene.add(fairyRing2);
 
@@ -2966,8 +2969,11 @@ function animate(){
   fairyRing1.position.copy(fairy.position);
   fairyRing2.position.copy(fairy.position);
 
-  fairyRing1.rotation.y += 0.012;
-  fairyRing2.rotation.y -= 0.007;
+  fairyRing1.position.z -= 0.15;
+  fairyRing2.position.z += 0.15;
+     
+  fairyRing1.rotation.y += 0.003;
+  fairyRing2.rotation.y -= 0.002;
 
 
 /* ===============================
