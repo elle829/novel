@@ -116,7 +116,7 @@ font-weight:400;
 line-height:1.5;
 margin:0;
 
-letter-spacing:0.08em;
+letter-spacing:0.14em;
 white-space:nowrap;
 }
 
@@ -138,7 +138,7 @@ letter-spacing:0.1em;
 margin-top:14px;
 
 font-size:16px;
-
+letter-spacing:0.08em;
 opacity:0.85;
 
 }
@@ -198,7 +198,7 @@ transform:translateY(-2px);
 .link-title{
 
 font-size:18px;
-
+letter-spacing:0.1em;
 margin-bottom:8px;
 
 }
@@ -208,7 +208,7 @@ margin-bottom:8px;
 .link-desc{
 
 font-size:13px;
-
+letter-spacing:0.05em;
 opacity:0.75;
 
 line-height:1.6;
@@ -581,7 +581,7 @@ margin-left:0;
 /* 花びらjs */
 const container = document.querySelector(".petals");
 
-for(let i=0;i<12;i++){
+for(let i=0;i<30;i++){
 
 const petal=document.createElement("div");
 petal.className="petal";
@@ -627,7 +627,7 @@ petal.style.setProperty("--time",20+Math.random()*30+"s");
 petal.style.setProperty("--scale",0.4 + Math.random()*0.6);
 
 /* 遅延 */
-petal.style.animationDelay=Math.random()*30+"s";
+petal.style.animationDelay=Math.random()*60+"s";
 
 container.appendChild(petal);
 
