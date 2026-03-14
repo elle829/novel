@@ -2150,6 +2150,23 @@ renderer.render(scene,camera);
 
 }
 
+/* =================================
+   起動UI
+   ================================= */
+
+const bootScreen = document.getElementById("bootScreen");
+const enterButton = document.getElementById("enterButton");
+
+enterButton.addEventListener("click",()=>{
+
+  bootScreen.classList.add("hide");
+
+  setTimeout(()=>{
+    bootScreen.style.display="none";
+  },1200);
+
+});
+
 animate();
 
 
