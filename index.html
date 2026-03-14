@@ -1933,8 +1933,9 @@ fairy.scale.set(4.2,5.4,1);
 
 fairy.renderOrder = 10;
 
-scene.add(fairy);
-
+const fairyPivot = new THREE.Group();
+scene.add(fairyPivot);
+fairyPivot.add(fairy);
 
 /* =========================================================
    3.5) 観測HUDリング
@@ -1975,11 +1976,10 @@ const fairyRing2 = createFairyRing(
   0.35
 );
 
-fairyRing1.position.z = -0.15;
-fairyRing2.position.z = 0.15;
+fairyPivot.rotation.z += 0.002;
      
-scene.add(fairyRing1);
-scene.add(fairyRing2);
+fairyPivot.add(fairyRing1);
+fairyPivot.add(fairyRing2);
 
 
 
