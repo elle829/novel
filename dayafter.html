@@ -554,50 +554,12 @@ margin-left:0;
 
 }
 
-/* ===============================
-墓石
-=============================== */
-  
-.stone-light{
-
-position:absolute;
-
-left:28%;
-top:60%;
-
-width:420px;
-height:420px;
-
-background:radial-gradient(
-circle,
-rgba(255,240,180,0.20),
-rgba(255,240,180,0.08),
-transparent 70%
-);
-
-filter:blur(80px);
-
-pointer-events:none;
-
-animation:stoneGlow 6s ease-in-out infinite;
-
-}
-
-@keyframes stoneGlow{
-
-0%{opacity:0.5}
-50%{opacity:0.8}
-100%{opacity:0.5}
-
-}
 
 </style>
 </head>
 
 <body>
 
-<div class="stone-light"></div>
-  
 <div class="petals"></div>
   
 <div class="mist mist0"></div>
@@ -685,22 +647,43 @@ animation:stoneGlow 6s ease-in-out infinite;
 /* 花びらjs */
 const container = document.querySelector(".petals");
 
-for(let i=0;i<36;i++){
+for(let i=0;i<48;i++){
 
 const petal=document.createElement("div");
 petal.className="petal";
 
-/* 風の角度（ランダム） */
-const angle = (-40 + Math.random()*80) * Math.PI/180;
+/* 風の角度 */
+const angle = (-60 + Math.random()*120) * Math.PI/180;
 
 /* 移動距離 */
-const distance = 140;
+const distance = 160;
 
-/* 開始位置 */
-const startX = -20;
-const startY = Math.random()*100;
+/* 出現位置（四辺ランダム） */
+let startX, startY;
 
-/* 終了位置 */
+const side = Math.floor(Math.random()*4);
+
+if(side===0){ // 左
+  startX = -20;
+  startY = Math.random()*100;
+}
+
+if(side===1){ // 右
+  startX = 120;
+  startY = Math.random()*100;
+}
+
+if(side===2){ // 上
+  startX = Math.random()*100;
+  startY = -20;
+}
+
+if(side===3){ // 下
+  startX = Math.random()*100;
+  startY = 120;
+}
+
+/* 終点 */
 const endX = startX + Math.cos(angle)*distance;
 const endY = startY + Math.sin(angle)*distance;
 
@@ -728,7 +711,7 @@ petal.style.setProperty("--zigY3",(-10+Math.random()*20)+"px");
 petal.style.setProperty("--time",20+Math.random()*30+"s");
 
 /* サイズ */
-petal.style.setProperty("--scale",0.4 + Math.random()*0.6);
+petal.style.setProperty("--scale",0.3 + Math.random()*0.9);
 
 /* 遅延 */
 petal.style.animationDelay=Math.random()*60+"s";
