@@ -1975,8 +1975,8 @@ const fairyRing2 = createFairyRing(
   0.35
 );
 
-fairy.add(fairyRing1);
-fairy.add(fairyRing2);
+scene.add(fairyRing1);
+scene.add(fairyRing2);
 
 
 
@@ -2962,9 +2962,12 @@ function animate(){
   if(driftStars.position.x > 40){
     driftStars.position.x = -40;
   }
-     
-  fairyRing1.rotation.z += 0.010;
-  fairyRing2.rotation.z -= 0.006;
+
+  fairyRing1.position.copy(fairy.position);
+  fairyRing2.position.copy(fairy.position);
+
+  fairyRing1.rotation.y += 0.012;
+  fairyRing2.rotation.y -= 0.007;
 
 
 /* ===============================
