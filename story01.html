@@ -48,30 +48,6 @@
   
 <style>
 
-/* =========================
-共通UI
-========================= */
-  
-/* 日本語 */
-@font-face{
-font-family:"UI-JP";
-src:local("Tsukushi A Old Mincho Pr6N"),
-    local("tsukushi-a-old-mincho-pr6n");
-unicode-range:
-U+3000-30FF,
-U+4E00-9FFF,
-U+FF00-FFEF;
-}
-
-/* 英数字 */
-@font-face{
-font-family:"UI-EN";
-src:local("Eurostile"),
-    local("Eurostile LT Std");
-unicode-range:
-U+0000-024F,
-U+2000-26FF;
-}
   
 /* =========================
 背景
@@ -100,18 +76,14 @@ to top,
 );
 
 /* Safari対応 */
-font-family:serif;
+font-family:
+eurostile,
+serif;
 
 color:white;
 
 }
 
-.wf-active body{
-font-family:
-"Eurostile",
-"Tsukushi A Old Mincho Pr6N",
-serif;
-}
 
 /* =========================
 星
@@ -265,8 +237,7 @@ transition:
 box-shadow .25s ease,
 transform .15s ease;
 font-family:
-"UI-JP",
-"UI-EN",
+eurostile,
 serif;
 }
   
@@ -380,8 +351,7 @@ text-shadow:
 0 0 18px rgba(120,190,255,.6),
 0 0 40px rgba(120,190,255,.4);
 font-family:
-"UI-JP",
-"UI-EN",
+eurostile,
 serif;
 animation:blink 1.2s infinite;
 }
