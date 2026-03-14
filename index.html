@@ -2163,7 +2163,29 @@ createNebula();
 /* =========================================================
    7) 星
    ========================================================= */
+function createStarTexture(){
+  const size = 64;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  const g = ctx.createRadialGradient(
+    size/2, size/2, 0,
+    size/2, size/2, size/2
+  );
+  g.addColorStop(0, "rgba(255,255,255,1)");
+  g.addColorStop(0.4, "rgba(255,255,255,0.9)");
+  g.addColorStop(0.8, "rgba(255,255,255,0.2)");
+  g.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(size/2, size/2, size/2, 0, Math.PI*2);
+  ctx.fill();
+  return new THREE.CanvasTexture(canvas);
+}
 
+const starTexture = createStarTexture();
+     
 function createStars(size,count){
 
   const geo = new THREE.BufferGeometry();
@@ -2181,14 +2203,15 @@ function createStars(size,count){
   );
 
   const material = new THREE.PointsMaterial({
-  color: 0xdfe9ff,
-  size: 0.035,
-  transparent: true,
-  opacity: 0.9,
-  sizeAttenuation: true,
-  depthWrite: false
-});
-
+    map: starTexture,
+    color: 0xdfe9ff,
+    size: 0.035,
+    transparent: true,
+    opacity: 0.9,
+    sizeAttenuation: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
   return new THREE.Points(geo, material);
 }
 const starsNear = createStars(40, 900);
@@ -3058,6 +3081,19 @@ enterButton.addEventListener("click",()=>{
 bootScreen.classList.add("hide");
 
 });
+
+/* ===============================
+   ターゲットリング初期位置
+=============================== */
+
+fairy.getWorldPosition(tmpVec3);
+const init = tmpVec3.clone().project(camera);
+
+ringX = (init.x * 0.5 + 0.5) * window.innerWidth;
+ringY = (-init.y * 0.5 + 0.5) * window.innerHeight;
+
+targetRing.style.left = ringX + "px";
+targetRing.style.top  = ringY + "px";
 
 /* ===============================
 HEADER GLITCH
