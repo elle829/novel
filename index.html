@@ -195,19 +195,21 @@ to top,
   pointer-events:none;
   z-index:20;
   opacity:0;
-  transform:
-  translate(-50%,-40%)
-  scale(.8);
-  transition:
-  opacity .25s ease,
-  transform .35s cubic-bezier(.2,.9,.3,1.2);
+  will-change:transform, opacity;
+  transition:opacity .25s ease;
+}
+
+#moonPopup .console{
+  transform:translate(-50%,-40%) scale(.8);
+  transition:transform .35s cubic-bezier(.2,.9,.3,1.2);
 }
 
 #moonPopup.show{
   opacity:1;
-  transform:
-  translate(-50%,-50%)
-  scale(1);
+}
+
+#moonPopup.show .console{
+  transform:translate(-50%,-50%) scale(1);
 }
 
 
@@ -1879,20 +1881,18 @@ camera.position.set(0,0.2,9);   // ←ここ追加
 
 const renderer = new THREE.WebGLRenderer({
   antialias:true,
-  alpha:true
+  alpha:true,
+  powerPreference:"high-performance"
 });
 
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.sortObjects = true;
      
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.85;
      
 renderer.setSize(window.innerWidth,window.innerHeight);
 
-renderer.setPixelRatio(
-  Math.min(window.devicePixelRatio,2)
-);
+renderer.setPixelRatio(window.devicePixelRatio);
 
 document
 .getElementById("scene")
@@ -2366,10 +2366,10 @@ window.addEventListener("click",()=>{
 function updatePopupForHoveredMoon(moon){
 
   moon.getWorldPosition(tmpVec3);
-  const v = tmpVec3.clone().project(camera);
+  tmpVec3.project(camera);
 
-  const screenX = (v.x * 0.5 + 0.5) * window.innerWidth;
-  const screenY = (-v.y * 0.5 + 0.5) * window.innerHeight;
+  const screenX = (tmpVec3.x * 0.5 + 0.5) * window.innerWidth;
+  const screenY = (-tmpVec3.y * 0.5 + 0.5) * window.innerHeight;
 
   /* =========================================================
      popup を月軌道の外側に出す
@@ -2406,8 +2406,10 @@ function updatePopupForHoveredMoon(moon){
      let popupY = screenY + outwardY * popupDistance;
      
      /* popupサイズ取得 */
-     moonPopup.style.left = popupX + "px";
-     moonPopup.style.top = popupY + "px";
+     moonPopup.style.transform =
+     `translate(${popupX}px,${popupY}px)`;
+
+     
      
      let rect = moonPopup.getBoundingClientRect();
      const popupHalfW = rect.width * 0.5;
@@ -2416,7 +2418,8 @@ function updatePopupForHoveredMoon(moon){
      /* 妖精座標 */
      
      fairy.getWorldPosition(tmpVec3b);
-     const fairyScreen = tmpVec3b.clone().project(camera);
+     tmpVec3b.project(camera);
+     const fairyScreen = tmpVec3b;
      
      const fairyX = (fairyScreen.x * 0.5 + 0.5) * window.innerWidth;
      const fairyY = (-fairyScreen.y * 0.5 + 0.5) * window.innerHeight;
@@ -2466,10 +2469,11 @@ for(let i=0;i<32;i++){
 popupX = bestX;
 popupY = bestY;
      
-  moonPopup.style.left = popupX + "px";
-  moonPopup.style.top = popupY + "px";
+  moonPopup.style.transform =
+  `translate(${popupX}px,${popupY}px)`;
 
   /* popupサイズ取得 */
+  rect = moonPopup.getBoundingClientRect();
   const halfW = rect.width * 0.5;
   const halfH = rect.height * 0.5;
 
@@ -2477,8 +2481,10 @@ popupY = bestY;
   popupX = Math.max(halfW + 20, Math.min(window.innerWidth - halfW - 20, popupX));
   popupY = Math.max(halfH + 20, Math.min(window.innerHeight - halfH - 20, popupY));
 
-  moonPopup.style.left = popupX + "px";
-  moonPopup.style.top = popupY + "px";
+  moonPopup.style.transform =
+  `translate(${popupX}px,${popupY}px)`;
+
+　rect = moonPopup.getBoundingClientRect();
 
   /* popupの最近接点 */
 
@@ -2536,11 +2542,10 @@ popupY = bestY;
 
   /* 描画 */
   tail.style.opacity = 1;
-  tail.style.left = startX + "px";
-  tail.style.top = startY + "px";
   tail.style.width = dist + "px";
-  tail.style.transform = "rotate(" + angle + "deg)";
-
+  tail.style.transform =
+  `translate(${startX}px,${startY}px) rotate(${angle}deg)`;
+     
   const safeDistance = 120;
   if(dist < safeDistance){
     tail.style.opacity = 0;
@@ -2854,8 +2859,9 @@ function animate(){
 
   raycaster.setFromCamera(mouse,camera);
 
+  raycaster.firstHitOnly = true;
   const hit = raycaster.intersectObjects(moons,false);
-
+     
   hovered=hit.length>0 ? hit[0].object : null;
 
   if(hovered){
@@ -2965,7 +2971,8 @@ function animate(){
 =============================== */
 
 fairy.getWorldPosition(tmpVec3);
-const v2 = tmpVec3.clone().project(camera);
+tmpVec3.project(camera);
+const v2 = tmpVec3;
 const x2 = (v2.x * 0.5 + 0.5) * window.innerWidth;
 const y2 = (-v2.y * 0.5 + 0.5) * window.innerHeight;
 const targetX = x2;
@@ -2975,15 +2982,16 @@ const targetY = y2;
 ringX += (targetX - ringX) * 0.12;
 ringY += (targetY - ringY) * 0.12;
 
-targetRing.style.left = ringX + mouseX * 4 + "px";
-targetRing.style.top  = ringY + mouseY * 2.5 + "px";
+targetRing.style.transform =
+`translate(${ringX + mouseX * 4}px, ${ringY + mouseY * 2.5}px)`;
      
 /* ノードを妖精位置に */
 fairy.getWorldPosition(tmpVec3b);
-const v = tmpVec3b.clone().project(camera);
+tmpVec3b.project(camera);
+const vFairy = tmpVec3b;
 
-const nodeBaseX = (v.x * 0.5 + 0.5) * window.innerWidth;
-const nodeBaseY = (-v.y * 0.5 + 0.5) * window.innerHeight;
+const nodeBaseX = (vFairy.x * 0.5 + 0.5) * window.innerWidth;
+const nodeBaseY = (-vFairy.y * 0.5 + 0.5) * window.innerHeight;
 
 /* ノード中心位置を少し妖精にかぶせる */
 const nodeOffsetX = -28;
@@ -2993,8 +3001,8 @@ const nodeX = nodeBaseX + nodeOffsetX;
 const nodeY = nodeBaseY + nodeOffsetY;
 
 /* ノード自体は中央合わせで配置 */
-vitalNode.style.left = (nodeX - 6) + "px";
-vitalNode.style.top = (nodeY - 6) + "px";
+vitalNode.style.transform =
+`translate(${nodeX - 6}px, ${nodeY - 6}px)`;
 
 /* ノード → グラフ線 */
 const rect = vitalGraph.getBoundingClientRect();
@@ -3008,10 +3016,9 @@ const dy = graphY - nodeY;
 const length = Math.hypot(dx,dy);
 const angle = Math.atan2(dy,dx) * 180 / Math.PI;
 
-vitalLine.style.left = nodeX + "px";
-vitalLine.style.top = nodeY + "px";
 vitalLine.style.width = length + "px";
-vitalLine.style.transform = "rotate(" + angle + "deg)";
+vitalLine.style.transform =
+`translate(${nodeX}px,${nodeY}px) rotate(${angle}deg)`;
      
   updateVitalWave();
      
@@ -3031,9 +3038,7 @@ window.addEventListener("resize",()=>{
 
   renderer.setSize(window.innerWidth,window.innerHeight);
 
-  renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio,2)
-  );
+  renderer.setPixelRatio(window.devicePixelRatio);
 
 });
 
