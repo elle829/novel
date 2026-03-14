@@ -49,8 +49,9 @@ margin:0;
 height:100%;
 
 font-family:
-"fot-tsukuaoldmin-pr6n",sans-serif;
-"eurostile",serif;
+"fot-tsukuaoldmin-pr6n",
+"eurostile",
+sans-serif;
 
 color:white;
 }
@@ -436,8 +437,8 @@ opacity:0;
 
 0%{
 transform:
-translateX(-20vw)
-translateY(0)
+translateX(var(--startX))
+translateY(var(--startY))
 rotate(0deg)
 scale(var(--scale));
 opacity:0;
@@ -449,8 +450,8 @@ opacity:0.6;
 
 100%{
 transform:
-translateX(120vw)
-translateY(var(--fall))
+translateX(var(--endX))
+translateY(var(--endY))
 rotate(var(--rot))
 scale(var(--scale));
 opacity:0;
@@ -505,13 +506,8 @@ margin-left:0;
 <div class="title">
 
 <h1>
-
-<ruby>
-人間
-<rt>あなた</rt>
-</ruby>
-たちについて知っているいくつかのこと
-
+あなたたちについて知っている<br>
+いくつかのこと
 </h1>
 
 <div class="subtitle">
@@ -552,7 +548,7 @@ margin-left:0;
 
 <div class="link-desc">
 あなたたちは狡いから……<br>
-悔しくて寂しくて、諦められなくなってしまったんです。
+悔しくて寂しくて、諦められない。
 </div>
 
 </div>
@@ -563,7 +559,8 @@ margin-left:0;
 <div class="link-window">
 
 <div class="link-title">
-あなたたちについて知っているいくつかのこと
+あなたたちについて知っている<br>
+いくつかのこと
 </div>
 
 <div class="link-desc">
@@ -586,25 +583,32 @@ for(let i=0;i<12;i++){
 const petal=document.createElement("div");
 petal.className="petal";
 
-/* 画面外からスタート */
-if(Math.random()>0.5){
-  petal.style.left=(-20 + Math.random()*10) + "vw";
-}else{
-  petal.style.left=(100 + Math.random()*20) + "vw";
-}
-  
-/* 高さ */
-petal.style.top=Math.random()*100+"vh";
+/* 風の角度（ランダム） */
+const angle = (-40 + Math.random()*80) * Math.PI/180;
 
-/* 速度 */
-petal.style.setProperty("--time",20+Math.random()*30+"s");
+/* 移動距離 */
+const distance = 140;
 
-/* 落下量 */
-petal.style.setProperty("--fall",-80+Math.random()*160+"px");
+/* 開始位置 */
+const startX = -20;
+const startY = Math.random()*100;
+
+/* 終了位置 */
+const endX = startX + Math.cos(angle)*distance;
+const endY = startY + Math.sin(angle)*distance;
+
+/* CSS変数 */
+petal.style.setProperty("--startX", startX+"vw");
+petal.style.setProperty("--startY", startY+"vh");
+petal.style.setProperty("--endX", endX+"vw");
+petal.style.setProperty("--endY", endY+"vh");
 
 /* 回転 */
 petal.style.setProperty("--rot",-60+Math.random()*120+"deg");
+
+/* ジグザグ */
 petal.style.setProperty("--zig",4+Math.random()*6+"s");
+
 petal.style.setProperty("--zigX1",(-10+Math.random()*20)+"px");
 petal.style.setProperty("--zigX2",(-10+Math.random()*20)+"px");
 petal.style.setProperty("--zigX3",(-10+Math.random()*20)+"px");
@@ -613,11 +617,14 @@ petal.style.setProperty("--zigY1",(-10+Math.random()*20)+"px");
 petal.style.setProperty("--zigY2",(-10+Math.random()*20)+"px");
 petal.style.setProperty("--zigY3",(-10+Math.random()*20)+"px");
 
-/* 遅延 */
-petal.style.animationDelay=Math.random()*30+"s";
+/* 速度 */
+petal.style.setProperty("--time",20+Math.random()*30+"s");
 
 /* サイズ */
 petal.style.setProperty("--scale",0.4 + Math.random()*0.6);
+
+/* 遅延 */
+petal.style.animationDelay=Math.random()*30+"s";
 
 container.appendChild(petal);
 
