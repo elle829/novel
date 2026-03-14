@@ -1942,19 +1942,19 @@ function createHudRing(radius, thickness = 0.02, opacity = 0.55){
   return new THREE.Mesh(geo, mat);
 }
      
-const hudHome = new THREE.Vector3(0,-0.1,-0.5);
+const hudHome = new THREE.Vector3(0,0,0);
 
 const hudRing = createHudRing(3.78, 0.035, 0.58);
 hudRing.rotation.y = Math.PI / 2;
 hudRing.position.copy(hudHome);
 hudRing.renderOrder = 2;
-scene.add(hudRing);
+fairy.add(hudRing);
 
 const hudRing2 = createHudRing(4.12, 0.018, 0.22);
 hudRing2.rotation.y = Math.PI / 2;
 hudRing2.position.copy(hudHome);
 hudRing2.renderOrder = 2;
-scene.add(hudRing2);
+fairy.add(hudRing2);
 
 /* 回転が見えるマーカー */
 const markerGeo = new THREE.PlaneGeometry(0.05,0.55);
@@ -2085,31 +2085,14 @@ for(let i=0;i<10;i++){
     subtitle:moonData[i].subtitle,
     url:moonData[i].url
   };
-
-/* グロー用テクスチャ */
-const glowMat = new THREE.SpriteMaterial({
-  map: tex,
-  color:0xcfe6ff,
-  transparent:true,
-  opacity:0.35,
-  blending:THREE.AdditiveBlending,
-  depthWrite:false
-});
-
-const glow = new THREE.Sprite(glowMat);
-moon.userData.glow = glow;
-
-/* 月より少し大きく */
-glow.scale.set(1.6,1.6,1);
-
-moon.add(glow);
-     
+ 
   moonGroup.add(moon);
 
   moons.push(moon);
 
 }
 
+     
 /* =========================================================
    Nebula
    ========================================================= */
@@ -2901,7 +2884,6 @@ function animate(){
     const scale=0.6+depth*0.6;
 
     const visited = isMoonVisited(moon.userData.index);
-    const glow = moon.userData.glow;
 
      if(moon === hovered){
        moon.scale.set(scale * 1.28, scale * 1.28, 1);
@@ -2915,7 +2897,6 @@ function animate(){
 
        moon.material.color.set(0xc86cff);
      
-       /* ネオン発光 */
        moon.material.blending = THREE.AdditiveBlending;
        moon.material.depthWrite = false;
      
@@ -2925,15 +2906,12 @@ function animate(){
      
        moon.material.opacity =
          Math.min(1,0.85 + depth * 0.25 + pulse * 0.25);
-       glow.material.color.set(0xc86cff);
-       glow.material.opacity = 0.6;
      
      }else{
+     
        moon.material.color.set(0xffffff);
        moon.material.opacity = Math.min(1, 0.5 + depth * 0.5);
      
-       glow.material.color.set(0xcfe6ff);
-       glow.material.opacity = 0.35;
      }
      
      moon.renderOrder = z > 0 ? 5 : 15;
