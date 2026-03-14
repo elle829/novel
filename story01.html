@@ -99,10 +99,13 @@ to top,
 #040817
 );
 
+/* Safari対応 */
 font-family:
-"UI-JP",
-"UI-EN",
+"Eurostile",
+"Eurostile LT Std",
+"Tsukushi A Old Mincho Pr6N",
 serif;
+
 color:white;
 
 }
@@ -427,8 +430,7 @@ animation:saveProgress 2s linear forwards;
 <button id="prev">&#9664;</button>
 <button id="next">&#9654;</button>
 
-<button id="saveButton">SAVE</button>
-
+<button id="saveButton" disabled>SAVE</button>
 
 <div class="save-overlay" id="saveOverlay">
 
@@ -489,8 +491,10 @@ next.disabled = (page === TOTAL_PAGES);
 
 /* SAVE */
 if(page === TOTAL_PAGES){
+saveButton.disabled = false;
 saveButton.classList.add("active");
 }else{
+saveButton.disabled = true;
 saveButton.classList.remove("active");
 }
 preloadNext();
