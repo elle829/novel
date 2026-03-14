@@ -3082,18 +3082,6 @@ bootScreen.classList.add("hide");
 
 });
 
-/* ===============================
-   ターゲットリング初期位置
-=============================== */
-
-fairy.getWorldPosition(tmpVec3);
-const init = tmpVec3.clone().project(camera);
-
-ringX = (init.x * 0.5 + 0.5) * window.innerWidth;
-ringY = (-init.y * 0.5 + 0.5) * window.innerHeight;
-
-targetRing.style.left = ringX + "px";
-targetRing.style.top  = ringY + "px";
 
 /* ===============================
 HEADER GLITCH
