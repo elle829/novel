@@ -1979,22 +1979,7 @@ fairy.add(fairyRing1);
 fairy.add(fairyRing2);
 
 
-/* 回転が見えるマーカー */
-const markerGeo = new THREE.PlaneGeometry(0.05,0.55);
-const markerMat = new THREE.MeshBasicMaterial({
-color:0x9ecbff,
-transparent:true,
-opacity:0.9,
-blending:THREE.AdditiveBlending,
-depthWrite:false
-});
-const ringMarker = new THREE.Mesh(markerGeo,markerMat);
 
-/* リングの外周に配置 */
-ringMarker.position.y = 3.78;
-hudRing.add(ringMarker);
-
-     
 /* =========================================================
    4) 月テクスチャ
    ========================================================= */
@@ -2981,12 +2966,6 @@ function animate(){
   fairyRing1.rotation.z += 0.010;
   fairyRing2.rotation.z -= 0.006;
 
-const idleX = hudHome.x + mouseX * 0.15;
-const idleY = hudHome.y + mouseY * 0.08;
-const idleZ = hudHome.z;
-
-hudRing.position.set(idleX, idleY, idleZ);
-hudRing2.position.set(idleX, idleY, idleZ);
 
 /* ===============================
    ターゲットリング追従
