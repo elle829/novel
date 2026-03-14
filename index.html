@@ -1864,6 +1864,9 @@ import * as THREE from
    ========================================================= */
 
 const scene = new THREE.Scene();
+/* 再利用Vector */
+const tmpVec3 = new THREE.Vector3();
+const tmpVec3b = new THREE.Vector3();
 
 const camera = new THREE.PerspectiveCamera(
   55,
@@ -2036,7 +2039,6 @@ function createMoonTexture(phase){
   ctx.globalCompositeOperation = "source-over";
 
   const texture = new THREE.CanvasTexture(canvas);
-  texture.needsUpdate = true;
   texture.colorSpace = THREE.SRGBColorSpace;
 
   return texture;
@@ -2234,8 +2236,10 @@ function createWarpStars(count){
 }
 
 const warpStars = createWarpStars(420);
-
 scene.add(warpStars);
+
+const warpPositions =
+warpStars.geometry.attributes.position.array;
      
 function createDriftStars(count){
 
@@ -2323,6 +2327,9 @@ const vitalGraph = document.querySelector(".vital-graph");
 let ringX = 0;
 let ringY = 0;
 
+const consoleBox =
+document.querySelector("#moonPopup .console");
+
 /* =========================================================
    10) 公転
    ========================================================= */
@@ -2362,10 +2369,8 @@ window.addEventListener("click",()=>{
 
 function updatePopupForHoveredMoon(moon){
 
-  const worldPos = new THREE.Vector3();
-  moon.getWorldPosition(worldPos);
-
-  const v = worldPos.clone().project(camera);
+  moon.getWorldPosition(tmpVec3);
+  const v = tmpVec3.clone().project(camera);
 
   const screenX = (v.x * 0.5 + 0.5) * window.innerWidth;
   const screenY = (-v.y * 0.5 + 0.5) * window.innerHeight;
@@ -2414,10 +2419,8 @@ function updatePopupForHoveredMoon(moon){
      
      /* 妖精座標 */
      
-     const fairyWorld = new THREE.Vector3();
-     fairy.getWorldPosition(fairyWorld);
-     
-     const fairyScreen = fairyWorld.clone().project(camera);
+     fairy.getWorldPosition(tmpVec3b);
+     const fairyScreen = tmpVec3b.clone().project(camera);
      
      const fairyX = (fairyScreen.x * 0.5 + 0.5) * window.innerWidth;
      const fairyY = (-fairyScreen.y * 0.5 + 0.5) * window.innerHeight;
@@ -2471,22 +2474,15 @@ popupY = bestY;
   moonPopup.style.top = popupY + "px";
 
   /* popupサイズ取得 */
-  rect = moonPopup.getBoundingClientRect();
-
   const halfW = rect.width * 0.5;
   const halfH = rect.height * 0.5;
 
   /* 画面クランプ */
-
   popupX = Math.max(halfW + 20, Math.min(window.innerWidth - halfW - 20, popupX));
   popupY = Math.max(halfH + 20, Math.min(window.innerHeight - halfH - 20, popupY));
 
   moonPopup.style.left = popupX + "px";
   moonPopup.style.top = popupY + "px";
-
-  /* rect 更新（これが重要） */
-  rect = moonPopup.getBoundingClientRect();
-  
 
   /* popupの最近接点 */
 
@@ -2536,7 +2532,6 @@ popupY = bestY;
     endY - startY,
     endX - startX
   ) * 180 / Math.PI;
-  const consoleBox = moonPopup.querySelector(".console");
   if(flip){
     consoleBox.classList.add("flip");
   }else{
@@ -2863,7 +2858,7 @@ function animate(){
 
   raycaster.setFromCamera(mouse,camera);
 
-  const hit=raycaster.intersectObjects(moons);
+  const hit = raycaster.intersectObjects(moons,false);
 
   hovered=hit.length>0 ? hit[0].object : null;
 
@@ -2944,21 +2939,19 @@ function animate(){
   starsMid.rotation.y+=0.00035;
   starsFar.rotation.y+=0.00015;
 
-  const t = performance.now() * 0.001;
-  starsNear.material.opacity = 0.75 + Math.sin(t*2.3) * 0.08;
-  starsMid.material.opacity  = 0.65 + Math.sin(t*1.8) * 0.07;
-  starsFar.material.opacity  = 0.55 + Math.sin(t*1.4) * 0.06;
+     const t = performance.now() * 0.001;
+     const s1 = Math.sin(t*2.3);
+     const s2 = Math.sin(t*1.8);
+     const s3 = Math.sin(t*1.4);
+     starsNear.material.opacity = 0.75 + s1 * 0.08;
+     starsMid.material.opacity  = 0.65 + s2 * 0.07;
+     starsFar.material.opacity  = 0.55 + s3 * 0.06;
      
-  const pos = warpStars.geometry.attributes.position.array;
-
-  for(let i=0;i<pos.length;i+=3){
-
-    pos[i+2] += 0.25;
-
-    if(pos[i+2] > 5){
-      pos[i+2] = -80;
-    }
-
+  for(let i=0;i<warpPositions.length;i+=3){
+  warpPositions[i+2] += 0.25;
+  if(warpPositions[i+2] > 5){
+  warpPositions[i+2] = -80;
+  }
   }
 
   warpStars.geometry.attributes.position.needsUpdate = true;
@@ -2975,9 +2968,8 @@ function animate(){
    ターゲットリング追従
 =============================== */
 
-const fairyWorld2 = new THREE.Vector3();
-fairy.getWorldPosition(fairyWorld2);
-const v2 = fairyWorld2.clone().project(camera);
+fairy.getWorldPosition(tmpVec3);
+const v2 = tmpVec3.clone().project(camera);
 const x2 = (v2.x * 0.5 + 0.5) * window.innerWidth;
 const y2 = (-v2.y * 0.5 + 0.5) * window.innerHeight;
 const targetX = x2;
@@ -2991,10 +2983,8 @@ targetRing.style.left = ringX + mouseX * 4 + "px";
 targetRing.style.top  = ringY + mouseY * 2.5 + "px";
      
 /* ノードを妖精位置に */
-const fairyWorld = new THREE.Vector3();
-fairy.getWorldPosition(fairyWorld);
-
-const v = fairyWorld.clone().project(camera);
+fairy.getWorldPosition(tmpVec3b);
+const v = tmpVec3b.clone().project(camera);
 
 const nodeBaseX = (v.x * 0.5 + 0.5) * window.innerWidth;
 const nodeBaseY = (-v.y * 0.5 + 0.5) * window.innerHeight;
