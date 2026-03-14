@@ -1614,12 +1614,13 @@ ARCHIVE ACCESS
 
 <div class="boot-text">
 このサイトは二次創作作品を扱うファンサイトです。<br>
-公式とは関係ありません。<br><br>
+公式とは関係ありません。<br>
+サイト内の全てについて、無断複製・転載・AI利用を禁じます。<br><br>
 All characters and worlds belong to their original creators.
 </div>
 
 <button id="enterButton" class="en">
-ENTER
+ACCESS
 </button>
 
 </div>
@@ -2085,25 +2086,6 @@ for(let i=0;i<10;i++){
     url:moonData[i].url
   };
 
-/* 月の発光ハロー */
-
-const glowGeo = new THREE.CircleGeometry(1.2,64);
-
-const glowMat = new THREE.MeshBasicMaterial({
-  color:0xc86cff,
-  transparent:true,
-  opacity:0.25,
-  blending:THREE.AdditiveBlending,
-  depthWrite:false
-});
-
-const glow = new THREE.Mesh(glowGeo,glowMat);
-
-/* 月の少し後ろに配置 */
-glow.position.z = -0.01;
-
-moon.add(glow);
-
 /* グロー用テクスチャ */
 const glowMat = new THREE.SpriteMaterial({
   map: tex,
@@ -2115,6 +2097,7 @@ const glowMat = new THREE.SpriteMaterial({
 });
 
 const glow = new THREE.Sprite(glowMat);
+moon.userData.glow = glow;
 
 /* 月より少し大きく */
 glow.scale.set(1.6,1.6,1);
@@ -2918,6 +2901,7 @@ function animate(){
     const scale=0.6+depth*0.6;
 
     const visited = isMoonVisited(moon.userData.index);
+    const glow = moon.userData.glow;
 
      if(moon === hovered){
        moon.scale.set(scale * 1.28, scale * 1.28, 1);
@@ -2941,10 +2925,15 @@ function animate(){
      
        moon.material.opacity =
          Math.min(1,0.85 + depth * 0.25 + pulse * 0.25);
+       glow.material.color.set(0xc86cff);
+       glow.material.opacity = 0.6;
      
      }else{
        moon.material.color.set(0xffffff);
        moon.material.opacity = Math.min(1, 0.5 + depth * 0.5);
+     
+       glow.material.color.set(0xcfe6ff);
+       glow.material.opacity = 0.35;
      }
      
      moon.renderOrder = z > 0 ? 5 : 15;
@@ -3088,9 +3077,9 @@ const enterButton = document.getElementById("enterButton");
    進捗チェック
 ========================= */
 
-const visitedStories = getVisited();
+const visitedStories = [...new Set(getVisited())];
 if(visitedStories.length > 0){
-bootScreen.style.display = "none";
+  bootScreen.style.display = "none";
 }
      
 enterButton.addEventListener("click",()=>{
