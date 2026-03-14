@@ -3093,16 +3093,7 @@ header.classList.remove("block-glitch");
 },2200);
 
      
-const hudObject = document.getElementById("hudSVG");
-hudObject.addEventListener("load",()=>{
-const svg = hudObject.contentDocument;
-/* 例：円メーター */
-const circles = svg.querySelectorAll("circle");
-circles.forEach((c,i)=>{
-c.style.transformOrigin = "center";
-c.style.animation = "hudSpin 8s linear infinite";
-});
-});
+
      
 animate();
 
