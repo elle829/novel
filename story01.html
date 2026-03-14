@@ -134,86 +134,21 @@ filter:drop-shadow(0 0 20px rgba(120,180,255,.45));
 }
 
 /* =========================
-中央ウィンドウ
-========================= */
-
-.reader{
-
-position:absolute;
-left:50%;
-top:50%;
-transform:translate(-50%,-50%);
-
-width:92vw;
-max-width:1400px;
-max-height:80vh;
-height:auto;
-
-padding:18px 28px 28px;
-  
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-
-background:
-linear-gradient(
-180deg,
-rgba(20,30,70,.85),
-rgba(10,15,40,.92)
-);
-
-border:1px solid rgba(120,190,255,.7);
-
-box-shadow:
-0 0 8px rgba(122,143,216,.35),
-0 0 18px rgba(122,143,216,.28),
-0 0 38px rgba(122,143,216,.22),
-inset 0 0 18px rgba(122,143,216,.08),
-inset 0 0 24px rgba(0,0,0,.55);
-
-clip-path:
-polygon(
-0 0,
-100% 0,
-100% 100%,
-70px 100%,
-0 calc(100% - 70px)
-);
-
-z-index:10;
-}
-  
-.reader::before{
-content:"";
-position:absolute;
-left:16px;
-top:20px;
-bottom:20px;
-width:30px;
-background:
-repeating-linear-gradient(
-to bottom,
-transparent 0px,
-transparent 8px,
-rgba(122,143,216,.7) 9px,
-rgba(122,143,216,.7) 10px
-);
-opacity:.6;
-}
-
-/* =========================
 画像
 ========================= */
 
 .page{
-width:100%;
+position:absolute;
+left:50%;
+top:50%;
+max-width:92vw;
+max-height:78vh;
+width:auto;
 height:auto;
-max-height:72vh;
 object-fit:contain;
-image-rendering:auto;
 box-shadow:none;
-transform-origin:left center;
+z-index:5;
+transform:translate(-50%,-55%);
 }
 
 #pageCounter{
@@ -238,32 +173,33 @@ animation:dataOut .35s ease forwards;
 .page.in{
 animation:dataIn .45s ease forwards;
 }
+  
 @keyframes dataOut{
 0%{
 opacity:1;
-transform:scale(1);
+transform:translate(-50%,-55%) scale(1);
 }
 40%{
 opacity:.6;
-transform:scale(.98) skewX(-4deg);
+transform:translate(-50%,-55%) scale(.98) skewX(-4deg);
 }
 100%{
 opacity:0;
-transform:scale(.95) translateX(-40px);
+transform:translate(calc(-50% - 40px),-55%) scale(.95);
 }
 }
 
 @keyframes dataIn{
 0%{
 opacity:0;
-transform:scale(.95) translateX(40px);
+transform:translate(calc(-50% + 40px),-55%) scale(.95);
 }
 40%{
 opacity:.5;
 }
 100%{
 opacity:1;
-transform:scale(1);
+transform:translate(-50%,-55%) scale(1);
 }
 }
 
@@ -272,11 +208,14 @@ transform:scale(1);
 ========================= */
 
 .controls{
-margin-top:20px;
-margin-bottom:20px;
-display:grid;
-grid-template-columns:1fr auto 1fr;
+position:absolute;
+left:50%;
+bottom:90px;
+transform:translateX(-50%);
+display:flex;
 align-items:center;
+gap:28px;
+z-index:6;
 }
 
 #prev{
@@ -286,12 +225,9 @@ justify-self:start;
 justify-self:end;
 }
 #pageCounter{
-width:140px;
-text-align:center;
 font-size:14px;
-letter-spacing:.15em;
+letter-spacing:.18em;
 color:#cfe7ff;
-
 text-shadow:
 0 0 6px rgba(120,190,255,.8),
 0 0 14px rgba(120,190,255,.4);
@@ -345,12 +281,13 @@ inset 0 0 14px rgba(122,143,216,.35);
 
 /* SAVE */
 #saveButton{
-margin-top:22px;
+position:absolute;
+left:50%;
+bottom:40px;
+transform:translateX(-50%);
 padding:10px 28px;
 font-size:13px;
 letter-spacing:.18em;
-width:auto;
-height:auto;
 border-radius:4px;
 background:
 linear-gradient(
@@ -362,6 +299,7 @@ border:1px solid rgba(120,190,255,.7);
 box-shadow:
 0 0 10px rgba(120,190,255,.5),
 0 0 30px rgba(120,190,255,.25);
+z-index:6;
 }
 #saveButton.active{
 opacity:1;
@@ -483,8 +421,6 @@ animation:saveProgress 2s linear forwards;
 
 <div class="hud-frame"></div>
 
-<div class="reader">
-
 <img id="pageImage" class="page">
 
 <div class="controls">
@@ -494,7 +430,7 @@ animation:saveProgress 2s linear forwards;
 </div>
 
 <button id="saveButton">SAVE</button>
-</div>
+
 
 <div class="save-overlay" id="saveOverlay">
 
@@ -686,8 +622,7 @@ s.x = Math.random()*canvas.width;
 
 /* 30fps */
 
-setTimeout(()=>requestAnimationFrame(drawStars),33);
-
+requestAnimationFrame(drawStars);
 }
 
 drawStars();
