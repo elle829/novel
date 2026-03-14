@@ -1976,8 +1976,9 @@ const fairyRing2 = createFairyRing(
   0.35
 );
 
-fairyPivot.rotation.z += 0.002;
-     
+fairyRing1.position.z = -0.15;
+fairyRing2.position.z = 0.15;
+
 fairyPivot.add(fairyRing1);
 fairyPivot.add(fairyRing2);
 
@@ -2966,23 +2967,6 @@ function animate(){
     driftStars.position.x = -40;
   }
 
-  fairyRing1.position.set(
-    fairy.position.x,
-    fairy.position.y,
-    fairy.position.z - 0.25
-  );
-
-  fairyRing2.position.set(
-    fairy.position.x,
-    fairy.position.y,
-    fairy.position.z + 0.25
-  );
-
-  fairyRing1.position.z -= 0.15;
-  fairyRing2.position.z += 0.15;
-     
-  fairyRing1.rotation.y += 0.003;
-  fairyRing2.rotation.y -= 0.002;
 
 
 /* ===============================
