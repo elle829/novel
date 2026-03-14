@@ -130,10 +130,7 @@ background-size:contain;
 pointer-events:none;
 z-index:2;
 opacity:.45;
-filter:
-drop-shadow(0 0 12px rgba(120,180,255,.6))
-drop-shadow(0 0 30px rgba(120,180,255,.35))
-drop-shadow(0 0 80px rgba(120,180,255,.2));
+filter:drop-shadow(0 0 20px rgba(120,180,255,.45));
 }
 
 /* =========================
@@ -216,6 +213,7 @@ box-shadow:
 0 0 30px rgba(120,190,255,.4);
 transform-origin:left center;
 image-rendering:auto;
+will-change:transform,opacity;
 }
 
 #pageCounter{
@@ -244,17 +242,14 @@ animation:dataIn .45s ease forwards;
 0%{
 opacity:1;
 transform:scale(1);
-filter:blur(0px);
 }
 40%{
 opacity:.6;
 transform:scale(.98) skewX(-4deg);
-filter:blur(2px);
 }
 100%{
 opacity:0;
 transform:scale(.95) translateX(-40px);
-filter:blur(6px);
 }
 }
 
@@ -262,18 +257,14 @@ filter:blur(6px);
 0%{
 opacity:0;
 transform:scale(.95) translateX(40px);
-filter:blur(6px);
 }
 40%{
 opacity:.5;
-filter:blur(3px);
 }
 100%{
 opacity:1;
 transform:scale(1);
-filter:blur(0px);
 }
-
 }
 
 /* =========================
@@ -409,7 +400,7 @@ text-align:center;
 overflow:hidden;
 }
 
-.save-panel::after{
+.save-overlay .save-panel::after{
 content:"";
 position:absolute;
 left:0;
@@ -553,29 +544,27 @@ img.classList.remove("in");
 img.classList.add("out");
 const newSrc =
 `archive/story${STORY_ID}/page${String(page).padStart(2,"0")}.png`;
-const preload = new Image();
-preload.onload = () => {
 setTimeout(()=>{
 img.src = newSrc;
 counter.textContent = page+" / "+TOTAL_PAGES;
 img.classList.remove("out");
 img.classList.add("in");
 },320);
-};
-preload.src = newSrc;
 
 /* ボタン状態 */
 prev.disabled = (page === 1);
 next.disabled = (page === TOTAL_PAGES);
 
-/* SAVE */
+/* SAVEボタン */
 if(page === TOTAL_PAGES){
 saveButton.classList.add("active");
 }else{
 saveButton.classList.remove("active");
 }
+
 }
 
+  
 /* =========================
 操作
 ========================= */
@@ -622,6 +611,7 @@ location.href="index.html";
 
 const canvas=document.getElementById("stars");
 const ctx=canvas.getContext("2d");
+ctx.imageSmoothingEnabled = false;
 
 function resizeCanvas(){
 canvas.width=window.innerWidth;
@@ -630,25 +620,29 @@ canvas.height=window.innerHeight;
 
 resizeCanvas();
 
-window.addEventListener("resize",resizeCanvas);
-const stars=[];
-for(let i=0;i<220;i++){
+window.addEventListener("resize",()=>{
+resizeCanvas();
+stars.length=0;
+
+for(let i=0;i<160;i++){
 stars.push({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
-s:Math.random()*2
+s:Math.random()*2,
+a:0.4 + Math.random()*0.6
 });
 }
+});
 
 function drawStars(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 ctx.fillStyle="white";
 for(const s of stars){
-ctx.globalAlpha = 0.4 + Math.random()*0.6;
+ctx.globalAlpha = s.a;
 ctx.fillRect(s.x,s.y,s.s,s.s);
 }
 
-requestAnimationFrame(drawStars);
+setTimeout(()=>requestAnimationFrame(drawStars),33);
 }
 
 drawStars();
