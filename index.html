@@ -1980,14 +1980,6 @@ function createHudRing(radius, opacity = 0.42){
   return ring;
 }
 
-const fairyRing1 = createHudRing(3.2, 0.72);
-const fairyRing2 = createHudRing(3.45, 0.30);
-
-fairyRing1.position.z = -0.12;
-fairyRing2.position.z =  0.12;
-
-fairyPivot.add(fairyRing1);
-fairyPivot.add(fairyRing2);
 
 /* =========================================================
    4) 月テクスチャ
@@ -3018,9 +3010,6 @@ vitalLine.style.width = length + "px";
 vitalLine.style.transform = "rotate(" + angle + "deg)";
      
   updateVitalWave();
-
-  fairyRing1.rotation.z += 0.0028;
-  fairyRing2.rotation.z -= 0.0016;
      
   renderer.render(scene,camera);
 
