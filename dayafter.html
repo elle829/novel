@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day After</title>
+
+<script>
+(function(d){
+var config={
+kitId:"iuw1frp",
+scriptTimeout:3000,
+async:true
+},
+h=d.documentElement,
+t=setTimeout(function(){
+h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";
+},config.scriptTimeout),
+tk=d.createElement("script"),
+f=false,
+s=d.getElementsByTagName("script")[0],
+a;
+
+h.className+=" wf-loading";
+tk.src="https://use.typekit.net/"+config.kitId+".js";
+tk.async=true;
+
+tk.onload=tk.onreadystatechange=function(){
+a=this.readyState;
+if(f||a&&a!="complete"&&a!="loaded")return;
+f=true;
+clearTimeout(t);
+try{Typekit.load(config)}catch(e){}
+};
+
+s.parentNode.insertBefore(tk,s);
+
+})(document);
+</script>
+  
+<style>
+
+/* ===============================
+基本設定
+=============================== */
+
+html,body{
+margin:0;
+height:100%;
+
+font-family:
+"fot-tsukuaoldmin-pr6n",
+"eurostile",
+serif;
+
+color:white;
+}
+
+rt{
+font-family:
+"fot-tsukuaoldmin-pr6n",
+serif;
+}
+
+/* ===============================
+背景
+=============================== */
+
+body{
+
+background-image:url("./png/dayafter.png");
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
+
+}
+
+/* 少し霧を重ねる */
+
+body::before{
+
+content:"";
+position:fixed;
+inset:0;
+
+background:
+
+linear-gradient(
+to right,
+rgba(0,0,0,0.35),
+rgba(0,0,0,0.15) 40%,
+rgba(0,0,0,0)
+);
+
+pointer-events:none;
+
+}
+
+/* ===============================
+タイトル
+=============================== */
+
+.title{
+
+position:absolute;
+top:70px;
+left:80px;
+
+max-width:520px;
+
+}
+
+.title h1{
+
+font-size:36px;
+font-weight:400;
+line-height:1.4;
+margin:0;
+
+letter-spacing:0.08em;
+
+}
+
+.title ruby{
+
+ruby-position:over;
+
+}
+
+.title rt{
+
+font-size:11px;
+letter-spacing:0.1em;
+
+}
+
+.subtitle{
+
+margin-top:14px;
+
+font-size:16px;
+
+opacity:0.85;
+
+}
+
+/* ===============================
+小説リンク
+=============================== */
+
+.links{
+
+position:absolute;
+
+right:90px;
+top:50%;
+
+transform:translateY(-50%);
+
+width:320px;
+
+display:flex;
+flex-direction:column;
+
+gap:24px;
+
+}
+
+/* ウィンドウ */
+
+.link-window{
+
+padding:20px;
+
+background:rgba(255,255,255,0.08);
+
+border:1px solid rgba(255,255,255,0.35);
+
+backdrop-filter:blur(6px);
+
+transition:all 0.3s;
+
+cursor:pointer;
+
+}
+
+/* ホバー */
+
+.link-window:hover{
+
+background:rgba(255,255,255,0.18);
+
+transform:translateY(-3px);
+
+}
+
+/* タイトル */
+
+.link-title{
+
+font-size:18px;
+
+margin-bottom:8px;
+
+}
+
+/* 説明 */
+
+.link-desc{
+
+font-size:13px;
+
+opacity:0.75;
+
+line-height:1.6;
+
+}
+
+/* ===============================
+モバイル
+=============================== */
+
+@media (max-width:900px){
+
+.title{
+
+left:30px;
+top:40px;
+
+max-width:80%;
+
+}
+
+.title h1{
+
+font-size:26px;
+
+}
+
+.links{
+
+right:30px;
+width:260px;
+
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ===============================
+タイトル
+=============================== -->
+
+<div class="title">
+
+<h1>
+
+<ruby>
+人間
+<rt>あなた</rt>
+</ruby>
+たちについて知っているいくつかのこと
+
+</h1>
+
+<div class="subtitle">
+夜が明けました。<br>
+あなたたちのいない、夜明けです。
+</div>
+
+</div>
+
+<!-- ===============================
+小説リンク
+=============================== -->
+
+<div class="links">
+
+<a href="novel1.html" style="text-decoration:none;color:white;">
+<div class="link-window">
+
+<div class="link-title">
+小さいころは妖精がいて
+</div>
+
+<div class="link-desc">
+妖精は少年と出会った。<br>
+ある夜が明けるまでの、束の間に。
+</div>
+
+</div>
+</a>
+
+
+<a href="novel2.html" style="text-decoration:none;color:white;">
+<div class="link-window">
+
+<div class="link-title">
+すべての夜が明けた日に
+</div>
+
+<div class="link-desc">
+あなたたちは狡いから……<br>
+悔しくて寂しくて、諦められなくなってしまったんです。
+</div>
+
+</div>
+</a>
+
+
+<a href="novel3.html" style="text-decoration:none;color:white;">
+<div class="link-window">
+
+<div class="link-title">
+あなたたちについて知っているいくつかのこと
+</div>
+
+<div class="link-desc">
+それでも世界は、こんなにもやさしい。
+</div>
+
+</div>
+</a>
+
+</div>
+
+</body>
+</html>
