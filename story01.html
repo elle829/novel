@@ -206,13 +206,14 @@ opacity:.6;
 
 .page{
 max-height:75vh;
-width:auto;
 max-width:100%;
-display:block;
-box-shadow:
-0 0 30px rgba(120,190,255,.4);
+width:auto;
+height:auto;
+object-fit:contain;
+image-rendering:-webkit-optimize-contrast;
+image-rendering:crisp-edges;
 transform-origin:left center;
-image-rendering:auto;
+box-shadow:0 0 30px rgba(120,190,255,.4);
 will-change:transform,opacity;
 }
 
@@ -544,18 +545,18 @@ img.classList.remove("in");
 img.classList.add("out");
 const newSrc =
 `archive/story${STORY_ID}/page${String(page).padStart(2,"0")}.png`;
-setTimeout(()=>{
-img.src = newSrc;
-counter.textContent = page+" / "+TOTAL_PAGES;
+img.onload = () => {
 img.classList.remove("out");
 img.classList.add("in");
-},320);
+};
+img.src = newSrc;
+counter.textContent = page+" / "+TOTAL_PAGES;
 
 /* ボタン状態 */
 prev.disabled = (page === 1);
 next.disabled = (page === TOTAL_PAGES);
 
-/* SAVEボタン */
+/* SAVE */
 if(page === TOTAL_PAGES){
 saveButton.classList.add("active");
 }else{
