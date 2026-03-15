@@ -215,8 +215,7 @@ opacity:0.92;
 background-size:contain;
 background-position:center;
 background-repeat:no-repeat;
-backdrop-filter: blur(4px) brightness(1.05);
--webkit-backdrop-filter: blur(4px) brightness(1.05);
+
 isolation:isolate;
 }
 
@@ -249,38 +248,15 @@ pointer-events:none;
 
 }
 
-.link-window::after{
-
-content:"";
-position:absolute;
-inset:0;
-
-background:linear-gradient(
-135deg,
-rgba(255,255,255,0.25),
-rgba(255,255,255,0.05)
-);
-
-pointer-events:none;
-
-  /* RGB色収差 */
-
-filter:
-drop-shadow(-1px 0 0 rgba(255,80,80,0.35))
-drop-shadow(1px 0 0 rgba(80,200,255,0.35))
-drop-shadow(0 0 2px rgba(255,255,255,0.25));
-
-opacity:0.6;
-
-mix-blend-mode:screen;
-}
 
 /* ガラス種類 */
 
 .glass1{
 
 background-image:url("./png/glass1@350x.png");
-
+filter:
+drop-shadow(0 0 4px rgba(180,220,255,0.4))
+drop-shadow(0 0 12px rgba(180,220,255,0.25));
 top:-10%;
 left:4vw;
 
@@ -293,7 +269,9 @@ animation:glassFloat 7s ease-in-out infinite;
 .glass2{
 
 background-image:url("./png/glass2@350x.png");
-
+filter:
+drop-shadow(0 0 4px rgba(180,220,255,0.4))
+drop-shadow(0 0 12px rgba(180,220,255,0.25));
 top:24%;
 left:-20vw;
 
@@ -317,7 +295,9 @@ margin-top:14px;
 .glass3{
 
 background-image:url("./png/glass3@350x.png");
-
+filter:
+drop-shadow(0 0 4px rgba(180,220,255,0.4))
+drop-shadow(0 0 12px rgba(180,220,255,0.25));
 top:65%;
 left:8vw;
 
