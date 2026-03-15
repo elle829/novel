@@ -108,8 +108,8 @@ pointer-events:none;
 .title{
 
 position:absolute;
-top:70px;
-left:80px;
+top:8vh;
+left:6vw;
 
 max-width:520px;
 text-shadow:
@@ -118,7 +118,7 @@ text-shadow:
 
 .title h1{
 
-font-size:42px;
+font-size:clamp(22px,3.2vw,42px);
 font-weight:400;
 line-height:1.5;
 margin:0;
@@ -144,7 +144,7 @@ letter-spacing:0.1em;
 
 .title-divider{
 
-width:220px;
+width:clamp(120px,16vw,220px);
 height:1px;
 
 background:linear-gradient(
@@ -161,7 +161,7 @@ margin:22px 0;
 
 margin-top:14px;
 
-font-size:16px;
+font-size:clamp(12px,1.2vw,16px);
 letter-spacing:0.08em;
 opacity:0.85;
 
@@ -175,14 +175,15 @@ opacity:0.85;
 
 position:absolute;
 
-right:10vw;
+right:8vw;
 top:50%;
 
 transform:translateY(-50%);
 
-width:480px;
-height:720px;
+width:40vw;
+height:70vh;
 
+max-width:480px;
 display:flex;
 flex-direction:column;
 
@@ -198,8 +199,8 @@ gap:24px;
 
 position:absolute;
 
-width:350px;
-height:240px;
+width:clamp(260px,22vw,350px);
+height:clamp(180px,16vw,240px);
 
 display:flex;
 flex-direction:column;
@@ -208,7 +209,7 @@ align-items:center;
 
 text-align:center;
 
-padding:36px;
+padding:clamp(16px,2vw,36px);
 
 background-size:contain;
 background-position:center;
@@ -252,8 +253,8 @@ pointer-events:none;
 
 background-image:url("./png/glass1@350x.png");
 
-top:-40px;
-left:80px;
+top:-5vh;
+left:4vw;
 
 transform:rotate(-6deg);
 
@@ -265,11 +266,11 @@ animation:glassFloat 7s ease-in-out infinite;
 
 background-image:url("./png/glass2@350x.png");
 
-top:200px;
-left:-300px;
+top:34vh;
+left:-20vw;
 
-width:420px;
-height:280px;
+width:clamp(280px,28vw,420px);
+height:clamp(180px,18vw,280px);
 
 transform:rotate(8deg);
 
@@ -280,7 +281,7 @@ animation:glassFloat 8s ease-in-out infinite;
 .glass2 .link-title,
 .glass2 .link-desc{
 
-transform:rotate(-8deg) translateY(16px);
+transform:rotate(-8deg) translateY(18px);
 margin-top:14px;
 
 }
@@ -289,8 +290,8 @@ margin-top:14px;
 
 background-image:url("./png/glass3@350x.png");
 
-top:470px;
-left:140px;
+top:58vh;
+left:8vw;
 
 transform:rotate(8deg);
 
@@ -309,7 +310,7 @@ margin-top:12px;
 /* テキスト */
 
 .link-title{
-font-size:18px;
+font-size:clamp(14px,1.2vw,18px);
 line-height:1.5;
 letter-spacing:0.1em;
 margin-bottom:10px;
@@ -317,7 +318,7 @@ text-shadow:0 0 10px rgba(255,255,255,0.4);
 }
 
 .link-desc{
-font-size:13px;
+font-size:clamp(10px,0.9vw,13px);
 letter-spacing:0.05em;
 line-height:1.6;
 opacity:0.85;
