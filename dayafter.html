@@ -189,100 +189,75 @@ gap:24px;
 
 }
 
-/* ウィンドウ */
+/* ===============================
+割れたガラスリンク
+=============================== */
 
 .link-window{
-padding:22px;
-background:linear-gradient(
-145deg,
-rgba(255,255,255,0.22),
-rgba(255,255,255,0.08)
-);
-border:1px solid rgba(255,255,255,0.45);
-backdrop-filter:blur(12px);
-box-shadow:
-0 10px 30px rgba(0,0,0,0.15),
-inset 0 1px 0 rgba(255,255,255,0.35);
-transition:all 0.35s;
-cursor:pointer;
-border-radius:8px;
-overflow:hidden;
+
+position:relative;
+
+width:320px;
+height:220px;
+
+padding:40px;
+
+background-size:contain;
+background-position:center;
+background-repeat:no-repeat;
+
+border:none;
+backdrop-filter:none;
+box-shadow:none;
+
+display:flex;
+flex-direction:column;
+justify-content:center;
+
+transition:transform 0.4s ease,
+filter 0.4s ease;
+
 }
 
-@keyframes uiFloat{
+/* ガラス種類 */
 
-0%{transform:translateY(0)}
-50%{transform:translateY(-4px)}
-100%{transform:translateY(0)}
+.glass1{
+background-image:url("./png/glass1@350x.png");
+}
 
+.glass2{
+background-image:url("./png/glass2@350x.png");
+}
+
+.glass3{
+background-image:url("./png/glass3@350x.png");
+}
+
+/* テキスト */
+
+.link-title{
+font-size:18px;
+letter-spacing:0.1em;
+margin-bottom:8px;
+text-shadow:0 0 10px rgba(255,255,255,0.4);
+}
+
+.link-desc{
+font-size:13px;
+letter-spacing:0.05em;
+line-height:1.6;
+opacity:0.85;
 }
 
 /* ホバー */
 
 .link-window:hover{
 
-background:linear-gradient(
-145deg,
-rgba(255,255,255,0.30),
-rgba(255,255,255,0.10)
-);
+transform:scale(1.05);
 
-transform:translateY(-4px);
-
-box-shadow:
-0 18px 40px rgba(0,0,0,0.2),
-inset 0 1px 0 rgba(255,255,255,0.4);
-
-}
-
-.link-window::after{
-
-content:"";
-position:absolute;
-top:-120%;
-left:-120%;
-
-width:200%;
-height:200%;
-
-background:linear-gradient(
-120deg,
-transparent,
-rgba(255,255,255,0.25),
-transparent
-);
-
-transform:rotate(25deg);
-transition:0.6s;
-}
-
-.link-window:hover::after{
-
-top:-40%;
-left:-40%;
-z-index:0;
-
-}
-
-/* タイトル */
-
-.link-title{
-
-font-size:18px;
-letter-spacing:0.1em;
-margin-bottom:8px;
-
-}
-
-/* 説明 */
-
-.link-desc{
-
-font-size:13px;
-letter-spacing:0.05em;
-opacity:0.75;
-
-line-height:1.6;
+filter:
+brightness(1.15)
+drop-shadow(0 0 20px rgba(180,220,255,0.6));
 
 }
 
@@ -710,7 +685,7 @@ animation:graveGlow 8s ease-in-out infinite;
 <div class="links">
 
 <a href="novel1.html" style="text-decoration:none;color:white;">
-<div class="link-window">
+<div class="link-window glass1">
 
 <div class="link-title">
 小さいころは妖精がいて
@@ -726,7 +701,7 @@ animation:graveGlow 8s ease-in-out infinite;
 
 
 <a href="novel2.html" style="text-decoration:none;color:white;">
-<div class="link-window">
+<div class="link-window glass2">
 
 <div class="link-title">
 すべての夜が明けた日に
@@ -742,7 +717,7 @@ animation:graveGlow 8s ease-in-out infinite;
 
 
 <a href="novel3.html" style="text-decoration:none;color:white;">
-<div class="link-window">
+<div class="link-window glass3">
 
 <div class="link-title">
 あなたたちについて知っている<br>
