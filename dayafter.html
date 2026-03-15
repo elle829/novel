@@ -175,12 +175,13 @@ opacity:0.85;
 
 position:absolute;
 
-right:90px;
+right:12vw;
 top:50%;
 
 transform:translateY(-50%);
 
-width:320px;
+width:420px;
+height:520px;
 
 display:flex;
 flex-direction:column;
@@ -195,24 +196,24 @@ gap:24px;
 
 .link-window{
 
-position:relative;
+position:absolute;
 
 width:320px;
 height:220px;
 
-padding:40px;
+display:flex;
+flex-direction:column;
+
+justify-content:center;
+align-items:center;
+
+text-align:center;
+
+padding:30px;
 
 background-size:contain;
 background-position:center;
 background-repeat:no-repeat;
-
-border:none;
-backdrop-filter:none;
-box-shadow:none;
-
-display:flex;
-flex-direction:column;
-justify-content:center;
 
 transition:transform 0.4s ease,
 filter 0.4s ease;
@@ -223,14 +224,26 @@ filter 0.4s ease;
 
 .glass1{
 background-image:url("./png/glass1@350x.png");
+top:0px;
+left:40px;
+
+transform:rotate(-6deg);
 }
 
 .glass2{
 background-image:url("./png/glass2@350x.png");
+top:190px;
+left:0px;
+
+transform:rotate(6deg);
 }
 
 .glass3{
 background-image:url("./png/glass3@350x.png");
+top:380px;
+left:60px;
+
+transform:rotate(-8deg);
 }
 
 /* テキスト */
@@ -253,13 +266,18 @@ opacity:0.85;
 
 .link-window:hover{
 
-transform:scale(1.05);
+transform:scale(1.08) rotate(var(--rot));
 
 filter:
 brightness(1.15)
-drop-shadow(0 0 20px rgba(180,220,255,0.6));
+drop-shadow(0 0 18px rgba(200,230,255,0.8));
 
 }
+
+.glass1{ --rot:-6deg; }
+.glass2{ --rot:6deg; }
+.glass3{ --rot:-8deg; }
+
 
 /* ===============================
 モバイル
