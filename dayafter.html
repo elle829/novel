@@ -475,6 +475,19 @@ petalZigzag var(--zig) ease-in-out infinite;
 z-index:5;
 }
 
+.petal.front{
+
+width:28px;
+height:22px;
+
+opacity:0.85;
+
+filter:blur(1px);
+
+z-index:10;
+
+}
+
 /* ===============================
 落下
 =============================== */
@@ -562,13 +575,109 @@ margin-left:0;
 
 }
 
+/* ===============================
+光粒子
+=============================== */
 
+.particles{
+
+position:fixed;
+inset:0;
+
+pointer-events:none;
+
+z-index:4;
+
+}
+
+.particle{
+
+position:absolute;
+
+width:4px;
+height:4px;
+
+background:rgba(255,255,255,0.6);
+
+border-radius:50%;
+
+filter:blur(1px);
+
+animation:particleFloat var(--t) linear infinite;
+
+}
+
+@keyframes particleFloat{
+
+0%{
+transform:
+translate(var(--sx),var(--sy))
+scale(0.6);
+opacity:0;
+}
+
+10%{
+opacity:0.8;
+}
+
+90%{
+opacity:0.8;
+}
+
+100%{
+transform:
+translate(var(--ex),var(--ey))
+scale(1.2);
+opacity:0;
+}
+
+}
+
+
+/* ===============================
+墓石の光
+=============================== */
+
+.grave-glow{
+position:absolute;
+
+left:30%;
+top:58%;
+
+width:520px;
+height:520px;
+
+background:
+radial-gradient(
+circle,
+rgba(255,255,220,0.25),
+rgba(255,255,200,0.08),
+transparent 70%
+);
+
+filter:blur(100px);
+
+pointer-events:none;
+
+animation:graveGlow 8s ease-in-out infinite;
+}
+
+@keyframes graveGlow{
+
+0%{opacity:0.4}
+50%{opacity:0.9}
+100%{opacity:0.4}
+
+}
+  
 </style>
 </head>
 
 <body>
 
+<div class="grave-glow"></div>
 <div class="petals"></div>
+<div class="particles"></div>
   
 <div class="mist mist0"></div>
 <div class="mist mist1"></div>
@@ -660,6 +769,9 @@ for(let i=0;i<48;i++){
 
 const petal=document.createElement("div");
 petal.className="petal";
+if(Math.random()<0.25){
+petal.classList.add("front");
+}
 
 /* 風の角度 */
 const angle = (-60 + Math.random()*120) * Math.PI/180;
@@ -739,6 +851,42 @@ document.body.style.backgroundPosition =
 `${50 + x/10}% ${50 + y/10}%`;
 
 });
+
+
+/* 光粒子 */
+
+const particleLayer=document.querySelector(".particles");
+
+for(let i=0;i<30;i++){
+
+const p=document.createElement("div");
+p.className="particle";
+
+/* 出発位置 */
+
+const sx=Math.random()*100+"vw";
+const sy=Math.random()*100+"vh";
+
+/* 終点 */
+
+const ex=(Math.random()*100)+"vw";
+const ey=(Math.random()*100)+"vh";
+
+/* CSS変数 */
+
+p.style.setProperty("--sx",sx);
+p.style.setProperty("--sy",sy);
+
+p.style.setProperty("--ex",ex);
+p.style.setProperty("--ey",ey);
+
+p.style.setProperty("--t",(20+Math.random()*40)+"s");
+
+p.style.animationDelay=(Math.random()*40)+"s";
+
+particleLayer.appendChild(p);
+
+}
 
 </script>
 
