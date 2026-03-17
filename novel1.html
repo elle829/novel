@@ -99,6 +99,7 @@ object-fit:contain;
 
 <script>
 
+/* PDF worker */
 pdfjsLib.GlobalWorkerOptions.workerSrc =
 "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
@@ -109,9 +110,12 @@ const flipSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2571/25
 
 pdfjsLib.getDocument(url).promise.then(async pdf => {
 
-let renderTasks = [];
+const pages = [];
+const renderTasks = [];
 
-for(let i=pdf.numPages;i>=1;i--){
+/* ===== PDF読み込み ===== */
+
+for(let i=1;i<=pdf.numPages;i++){
 
   const page = await pdf.getPage(i);
 
@@ -126,33 +130,52 @@ for(let i=pdf.numPages;i>=1;i--){
   canvas.width = viewport.width;
   canvas.height = viewport.height;
 
-  const renderTask = page.render({
+  const task = page.render({
     canvasContext:canvas.getContext("2d"),
     viewport:viewport
   }).promise;
 
-  renderTasks.push(renderTask);
-  book.appendChild(div);
+  renderTasks.push(task);
+  pages.push(div);
 }
 
+/* 描画完了待ち */
 await Promise.all(renderTasks);
+
+/* ===== 🔥 ペア逆転（ここが核心） ===== */
+
+for(let i=0;i<pages.length;i+=2){
+
+  if(pages[i+1]){
+    book.appendChild(pages[i+1]); // 2
+    book.appendChild(pages[i]);   // 1
+  }else{
+    book.appendChild(pages[i]);   // 奇数最後
+  }
+}
+
+/* ===== turn.js ===== */
 
 requestAnimationFrame(()=>{
 
-  $("#book").turn({
-    width: $("#book").width(),
-    height: $("#book").height(),
-    autoCenter:true,
-    direction:"rtl",
-    display:"double",
-    gradients:true,
-    elevation:80,
-    page: 2
-  });
+$("#book").turn({
+
+  width: $("#book").width(),
+  height: $("#book").height(),
+
+  autoCenter:true,
+  direction:"ltr",   // ←超重要
+  display:"double",
+
+  gradients:true,
+  elevation:80
 
 });
 
-/* クリック */
+});
+
+/* ===== クリック（左→右） ===== */
+
 $("#book").on("click", function(e){
 
   const x = e.pageX - $(this).offset().left;
@@ -169,5 +192,6 @@ $("#book").on("click", function(e){
 });
 
 </script>
+
 </body>
 </html>
