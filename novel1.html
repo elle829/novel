@@ -5,12 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Novel 01</title>
 
-  
-<!-- 懲りないね。こんなところも見てるの？　-->
+<!-- もうこれで終わりだよ -->  
 
-  
-<link rel="preconnect" href="https://use.typekit.net">
+<!-- =========================================================
+     Adobe Fonts
+     ========================================================= -->
 
+<script>
+
+(function(d){
+  var config = {
+    kitId: "iuw1frp",
+    scriptTimeout: 3000,
+    async: true
+  },
+  h = d.documentElement,
+  t = setTimeout(function(){
+    h.className = h.className.replace(/\bwf-loading\b/g,"") + " wf-inactive";
+  }, config.scriptTimeout),
+  tk = d.createElement("script"),
+  f = false,
+  s = d.getElementsByTagName("script")[0],
+  a;
+  h.className += " wf-loading";
+  tk.src = "https://use.typekit.net/" + config.kitId + ".js";
+  tk.async = true;
+  tk.onload = tk.onreadystatechange = function(){
+    a = this.readyState;
+    if (f || (a && a !== "complete" && a !== "loaded")) return;
+    f = true;
+    clearTimeout(t);
+    try{
+      Typekit.load(config);
+    }catch(e){}
+  };
+  s.parentNode.insertBefore(tk, s);
+})(document);
+     
+</script>
+
+
+<!-- ライブラリ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@master/turn.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -18,25 +53,17 @@
 <style>
 
 /* ===============================
-背景（dayafterと統一）
+背景（dayafter統一）
 =============================== */
 
 body{
-
 margin:0;
 height:100vh;
 overflow:hidden;
 
-background-image:url("./png/dayafter.png");
-background-size:cover;
-background-position:center;
+background:url("./png/dayafter.png") center/cover no-repeat;
 
-font-family:
-"fot-tsukuaoldmin-pr6n",
-serif;
-
-color:white;
-
+font-family:"fot-tsukuaoldmin-pr6n", serif;
 }
 
 /* ===============================
@@ -44,32 +71,20 @@ color:white;
 =============================== */
 
 .mist{
-
 position:fixed;
 inset:-40%;
 pointer-events:none;
 filter:blur(80px);
-
 }
 
 .mist1{
-
-background:
-radial-gradient(
-circle at 30% 40%,
-rgba(255,255,255,0.18),
-transparent 60%
-);
-
+background:radial-gradient(circle at 30% 40%, rgba(255,255,255,0.18), transparent 60%);
 animation:mist1 160s linear infinite;
-
 }
 
 @keyframes mist1{
-
 0%{transform:translate(-10%,0)}
 100%{transform:translate(10%,0)}
-
 }
 
 /* ===============================
@@ -77,60 +92,76 @@ animation:mist1 160s linear infinite;
 =============================== */
 
 #book{
-
 position:absolute;
-
 left:50%;
 top:50%;
-
 transform:translate(-50%,-50%);
 
 width:min(92vw,1100px);
 height:min(80vh,700px);
 
-box-shadow:
-0 40px 120px rgba(0,0,0,0.45);
-
+box-shadow:0 40px 120px rgba(0,0,0,0.45);
 }
 
-/* ページ */
+/* 中央線 */
+
+#book::before{
+content:"";
+position:absolute;
+left:50%;
+top:0;
+bottom:0;
+width:2px;
+background:rgba(0,0,0,0.2);
+z-index:10;
+}
+
+/* ===============================
+ページ
+=============================== */
 
 .page{
-
 background:white;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
+position:relative;
 overflow:hidden;
+}
 
+/* 紙の影 */
+
+.page::after{
+content:"";
+position:absolute;
+inset:0;
+box-shadow:inset 0 0 30px rgba(0,0,0,0.2);
+pointer-events:none;
 }
 
 /* canvas */
 
 .page canvas{
-
 width:100%;
 height:100%;
 object-fit:contain;
-
 }
 
-/* ページ影 */
+/* ===============================
+表紙
+=============================== */
 
-.page:after{
+.cover{
+background:linear-gradient(
+135deg,
+rgba(255,255,255,0.95),
+rgba(230,240,255,0.9)
+);
 
-content:"";
+display:flex;
+align-items:center;
+justify-content:center;
 
-position:absolute;
-inset:0;
-
-box-shadow:
-inset 0 0 30px rgba(0,0,0,0.2);
-
-pointer-events:none;
-
+font-size:24px;
+letter-spacing:0.2em;
+color:#333;
 }
 
 </style>
@@ -144,29 +175,35 @@ pointer-events:none;
 
 <script>
 
-const url = "archive/after/novel01.pdf";
-
-/* pdf worker */
+/* PDF worker */
 pdfjsLib.GlobalWorkerOptions.workerSrc =
 "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-pdfjsLib.getDocument(url).promise.then(async pdf => {
+/* PDFパス */
+const url = "./archive/after/novel01.pdf";
+
+/* ページめくり音 */
+const flipSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3");
 
 const book = document.getElementById("book");
 
-/* 全ページ生成 */
+pdfjsLib.getDocument(url).promise.then(async pdf => {
 
+/* 空白ページ（右綴じ） */
+const blank = document.createElement("div");
+blank.className = "page";
+book.appendChild(blank);
+
+/* PDFページ */
 for(let i=1;i<=pdf.numPages;i++){
 
 const page = await pdf.getPage(i);
 
-const pageDiv = document.createElement("div");
-pageDiv.className = "page";
+const div = document.createElement("div");
+div.className = "page";
 
 const canvas = document.createElement("canvas");
-
-pageDiv.appendChild(canvas);
-book.appendChild(pageDiv);
+div.appendChild(canvas);
 
 const viewport = page.getViewport({scale:2});
 
@@ -178,25 +215,44 @@ canvasContext:canvas.getContext("2d"),
 viewport:viewport
 }).promise;
 
+book.appendChild(div);
+
 }
 
-/* 全ページ生成後にturn.js */
+/* 表紙（最後） */
+const cover = document.createElement("div");
+cover.className = "page cover";
+cover.innerHTML = "NOVEL I";
+book.appendChild(cover);
 
+/* turn.js */
 $("#book").turn({
-
 width:book.clientWidth,
 height:book.clientHeight,
-
 autoCenter:true,
 direction:"rtl",
 display:"double",
-
 gradients:true,
-elevation:50
+elevation:80
+});
+
+/* クリックめくり */
+$("#book").on("click", function(e){
+
+const x = e.pageX - $(this).offset().left;
+
+if(x > $(this).width()/2){
+$(this).turn("previous");
+}else{
+$(this).turn("next");
+}
+
+flipSound.currentTime = 0;
+flipSound.play();
 
 });
 
-});
+}); // ←これ絶対必要
 
 </script>
 
