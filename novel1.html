@@ -241,12 +241,12 @@ $("#book").on("click", function(e){
 
 const x = e.pageX - $(this).offset().left;
 
-if(x > $(this).width()/2){
-$(this).turn("previous");
-}else{
-$(this).turn("next");
+if(x < $(this).width()/2){
+  $(this).turn("previous");
+  flipSound.currentTime = 0;
+  flipSound.play();
 }
-
+     
 flipSound.currentTime = 0;
 flipSound.play();
 
