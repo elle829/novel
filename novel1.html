@@ -136,15 +136,9 @@ pdfjsLib.getDocument(url).promise.then(async (pdf) => {
     pages.push(pageDiv);
   }
 
-  /* ===== 🔥 ペア逆転 ===== */
-  for(let i=0;i<pages.length;i+=2){
-
-    if(pages[i+1]){
-      bookEl.appendChild(pages[i+1]); // 2
-      bookEl.appendChild(pages[i]);   // 1
-    }else{
-      bookEl.appendChild(pages[i]);
-    }
+  /* ===== 🔥 後ろから追加（これが正解） ===== */
+  for(let i = pages.length - 1; i >= 0; i--){
+    bookEl.appendChild(pages[i]);
   }
 
   /* ===== turn.js ===== */
@@ -156,7 +150,7 @@ pdfjsLib.getDocument(url).promise.then(async (pdf) => {
 
       autoCenter: true,
       display: "double",
-      direction: "ltr",   // ←重要
+      direction: "ltr",
 
       gradients: true,
       elevation: 80,
@@ -172,11 +166,9 @@ pdfjsLib.getDocument(url).promise.then(async (pdf) => {
     const half = $(this).width()/2;
 
     if(x < half){
-      // 左クリック → 進む（右にめくる）
-      $(this).turn("next");
+      $(this).turn("next");     // 左クリック → 進む
     }else{
-      // 右クリック → 戻る
-      $(this).turn("previous");
+      $(this).turn("previous"); // 右クリック → 戻る
     }
 
     flipSound.currentTime = 0;
