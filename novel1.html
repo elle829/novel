@@ -189,11 +189,6 @@ const book = document.getElementById("book");
 
 pdfjsLib.getDocument(url).promise.then(async pdf => {
 
-/* 空白ページ（右綴じ） */
-const blank = document.createElement("div");
-blank.className = "page";
-book.appendChild(blank);
-
 /* PDFページ */
 for(let i=1;i<=pdf.numPages;i++){
 
@@ -252,8 +247,7 @@ flipSound.play();
 
 });
 
-}); // ←これ絶対必要
-
+}); 
 </script>
 
 </body>
