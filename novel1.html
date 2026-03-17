@@ -111,7 +111,7 @@ pdfjsLib.getDocument(url).promise.then(async pdf => {
 
 let renderTasks = [];
 
-for(let i=1;i<=pdf.numPages;i++){
+for(let i=pdf.numPages;i>=1;i--){
 
   const page = await pdf.getPage(i);
 
@@ -135,24 +135,18 @@ for(let i=1;i<=pdf.numPages;i++){
   book.appendChild(div);
 }
 
-/* 🔥 全ページ描画完了を待つ */
 await Promise.all(renderTasks);
 
-/* 🔥 次フレームで初期化 */
 requestAnimationFrame(()=>{
 
   $("#book").turn({
-
     width: $("#book").width(),
     height: $("#book").height(),
-
     autoCenter:true,
     direction:"rtl",
     display:"double",
-
     gradients:true,
     elevation:80,
-
     page: 2
   });
 
