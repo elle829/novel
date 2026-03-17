@@ -137,7 +137,7 @@ pdfjsLib.getDocument(url).promise.then(async (pdf) => {
       height: $("#book").height(),
       autoCenter: true,
       display: "double",
-      direction: "ltl",
+      direction: "ltr",
       gradients: true,
       elevation: 80,
       page: Math.min(2, pdf.numPages)
