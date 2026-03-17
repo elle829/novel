@@ -1,105 +1,5 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Novel 01</title>
-
-<!-- Adobe Fonts -->
-<script>
-(function(d){
-  var config = { kitId:"iuw1frp", scriptTimeout:3000, async:true },
-  h=d.documentElement,
-  t=setTimeout(function(){ h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive"; },3000),
-  tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;
-  h.className+=" wf-loading";
-  tk.src="https://use.typekit.net/"+config.kitId+".js";
-  tk.async=true;
-  tk.onload=tk.onreadystatechange=function(){
-    a=this.readyState;
-    if(f||a&&a!="complete"&&a!="loaded")return;
-    f=true; clearTimeout(t);
-    try{Typekit.load(config)}catch(e){}
-  };
-  s.parentNode.insertBefore(tk,s);
-})(document);
-</script>
-
-<!-- ライブラリ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@master/turn.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
-<style>
-
-/* ===== 背景 ===== */
-
-body{
-margin:0;
-height:100vh;
-overflow:hidden;
-background:url("./png/dayafter.png") center/cover no-repeat;
-font-family:"fot-tsukuaoldmin-pr6n", serif;
-}
-
-/* ===== 本 ===== */
-
-#book{
-position:absolute;
-left:50%;
-top:50%;
-transform:translate(-50%,-50%);
-width:min(92vw,1100px);
-height:min(80vh,700px);
-box-shadow:0 40px 120px rgba(0,0,0,0.45);
-}
-
-/* 中央ライン */
-
-#book::before{
-content:"";
-position:absolute;
-left:50%;
-top:0;
-bottom:0;
-width:2px;
-background:rgba(0,0,0,0.2);
-z-index:10;
-}
-
-/* ===== ページ ===== */
-
-.page{
-background:white;
-width:100%;
-height:100%;
-position:relative;
-overflow:hidden;
-}
-
-.page::after{
-content:"";
-position:absolute;
-inset:0;
-box-shadow:inset 0 0 30px rgba(0,0,0,0.2);
-}
-
-.page canvas{
-width:100%;
-height:100%;
-object-fit:contain;
-}
-
-</style>
-</head>
-
-<body>
-
-<div id="book"></div>
-
 <script>
 
-/* PDF worker */
 pdfjsLib.GlobalWorkerOptions.workerSrc =
 "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
@@ -111,9 +11,8 @@ const flipSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2571/25
 pdfjsLib.getDocument(url).promise.then(async pdf => {
 
 const pages = [];
-const renderTasks = [];
 
-/* ===== PDF読み込み ===== */
+/* ===== PDF生成 ===== */
 
 for(let i=1;i<=pdf.numPages;i++){
 
@@ -130,68 +29,59 @@ for(let i=1;i<=pdf.numPages;i++){
   canvas.width = viewport.width;
   canvas.height = viewport.height;
 
-  const task = page.render({
+  await page.render({
     canvasContext:canvas.getContext("2d"),
     viewport:viewport
   }).promise;
 
-  renderTasks.push(task);
   pages.push(div);
 }
 
-/* 描画完了待ち */
-await Promise.all(renderTasks);
-
-/* ===== 🔥 ペア逆転（ここが核心） ===== */
+/* ===== ペア逆転 ===== */
 
 for(let i=0;i<pages.length;i+=2){
 
   if(pages[i+1]){
-    book.appendChild(pages[i+1]); // 2
-    book.appendChild(pages[i]);   // 1
+    book.appendChild(pages[i+1]);
+    book.appendChild(pages[i]);
   }else{
-    book.appendChild(pages[i]);   // 奇数最後
+    book.appendChild(pages[i]);
   }
 }
 
-/* ===== turn.js ===== */
-
+/* 🔥 DOM完成後に初期化 */
 requestAnimationFrame(()=>{
 
-$("#book").turn({
-
-  width: $("#book").width(),
-  height: $("#book").height(),
-
-  autoCenter:true,
-  direction:"ltr",   // ←超重要
-  display:"double",
-
-  gradients:true,
-  elevation:80
-
-});
+  $("#book").turn({
+    width: $("#book").width(),
+    height: $("#book").height(),
+    autoCenter:true,
+    direction:"ltr",
+    display:"double",
+    gradients:true,
+    elevation:80,
+    page:2   // ←ここ超重要
+  });
 
 });
 
-/* ===== クリック（左→右） ===== */
+/* ===== クリック操作 ===== */
 
 $("#book").on("click", function(e){
 
   const x = e.pageX - $(this).offset().left;
 
   if(x < $(this).width()/2){
-    $(this).turn("previous");
-
-    flipSound.currentTime = 0;
-    flipSound.play();
+    $(this).turn("previous"); // 左 → 戻る
+  }else{
+    $(this).turn("next");     // 右 → 進む
   }
+
+  flipSound.currentTime = 0;
+  flipSound.play();
 
 });
 
 });
 
 </script>
-
-</body>
-</html>
