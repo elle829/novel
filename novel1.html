@@ -5,45 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Novel 01</title>
 
-<!-- もうこれで終わりだよ -->  
-
-<!-- =========================================================
-     Adobe Fonts
-     ========================================================= -->
-
+<!-- Adobe Fonts -->
 <script>
-
 (function(d){
-  var config = {
-    kitId: "iuw1frp",
-    scriptTimeout: 3000,
-    async: true
-  },
-  h = d.documentElement,
-  t = setTimeout(function(){
-    h.className = h.className.replace(/\bwf-loading\b/g,"") + " wf-inactive";
-  }, config.scriptTimeout),
-  tk = d.createElement("script"),
-  f = false,
-  s = d.getElementsByTagName("script")[0],
-  a;
-  h.className += " wf-loading";
-  tk.src = "https://use.typekit.net/" + config.kitId + ".js";
-  tk.async = true;
-  tk.onload = tk.onreadystatechange = function(){
-    a = this.readyState;
-    if (f || (a && a !== "complete" && a !== "loaded")) return;
-    f = true;
-    clearTimeout(t);
-    try{
-      Typekit.load(config);
-    }catch(e){}
+  var config = { kitId:"iuw1frp", scriptTimeout:3000, async:true },
+  h=d.documentElement,
+  t=setTimeout(function(){ h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive"; },3000),
+  tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;
+  h.className+=" wf-loading";
+  tk.src="https://use.typekit.net/"+config.kitId+".js";
+  tk.async=true;
+  tk.onload=tk.onreadystatechange=function(){
+    a=this.readyState;
+    if(f||a&&a!="complete"&&a!="loaded")return;
+    f=true; clearTimeout(t);
+    try{Typekit.load(config)}catch(e){}
   };
-  s.parentNode.insertBefore(tk, s);
+  s.parentNode.insertBefore(tk,s);
 })(document);
-     
 </script>
-
 
 <!-- ライブラリ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -52,23 +32,17 @@
 
 <style>
 
-/* ===============================
-背景（dayafter統一）
-=============================== */
+/* ================= 背景 ================= */
 
 body{
 margin:0;
 height:100vh;
 overflow:hidden;
-
 background:url("./png/dayafter.png") center/cover no-repeat;
-
 font-family:"fot-tsukuaoldmin-pr6n", serif;
 }
 
-/* ===============================
-霧
-=============================== */
+/* ================= 霧 ================= */
 
 .mist{
 position:fixed;
@@ -76,35 +50,28 @@ inset:-40%;
 pointer-events:none;
 filter:blur(80px);
 }
-
 .mist1{
 background:radial-gradient(circle at 30% 40%, rgba(255,255,255,0.18), transparent 60%);
 animation:mist1 160s linear infinite;
 }
-
 @keyframes mist1{
 0%{transform:translate(-10%,0)}
 100%{transform:translate(10%,0)}
 }
 
-/* ===============================
-本
-=============================== */
+/* ================= 本 ================= */
 
 #book{
 position:absolute;
 left:50%;
 top:50%;
 transform:translate(-50%,-50%);
-
 width:min(92vw,1100px);
 height:min(80vh,700px);
-
 box-shadow:0 40px 120px rgba(0,0,0,0.45);
 }
 
 /* 中央線 */
-
 #book::before{
 content:"";
 position:absolute;
@@ -116,49 +83,37 @@ background:rgba(0,0,0,0.2);
 z-index:10;
 }
 
-/* ===============================
-ページ
-=============================== */
+/* ================= ページ ================= */
 
 .page{
 background:white;
 position:relative;
 overflow:hidden;
+width:100%;
+height:100%;
 }
-
-/* 紙の影 */
 
 .page::after{
 content:"";
 position:absolute;
 inset:0;
 box-shadow:inset 0 0 30px rgba(0,0,0,0.2);
-pointer-events:none;
 }
 
 /* canvas */
-
 .page canvas{
 width:100%;
 height:100%;
 object-fit:contain;
 }
 
-/* ===============================
-表紙
-=============================== */
+/* ================= 表紙 ================= */
 
 .cover{
-background:linear-gradient(
-135deg,
-rgba(255,255,255,0.95),
-rgba(230,240,255,0.9)
-);
-
+background:linear-gradient(135deg, rgba(255,255,255,0.95), rgba(230,240,255,0.9));
 display:flex;
 align-items:center;
 justify-content:center;
-
 font-size:24px;
 letter-spacing:0.2em;
 color:#333;
@@ -170,7 +125,6 @@ color:#333;
 <body>
 
 <div class="mist mist1"></div>
-
 <div id="book"></div>
 
 <script>
@@ -179,81 +133,81 @@ color:#333;
 pdfjsLib.GlobalWorkerOptions.workerSrc =
 "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-/* PDFパス */
 const url = "./archive/after/novel01.pdf";
-
-/* ページめくり音 */
-const flipSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3");
-
 const book = document.getElementById("book");
+const flipSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3");
 
 pdfjsLib.getDocument(url).promise.then(async pdf => {
 
-/* PDFページ */
-for(let i=1;i<=pdf.numPages;i++){
+/* ① 最初に空白（ズラし） */
+const blankStart = document.createElement("div");
+blankStart.className = "page";
+book.appendChild(blankStart);
 
-const page = await pdf.getPage(i);
-
-const div = document.createElement("div");
-div.className = "page";
-
-const canvas = document.createElement("canvas");
-div.appendChild(canvas);
-
-const viewport = page.getViewport({scale:2});
-
-canvas.width = viewport.width;
-canvas.height = viewport.height;
-
-await page.render({
-canvasContext:canvas.getContext("2d"),
-viewport:viewport
-}).promise;
-
-book.appendChild(div);
-
-}
-
-/* 表紙（最後） */
+/* ② 表紙（右ページになる） */
 const cover = document.createElement("div");
 cover.className = "page cover";
 cover.innerHTML = "NOVEL I";
 book.appendChild(cover);
 
-if(book.children.length % 2 !== 0){
-  const blank = document.createElement("div");
-  blank.className = "page";
-  book.appendChild(blank);
+/* ③ PDFページ */
+for(let i=1;i<=pdf.numPages;i++){
+
+  const page = await pdf.getPage(i);
+
+  const div = document.createElement("div");
+  div.className = "page";
+
+  const canvas = document.createElement("canvas");
+  div.appendChild(canvas);
+
+  const viewport = page.getViewport({scale:2});
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  await page.render({
+    canvasContext:canvas.getContext("2d"),
+    viewport:viewport
+  }).promise;
+
+  book.appendChild(div);
 }
 
-/* turn.js */
-$("#book").turn({
-width:book.clientWidth,
-height:book.clientHeight,
-autoCenter:true,
-direction:"rtl",
-display:"double",
-gradients:true,
-elevation:80
-});
+/* ④ 偶数調整（最後に空白） */
+if(book.children.length % 2 !== 0){
+  const blankEnd = document.createElement("div");
+  blankEnd.className = "page";
+  book.appendChild(blankEnd);
+}
 
-/* クリックめくり */
+/* ⑤ turn.js 初期化（少し遅延） */
+setTimeout(()=>{
+$("#book").turn({
+  width:book.clientWidth,
+  height:book.clientHeight,
+  autoCenter:true,
+  direction:"rtl",
+  display:"double",
+  gradients:true,
+  elevation:80
+});
+},100);
+
+/* ⑥ 左ページクリックでめくる */
 $("#book").on("click", function(e){
 
-const x = e.pageX - $(this).offset().left;
+  const x = e.pageX - $(this).offset().left;
 
-if(x < $(this).width()/2){
-  $(this).turn("previous");
-  flipSound.currentTime = 0;
-  flipSound.play();
-}
-     
-flipSound.currentTime = 0;
-flipSound.play();
+  if(x < $(this).width()/2){
+    $(this).turn("previous");
+    flipSound.currentTime = 0;
+    flipSound.play();
+  }
 
 });
 
-}); 
+});
+
 </script>
 
 </body>
