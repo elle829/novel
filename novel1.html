@@ -220,6 +220,12 @@ cover.className = "page cover";
 cover.innerHTML = "NOVEL I";
 book.appendChild(cover);
 
+if(book.children.length % 2 !== 0){
+  const blank = document.createElement("div");
+  blank.className = "page";
+  book.appendChild(blank);
+}
+
 /* turn.js */
 $("#book").turn({
 width:book.clientWidth,
