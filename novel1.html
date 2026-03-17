@@ -3,98 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Novel 01</title>
+<title>Novel Viewer</title>
 
-<script>
-(function(d){
-  var config = { kitId:"iuw1frp", scriptTimeout:3000, async:true },
-  h=d.documentElement,
-  t=setTimeout(function(){
-    h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";
-  },3000),
-  tk=d.createElement("script"),
-  f=false,
-  s=d.getElementsByTagName("script")[0],
-  a;
-  h.className+=" wf-loading";
-  tk.src="https://use.typekit.net/"+config.kitId+".js";
-  tk.async=true;
-  tk.onload=tk.onreadystatechange=function(){
-    a=this.readyState;
-    if(f || (a && a!=="complete" && a!=="loaded")) return;
-    f=true;
-    clearTimeout(t);
-    try{ Typekit.load(config); }catch(e){}
-  };
-  s.parentNode.insertBefore(tk,s);
-})(document);
-</script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@master/turn.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <style>
-html, body{
-  margin:0;
-  height:100%;
-}
 
 body{
-  overflow:hidden;
+  margin:0;
+  height:100vh;
   background:url("./png/dayafter.png") center/cover no-repeat;
-  font-family:"fot-tsukuaoldmin-pr6n", serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
+/* 本 */
+
 #book{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
   width:min(92vw,1100px);
   height:min(80vh,700px);
+  display:flex;
   box-shadow:0 40px 120px rgba(0,0,0,0.45);
 }
 
-#book::before{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:0;
-  bottom:0;
-  width:2px;
-  background:rgba(0,0,0,0.14);
-  z-index:20;
-  pointer-events:none;
-}
+/* ページ */
 
 .page{
-  position:relative;
-  width:100%;
+  width:50%;
   height:100%;
   background:#f8f8f6;
-  overflow:hidden;
-}
-
-.page::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  box-shadow:inset 0 0 30px rgba(0,0,0,0.14);
-  pointer-events:none;
+  position:relative;
 }
 
 .page canvas{
-  display:block;
   width:100%;
   height:100%;
 }
+
+/* 中央線 */
+#book::before{
+  content:"";
+  position:absolute;
+  width:2px;
+  height:80%;
+  background:rgba(0,0,0,0.2);
+}
+
 </style>
 </head>
 
 <body>
 
-<div id="book"></div>
+<div id="book">
+  <div class="page"><canvas id="left"></canvas></div>
+  <div class="page"><canvas id="right"></canvas></div>
+</div>
 
 <script>
 
@@ -102,79 +66,66 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
 const url = "./archive/after/novel01.pdf";
-const bookEl = document.getElementById("book");
 
-const flipSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3");
+let pdfDoc;
+let state = 0;
 
-pdfjsLib.getDocument(url).promise.then(async (pdf) => {
+const leftCanvas = document.getElementById("left");
+const rightCanvas = document.getElementById("right");
 
-  const pages = [];
+async function renderPage(pageNum, canvas){
 
-  /* ===== PDF読み込み ===== */
-  for(let i = 1; i <= pdf.numPages; i++){
-
-    const pdfPage = await pdf.getPage(i);
-
-    const viewport = pdfPage.getViewport({ scale: 2 });
-
-    const pageDiv = document.createElement("div");
-    pageDiv.className = "page";
-
-    const canvas = document.createElement("canvas");
+  if(pageNum < 1 || pageNum > pdfDoc.numPages){
     const ctx = canvas.getContext("2d");
-
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-
-    pageDiv.appendChild(canvas);
-
-    await pdfPage.render({
-      canvasContext: ctx,
-      viewport
-    }).promise;
-
-    pages.push(pageDiv);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    return;
   }
 
-  /* ===== 🔥 後ろから追加（これが正解） ===== */
-  for(let i = pages.length - 1; i >= 0; i--){
-    bookEl.appendChild(pages[i]);
+  const page = await pdfDoc.getPage(pageNum);
+  const viewport = page.getViewport({scale:2});
+
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  await page.render({
+    canvasContext: canvas.getContext("2d"),
+    viewport
+  }).promise;
+}
+
+/* 表示更新 */
+
+async function renderSpread(){
+
+  await renderPage(state+2, leftCanvas);  // 左
+  await renderPage(state+1, rightCanvas); // 右
+}
+
+/* 初期化 */
+
+pdfjsLib.getDocument(url).promise.then(async (pdf)=>{
+  pdfDoc = pdf;
+  state = 0;
+  renderSpread();
+});
+
+/* 操作 */
+
+document.getElementById("book").addEventListener("click",(e)=>{
+
+  const half = window.innerWidth / 2;
+
+  if(e.clientX < half){
+    // 左クリック → 進む
+    state += 2;
+  }else{
+    // 右クリック → 戻る
+    state -= 2;
   }
 
-  /* ===== turn.js ===== */
-  requestAnimationFrame(()=>{
+  state = Math.max(0, Math.min(state, pdfDoc.numPages-1));
 
-    $("#book").turn({
-      width: $("#book").width(),
-      height: $("#book").height(),
-
-      autoCenter: true,
-      display: "double",
-      direction: "ltr",
-
-      gradients: true,
-      elevation: 80,
-      page: 2
-    });
-
-  });
-
-  /* ===== 操作 ===== */
-  $("#book").on("click", function(e){
-
-    const x = e.pageX - $(this).offset().left;
-    const half = $(this).width()/2;
-
-    if(x < half){
-      $(this).turn("next");     // 左クリック → 進む
-    }else{
-      $(this).turn("previous"); // 右クリック → 戻る
-    }
-
-    flipSound.currentTime = 0;
-    flipSound.play().catch(()=>{});
-  });
-
+  renderSpread();
 });
 
 </script>
