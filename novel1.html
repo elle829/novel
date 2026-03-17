@@ -99,7 +99,7 @@ body{
 <script>
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
 const url = "./archive/after/novel01.pdf";
 const bookEl = document.getElementById("book");
@@ -108,6 +108,9 @@ const flipSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2571/25
 
 pdfjsLib.getDocument(url).promise.then(async (pdf) => {
 
+  const pages = [];
+
+  /* ===== PDF読み込み ===== */
   for(let i = 1; i <= pdf.numPages; i++){
 
     const pdfPage = await pdf.getPage(i);
@@ -124,15 +127,28 @@ pdfjsLib.getDocument(url).promise.then(async (pdf) => {
     canvas.height = viewport.height;
 
     pageDiv.appendChild(canvas);
-    bookEl.appendChild(pageDiv);
 
     await pdfPage.render({
       canvasContext: ctx,
       viewport
     }).promise;
+
+    pages.push(pageDiv);
   }
 
-  requestAnimationFrame(() => {
+  /* ===== 🔥 ペア逆転 ===== */
+  for(let i=0;i<pages.length;i+=2){
+
+    if(pages[i+1]){
+      bookEl.appendChild(pages[i+1]); // 2
+      bookEl.appendChild(pages[i]);   // 1
+    }else{
+      bookEl.appendChild(pages[i]);
+    }
+  }
+
+  /* ===== turn.js ===== */
+  requestAnimationFrame(()=>{
 
     $("#book").turn({
       width: $("#book").width(),
@@ -140,11 +156,11 @@ pdfjsLib.getDocument(url).promise.then(async (pdf) => {
 
       autoCenter: true,
       display: "double",
-      direction: "rtl",   // ←右綴じ
+      direction: "ltr",   // ←重要
 
       gradients: true,
       elevation: 80,
-      page: 2             // ←最初 [2][1]
+      page: 2
     });
 
   });
@@ -153,7 +169,7 @@ pdfjsLib.getDocument(url).promise.then(async (pdf) => {
   $("#book").on("click", function(e){
 
     const x = e.pageX - $(this).offset().left;
-    const half = $(this).width() / 2;
+    const half = $(this).width()/2;
 
     if(x < half){
       // 左クリック → 進む（右にめくる）
