@@ -32,7 +32,7 @@
 
 <style>
 
-/* ================= 背景 ================= */
+/* ===== 背景 ===== */
 
 body{
 margin:0;
@@ -42,24 +42,7 @@ background:url("./png/dayafter.png") center/cover no-repeat;
 font-family:"fot-tsukuaoldmin-pr6n", serif;
 }
 
-/* ================= 霧 ================= */
-
-.mist{
-position:fixed;
-inset:-40%;
-pointer-events:none;
-filter:blur(80px);
-}
-.mist1{
-background:radial-gradient(circle at 30% 40%, rgba(255,255,255,0.18), transparent 60%);
-animation:mist1 160s linear infinite;
-}
-@keyframes mist1{
-0%{transform:translate(-10%,0)}
-100%{transform:translate(10%,0)}
-}
-
-/* ================= 本 ================= */
+/* ===== 本 ===== */
 
 #book{
 position:absolute;
@@ -71,7 +54,8 @@ height:min(80vh,700px);
 box-shadow:0 40px 120px rgba(0,0,0,0.45);
 }
 
-/* 中央線 */
+/* 中央ライン */
+
 #book::before{
 content:"";
 position:absolute;
@@ -83,14 +67,14 @@ background:rgba(0,0,0,0.2);
 z-index:10;
 }
 
-/* ================= ページ ================= */
+/* ===== ページ ===== */
 
 .page{
 background:white;
-position:relative;
-overflow:hidden;
 width:100%;
 height:100%;
+position:relative;
+overflow:hidden;
 }
 
 .page::after{
@@ -100,23 +84,10 @@ inset:0;
 box-shadow:inset 0 0 30px rgba(0,0,0,0.2);
 }
 
-/* canvas */
 .page canvas{
 width:100%;
 height:100%;
 object-fit:contain;
-}
-
-/* ================= 表紙 ================= */
-
-.cover{
-background:linear-gradient(135deg, rgba(255,255,255,0.95), rgba(230,240,255,0.9));
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:24px;
-letter-spacing:0.2em;
-color:#333;
 }
 
 </style>
@@ -124,7 +95,6 @@ color:#333;
 
 <body>
 
-<div class="mist mist1"></div>
 <div id="book"></div>
 
 <script>
@@ -135,22 +105,14 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
 const url = "./archive/after/novel01.pdf";
 const book = document.getElementById("book");
+
+/* めくり音 */
 const flipSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3");
 
 pdfjsLib.getDocument(url).promise.then(async pdf => {
 
-/* ① 最初に空白（ズラし） */
-const blankStart = document.createElement("div");
-blankStart.className = "page";
-book.appendChild(blankStart);
+/* ===== PDFページ生成 ===== */
 
-/* ② 表紙（右ページになる） */
-const cover = document.createElement("div");
-cover.className = "page cover";
-cover.innerHTML = "NOVEL I";
-book.appendChild(cover);
-
-/* ③ PDFページ */
 for(let i=1;i<=pdf.numPages;i++){
 
   const page = await pdf.getPage(i);
@@ -162,6 +124,7 @@ for(let i=1;i<=pdf.numPages;i++){
   div.appendChild(canvas);
 
   const viewport = page.getViewport({scale:2});
+
   canvas.width = viewport.width;
   canvas.height = viewport.height;
 
@@ -173,33 +136,37 @@ for(let i=1;i<=pdf.numPages;i++){
   book.appendChild(div);
 }
 
-/* ④ 偶数調整（最後に空白） */
-if(book.children.length % 2 !== 0){
-  const blankEnd = document.createElement("div");
-  blankEnd.className = "page";
-  book.appendChild(blankEnd);
-}
+/* ===== turn.js ===== */
 
-/* ⑤ turn.js 初期化（少し遅延） */
 setTimeout(()=>{
+
 $("#book").turn({
-  width:book.clientWidth,
-  height:book.clientHeight,
-  autoCenter:true,
-  direction:"rtl",
-  display:"double",
-  gradients:true,
-  elevation:80
+
+  width: book.clientWidth,
+  height: book.clientHeight,
+
+  autoCenter: true,
+  direction: "rtl",
+  display: "double",
+
+  gradients: true,
+  elevation: 80,
+
+  page: Math.min(2, pdf.numPages) // ←核心：最初から [2][1]
+
 });
+
 },100);
 
-/* ⑥ 左ページクリックでめくる */
+/* ===== クリックめくり（左ページだけ） ===== */
+
 $("#book").on("click", function(e){
 
   const x = e.pageX - $(this).offset().left;
 
   if(x < $(this).width()/2){
     $(this).turn("previous");
+
     flipSound.currentTime = 0;
     flipSound.play();
   }
