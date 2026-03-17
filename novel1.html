@@ -156,8 +156,7 @@ body{
 /* canvas（比率維持） */
 
 .page canvas{
-  width:auto;
-  height:100%;
+  display:block;
   max-height:100%;
   max-width:100%;
   object-fit:contain;
@@ -331,14 +330,27 @@ async function renderPage(pageNum, canvas){
   }
 
   const page = await pdfDoc.getPage(pageNum);
-  const viewport = page.getViewport({scale:2});
 
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
+  const pageDiv = canvas.parentElement;
+  const rect = pageDiv.getBoundingClientRect();
+
+  /* 元サイズ */
+  const viewport = page.getViewport({ scale: 1 });
+
+  /* ★ ここが一番重要 */
+  const scale = Math.min(
+    rect.width / viewport.width,
+    rect.height / viewport.height
+  );
+
+  const scaledViewport = page.getViewport({ scale });
+
+  canvas.width = scaledViewport.width;
+  canvas.height = scaledViewport.height;
 
   await page.render({
     canvasContext: ctx,
-    viewport
+    viewport: scaledViewport
   }).promise;
 }
 
