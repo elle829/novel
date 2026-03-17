@@ -99,19 +99,17 @@ object-fit:contain;
 
 <script>
 
-/* PDF worker */
 pdfjsLib.GlobalWorkerOptions.workerSrc =
 "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
 const url = "./archive/after/novel01.pdf";
 const book = document.getElementById("book");
 
-/* めくり音 */
 const flipSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3");
 
 pdfjsLib.getDocument(url).promise.then(async pdf => {
 
-/* ===== PDFページ生成 ===== */
+let renderTasks = [];
 
 for(let i=1;i<=pdf.numPages;i++){
 
@@ -128,38 +126,39 @@ for(let i=1;i<=pdf.numPages;i++){
   canvas.width = viewport.width;
   canvas.height = viewport.height;
 
-  await page.render({
+  const renderTask = page.render({
     canvasContext:canvas.getContext("2d"),
     viewport:viewport
   }).promise;
 
+  renderTasks.push(renderTask);
   book.appendChild(div);
 }
 
-/* ===== turn.js ===== */
+/* 🔥 全ページ描画完了を待つ */
+await Promise.all(renderTasks);
 
-setTimeout(()=>{
+/* 🔥 次フレームで初期化 */
+requestAnimationFrame(()=>{
 
-$("#book").turn({
+  $("#book").turn({
 
-  width: book.clientWidth,
-  height: book.clientHeight,
+    width: $("#book").width(),
+    height: $("#book").height(),
 
-  autoCenter: true,
-  direction: "rtl",
-  display: "double",
+    autoCenter:true,
+    direction:"rtl",
+    display:"double",
 
-  gradients: true,
-  elevation: 80,
+    gradients:true,
+    elevation:80,
 
-  page: Math.min(2, pdf.numPages) // ←核心：最初から [2][1]
+    page: 2
+  });
 
 });
 
-},100);
-
-/* ===== クリックめくり（左ページだけ） ===== */
-
+/* クリック */
 $("#book").on("click", function(e){
 
   const x = e.pageX - $(this).offset().left;
@@ -176,6 +175,5 @@ $("#book").on("click", function(e){
 });
 
 </script>
-
 </body>
 </html>
