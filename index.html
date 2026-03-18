@@ -1601,6 +1601,98 @@ to{
 transform:rotate(360deg);
 }
 }
+
+/* ===============================
+   CRASH SCREEN
+=============================== */
+
+#crashScreen{
+  position:fixed;
+  inset:0;
+  background:black;
+  z-index:2000;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  opacity:0;
+  pointer-events:none;
+}
+
+/* 表示 */
+#crashScreen.active{
+  opacity:1;
+  pointer-events:auto;
+  animation:crashFlash .15s steps(2,end);
+}
+
+/* ブツ切り感 */
+@keyframes crashFlash{
+  0%{opacity:0;}
+  40%{opacity:1;}
+  60%{opacity:0;}
+  100%{opacity:1;}
+}
+
+/* ノイズ */
+.crash-noise{
+  position:absolute;
+  inset:0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,.08),
+      rgba(255,255,255,.08) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  mix-blend-mode:overlay;
+  opacity:.3;
+  animation:noise .08s infinite;
+}
+
+@keyframes noise{
+  0%{transform:translateY(0);}
+  100%{transform:translateY(2px);}
+}
+
+/* ローディング */
+.crash-loading{
+  text-align:center;
+  color:#9edcff;
+  z-index:2;
+}
+
+.crash-text{
+  font-size:14px;
+  letter-spacing:.2em;
+  margin-bottom:20px;
+}
+
+/* バー */
+.crash-bar-wrap{
+  width:300px;
+  height:10px;
+  border:1px solid rgba(120,190,255,.7);
+  margin:0 auto 12px;
+  overflow:hidden;
+}
+
+.crash-bar{
+  width:0%;
+  height:100%;
+  background:#9edcff;
+  box-shadow:
+    0 0 10px rgba(120,190,255,.9),
+    0 0 30px rgba(120,190,255,.5);
+}
+
+/* % */
+.crash-percent{
+  font-size:12px;
+  letter-spacing:.2em;
+}
      
 </style>
 
@@ -2832,11 +2924,43 @@ RE-LINK LEYLINE...
 `;
 document.body.appendChild(e);
 count++;
-if(count>180){
-clearInterval(interval);
-setTimeout(()=>{
-location.href="afterday.html";
-},1200);
+if(count>120){
+
+  clearInterval(interval);
+  document.body.style.filter = "contrast(1.4) brightness(1.2)";
+  /* =========================
+     画面ブツ切り
+  ========================= */
+  const crash = document.getElementById("crashScreen");
+  crash.classList.add("active");
+
+  /* =========================
+     ローディング
+  ========================= */
+
+  const bar = document.getElementById("crashBar");
+  const percent = document.getElementById("crashPercent");
+
+  let p = 0;
+
+  const loadInterval = setInterval(()=>{
+
+    p += Math.random() * 8 + 2;
+
+    if(p >= 100){
+      p = 100;
+      clearInterval(loadInterval);
+      
+      setTimeout(()=>{
+        location.href = "dayafter.html";
+      },400);
+    }
+
+    bar.style.width = p + "%";
+    percent.textContent = Math.floor(p) + "%";
+
+  },120);
+
 }
 },20);
 });
@@ -3120,6 +3244,21 @@ header.classList.remove("block-glitch");
 animate();
 
 </script>
+
+/* クラッシュhtml */
+<div id="crashScreen">
+  <div class="crash-noise"></div>
+
+  <div class="crash-loading">
+    <div class="crash-text en">RE-BUILDING ELYSIUM...</div>
+
+    <div class="crash-bar-wrap">
+      <div class="crash-bar" id="crashBar"></div>
+    </div>
+
+    <div class="crash-percent en" id="crashPercent">0%</div>
+  </div>
+</div>
      
 </body>
 </html>
