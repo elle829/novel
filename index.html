@@ -3005,36 +3005,46 @@ if(count>120){
   const power = document.getElementById("powerCut");
   power.classList.add("active");
 
+/* =========================
+   ★ 暗転フェーズ（余韻）
+========================= */
+
+setTimeout(()=>{
+
+  /* ノイズ” */
+  document.body.style.filter = "brightness(0.3) contrast(1.2)";
+
+},450);
+     
   setTimeout(()=>{
 
-    const crash = document.getElementById("crashScreen");
-    crash.classList.add("active");
+  const crash = document.getElementById("crashScreen");
+  crash.classList.add("active");
 
-    const bar = document.getElementById("crashBar");
-    const percent = document.getElementById("crashPercent");
+  const bar = document.getElementById("crashBar");
+  const percent = document.getElementById("crashPercent");
 
-    let p = 0;
+  let p = 0;
 
-    const loadInterval = setInterval(()=>{
+  const loadInterval = setInterval(()=>{
 
-      p += Math.random() * 8 + 2;
+    p += Math.random() * 8 + 2;
 
-      if(p >= 100){
-        p = 100;
-        clearInterval(loadInterval);
+    if(p >= 100){
+      p = 100;
+      clearInterval(loadInterval);
 
-        setTimeout(()=>{
-          location.href = "afterday.html";
-        },400);
-      }
+      setTimeout(()=>{
+        location.href = "afterday.html";
+      },400);
+    }
 
-      bar.style.width = p + "%";
-      percent.textContent = Math.floor(p) + "%";
+    bar.style.width = p + "%";
+    percent.textContent = Math.floor(p) + "%";
 
-    },120);
+  },120);
 
-  },480);
-
+},900);
 }
 },20);
 });
