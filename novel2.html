@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Novel02r</title>
+
+<!-- これでおしまい。　おやすみーーーー　-->
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  
+<script>
+(function(d){
+var config={
+kitId:"iuw1frp",
+scriptTimeout:3000,
+async:true
+},
+h=d.documentElement,
+t=setTimeout(function(){
+h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";
+},config.scriptTimeout),
+tk=d.createElement("script"),
+f=false,
+s=d.getElementsByTagName("script")[0],
+a;
+
+h.className+=" wf-loading";
+tk.src="https://use.typekit.net/"+config.kitId+".js";
+tk.async=true;
+
+tk.onload=tk.onreadystatechange=function(){
+a=this.readyState;
+if(f||a&&a!="complete"&&a!="loaded")return;
+f=true;
+clearTimeout(t);
+try{Typekit.load(config)}catch(e){}
+};
+
+s.parentNode.insertBefore(tk,s);
+
+})(document);
+</script>
+  
+<style>
+
+/* ===== 背景 ===== */
+
+body{
+  margin:0;
+  height:100vh;
+  overflow:hidden;
+  background:url("./png/dayafter.png") center/cover no-repeat;
+  justify-content:center;
+  align-items:center;
+  font-family:
+  "fot-tsukuaoldmin-pr6n",
+  "eurostile",
+  sans-serif;
+}
+
+/* ===== 本 ===== */
+
+#book{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:min(92vw,1100px);
+  height:min(80vh,700px);
+  display:flex;
+  box-shadow:
+    0 60px 140px rgba(0,0,0,0.45),
+    0 10px 40px rgba(0,0,0,0.25);
+  animation:float 6s ease-in-out infinite;
+}
+
+/* 中央線（柔らかく） */
+
+#book::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:5%;
+  bottom:5%;
+  width:2px;
+  background:rgba(0,0,0,0.08);
+  filter:blur(1px);
+  z-index:10;
+}
+
+/* ===== 空気レイヤー ===== */
+
+#book::after{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(
+      circle at 50% 30%,
+      rgba(255,255,255,0.15),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(0,0,0,0.15),
+      transparent 70%
+    );
+
+  pointer-events:none;
+  mix-blend-mode:soft-light;
+}
+
+@keyframes float{
+  0%,100%{ transform:translate(-50%,-50%) translateY(0); }
+  50%{ transform:translate(-50%,-50%) translateY(-6px); }
+}
+
+
+/* ===== ページ ===== */
+
+.page{
+  width:50%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:rgba(246,244,238,0.95);
+  backdrop-filter:blur(3px);
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 40px rgba(0,0,0,0.06),
+    inset -20px 0 30px rgba(0,0,0,0.05);
+
+  position:relative;
+  overflow:hidden;
+
+  transition:transform 0.5s ease, opacity 0.4s ease;
+}
+
+/* canvas（比率維持） */
+
+.page canvas{
+  width:auto;
+  height:100%;
+  max-height:100%;
+  max-width:100%;
+  object-fit:contain;
+  filter:
+    sepia(0.25)
+    contrast(0.95)
+    brightness(0.98)
+    saturate(0.9);
+    hue-rotate(-5deg);
+}
+
+/* 紙色オーバーレイ */
+
+.page::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(245,240,220,0.25);
+  mix-blend-mode:multiply;
+  pointer-events:none;
+}
+
+/* ===== めくりアニメ ===== */
+
+.page.flip-left{
+  transform:translateX(-30px) rotateY(10deg);
+  opacity:0.6;
+}
+
+.page.flip-right{
+  transform:translateX(30px) rotateY(-10deg);
+  opacity:0.6;
+}
+
+/* ===== ヘルプボタン ===== */
+
+#helpBtn{
+  position:fixed;
+  right:30px;
+  bottom:30px;
+  width:44px;
+  height:44px;
+
+  border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(6px);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:white;
+  font-size:20px;
+  cursor:pointer;
+
+  box-shadow:0 8px 30px rgba(0,0,0,0.3);
+  transition:0.3s;
+}
+
+#helpBtn:hover{
+  transform:scale(1.1);
+}
+
+/* ===== パネル ===== */
+
+#helpPanel{
+  position:fixed;
+  right:30px;
+  bottom:90px;
+  width:220px;
+
+  background:rgba(20,20,20,0.5);
+  backdrop-filter:blur(10px);
+
+  color:white;
+  font-size:13px;
+  line-height:1.6;
+
+  border-radius:12px;
+  padding:14px;
+
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(10px);
+  transition:0.3s;
+}
+
+#helpPanel.show{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+
+#backBtn{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+
+  padding:10px 24px;
+
+  color:white;
+  font-size:13px;
+  letter-spacing:0.1em;
+
+  background:rgba(255,255,255,0.12);
+  backdrop-filter:blur(6px);
+
+  border-radius:20px;
+
+  text-decoration:none;
+
+  box-shadow:0 6px 20px rgba(0,0,0,0.25);
+
+  transition:0.3s;
+}
+
+#backBtn:hover{
+  background:rgba(255,255,255,0.25);
+}
+  
+</style>
+</head>
+
+<body>
+
+<div id="book">
+  <div class="page" id="leftPage"><canvas id="left"></canvas></div>
+  <div class="page" id="rightPage"><canvas id="right"></canvas></div>
+</div>
+
+<div id="helpBtn">?</div>
+
+<div id="helpPanel">
+  <div class="help-inner">
+    <p>◀ 左端クリック：次のページ</p>
+    <p>▶ 右端クリック：前のページ</p>
+    <p>← → キーでも操作可能</p>
+  </div>
+</div>
+
+<a id="backBtn" href="./dayafter.html">戻る</a>
+
+<script>
+
+/* ===== PDF設定 ===== */
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+const url = "./archive/after/novel02.pdf";
+
+let pdfDoc;
+let state = 0;
+
+const leftCanvas = document.getElementById("left");
+const rightCanvas = document.getElementById("right");
+
+const leftPage = document.getElementById("leftPage");
+const rightPage = document.getElementById("rightPage");
+
+/* ===== ページ描画 ===== */
+
+async function renderPage(pageNum, canvas){
+
+  const ctx = canvas.getContext("2d");
+
+  if(pageNum < 1 || pageNum > pdfDoc.numPages){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    return;
+  }
+
+  const page = await pdfDoc.getPage(pageNum);
+  const viewport = page.getViewport({scale:2});
+
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  await page.render({
+    canvasContext: ctx,
+    viewport
+  }).promise;
+}
+
+/* ===== 見開き更新 ===== */
+
+async function renderSpread(){
+
+  await renderPage(state+2, leftCanvas);  // 左
+  await renderPage(state+1, rightCanvas); // 右
+}
+
+/* ===== 初期化 ===== */
+
+pdfjsLib.getDocument(url).promise.then(async (pdf)=>{
+  pdfDoc = pdf;
+  state = 0;
+  renderSpread();
+});
+
+/* ===== ページ送り ===== */
+
+function nextPage(){
+
+  if(state + 2 >= pdfDoc.numPages) return;
+
+  leftPage.classList.add("flip-left");
+
+  setTimeout(()=>{
+    state += 2;
+    renderSpread();
+    leftPage.classList.remove("flip-left");
+  },200);
+}
+
+function prevPage(){
+
+  if(state - 2 < 0) return;
+
+  rightPage.classList.add("flip-right");
+
+  setTimeout(()=>{
+    state -= 2;
+    renderSpread();
+    rightPage.classList.remove("flip-right");
+  },200);
+}
+
+/* ===== 操作 ===== */
+
+document.getElementById("book").addEventListener("click",(e)=>{
+
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const width = rect.width;
+
+  const edge = 120; // 端だけ有効
+
+  if(x < edge){
+    nextPage();   // 左 → 次
+  }else if(x > width - edge){
+    prevPage();   // 右 → 戻る
+  }
+
+});
+
+/* ===== キーボード ===== */
+
+document.addEventListener("keydown",(e)=>{
+  if(e.key === "ArrowLeft") nextPage();
+  if(e.key === "ArrowRight") prevPage();
+});
+
+/* ===== ボタン ===== */
+  
+const helpBtn = document.getElementById("helpBtn");
+const helpPanel = document.getElementById("helpPanel");
+
+helpBtn.addEventListener("click",()=>{
+  helpPanel.classList.toggle("show");
+});
+
+
+</script>
+
+</body>
+</html>
