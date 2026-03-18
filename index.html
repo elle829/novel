@@ -2054,9 +2054,7 @@ renderer.toneMappingExposure = 0.85;
      
 renderer.setSize(window.innerWidth,window.innerHeight);
 
-renderer.setPixelRatio(
-  Math.min(window.devicePixelRatio,2)
-);
+renderer.setPixelRatio(1.2);
 
 document
 .getElementById("scene")
@@ -2263,63 +2261,7 @@ for(let i=0;i<10;i++){
   moons.push(moon);
 
 }
-
-     
-/* =========================================================
-   Nebula
-   ========================================================= */
-let nebula;
-     
-function createNebula(){
-
-const canvas = document.createElement("canvas");
-canvas.width = 512;
-canvas.height = 512;
-
-const ctx = canvas.getContext("2d");
-
-const g = ctx.createRadialGradient(
-256,256,20,
-256,256,256
-);
-
-g.addColorStop(0,"rgba(120,160,255,0.22)");
-g.addColorStop(.4,"rgba(120,160,255,0.12)");
-g.addColorStop(1,"rgba(0,0,0,0)");
-
-ctx.fillStyle = g;
-ctx.fillRect(0,0,512,512);
-
-const texture = new THREE.CanvasTexture(canvas);
-
-const mat = new THREE.SpriteMaterial({
-map:texture,
-transparent:true,
-opacity:0.45,
-depthWrite:false
-});
-
-nebula = new THREE.Sprite(mat); 
-
-nebula.scale.set(85,85,1);
-nebula.position.set(0,0,-4);
-nebula.renderOrder = -10;
-
-scene.add(nebula);
-
-const nebula2 = nebula.clone();
-
-nebula2.position.set(-6,2,-6);
-nebula2.scale.set(70,70,1);
-nebula2.material.opacity = 0.55;
-
-scene.add(nebula2);
-     
-}
-
-createNebula();
-
-     
+   
 /* =========================================================
    7) 星
    ========================================================= */
@@ -2334,8 +2276,8 @@ function createStarTexture(){
     size/2, size/2, size/2
   );
   g.addColorStop(0, "rgba(255,255,255,1)");
-  g.addColorStop(0.4, "rgba(255,255,255,0.9)");
-  g.addColorStop(0.8, "rgba(255,255,255,0.2)");
+  g.addColorStop(0.5, "rgba(255,255,255,1)");
+  g.addColorStop(0.85, "rgba(255,255,255,0.4)");
   g.addColorStop(1, "rgba(255,255,255,0)");
   ctx.fillStyle = g;
   ctx.beginPath();
@@ -2365,7 +2307,7 @@ function createStars(size,count){
   const material = new THREE.PointsMaterial({
     map: starTexture,
     color: 0xdfe9ff,
-    size: 0.055,
+    size: 0.09,
     transparent: true,
     opacity: 0.9,
     sizeAttenuation: true,
@@ -2374,9 +2316,9 @@ function createStars(size,count){
   });
   return new THREE.Points(geo, material);
 }
-const starsNear = createStars(40, 900);
-const starsMid  = createStars(80, 700);
-const starsFar  = createStars(120, 500);
+const starsNear = createStars(40, 500);
+const starsMid  = createStars(80, 400);
+const starsFar  = createStars(120, 300);
      
 scene.add(starsNear);
 scene.add(starsMid);
@@ -2546,7 +2488,8 @@ window.addEventListener("click",()=>{
 function updatePopupForHoveredMoon(moon){
 
   moon.getWorldPosition(tmpVec3);
-  const v = tmpVec3.clone().project(camera);
+  tmpVec3.project(camera);
+  const v = tmpVec3;
 
   const screenX = (v.x * 0.5 + 0.5) * window.innerWidth;
   const screenY = (-v.y * 0.5 + 0.5) * window.innerHeight;
@@ -3090,13 +3033,6 @@ function animate(){
 
   starsFar.position.x = mouseX * 0.2;
   starsFar.position.y = mouseY * 0.15;
-
-  if(nebula){
-
-    nebula.position.x = mouseX * 0.18;
-    nebula.position.y = mouseY * 0.12;
-
-  }
      
   camera.lookAt(0,0,0);
 
@@ -3149,17 +3085,17 @@ function animate(){
      
      if(visited){
 
-       moon.material.color.set(0x8f4ed9);
+       moon.material.color.set(0x7a5cff);
      
-       moon.material.blending = THREE.NormalBlending;
+       moon.material.blending = THREE.AdditiveBlending; 
        moon.material.depthWrite = false;
      
        const pulse =
-         0.9 +
-         Math.sin(performance.now()*0.004 + moon.userData.index) * 0.35;
+         1.0 +
+         Math.sin(performance.now()*0.004 + moon.userData.index) * 0.4;
      
        moon.material.opacity =
-         Math.min(1,0.85 + depth * 0.25 + pulse * 0.25);
+         Math.min(1, 0.9 + depth * 0.3 + pulse * 0.3);
      
      }else{
      
@@ -3213,7 +3149,8 @@ function animate(){
 =============================== */
 
 fairy.getWorldPosition(tmpVec3);
-const v2 = tmpVec3.clone().project(camera);
+tmpVec3.project(camera);
+const v2 = tmpVec3;
 const x2 = (v2.x * 0.5 + 0.5) * window.innerWidth;
 const y2 = (-v2.y * 0.5 + 0.5) * window.innerHeight;
 const targetX = x2;
@@ -3228,8 +3165,8 @@ targetRing.style.top  = ringY + mouseY * 2.5 + "px";
      
 /* ノード調整 */
 fairy.getWorldPosition(tmpVec3b);
-const v = tmpVec3b.clone().project(camera);
-
+tmpVec3b.project(camera);
+const v = tmpVec3b;
 const nodeBaseX = (v.x * 0.5 + 0.5) * window.innerWidth;
 const nodeBaseY = (-v.y * 0.5 + 0.5) * window.innerHeight;
 
