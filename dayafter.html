@@ -775,11 +775,47 @@ animation:graveGlow 8s ease-in-out infinite;
 100%{opacity:0.4}
 
 }
+
+/* ===============================
+   ページ出現（にじみ）
+=============================== */
+
+body.preload{
+
+  opacity:0;
+
+  filter:
+    blur(12px)
+    brightness(1.4)
+    contrast(0.85);
+
+  transform:scale(1.04);
+
+}
+
+/* 出現アニメ */
+body.loaded{
+
+  opacity:1;
+
+  filter:
+    blur(0px)
+    brightness(1)
+    contrast(1);
+
+  transform:scale(1);
+
+  transition:
+    opacity 1.8s ease,
+    filter 2.2s ease,
+    transform 2.2s cubic-bezier(.2,.9,.3,1);
+
+}
   
 </style>
 </head>
 
-<body>
+<body class="preload">
 
 <div class="grave-glow"></div>
 <div class="petals"></div>
@@ -993,6 +1029,18 @@ p.style.animationDelay=(Math.random()*40)+"s";
 particleLayer.appendChild(p);
 
 }
+
+/* ===============================
+   ページ出現（滲み）
+=============================== */
+
+window.addEventListener("load",()=>{
+
+  setTimeout(()=>{
+    document.body.classList.add("loaded");
+  },200);
+
+});
 
 </script>
 
