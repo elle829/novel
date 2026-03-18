@@ -2974,7 +2974,7 @@ rebootBtn.addEventListener("click",()=>{
   rebootModal.style.display = "none";
 
   let count = 0;
-  const maxErrors = 125;
+  const maxErrors = 90;
 
   function spawnErrorPopup(){
 
@@ -3049,7 +3049,7 @@ rebootBtn.addEventListener("click",()=>{
      
      },140);
 
-      },900);
+      },1600);
 
       return;
     }
@@ -3059,7 +3059,7 @@ rebootBtn.addEventListener("click",()=>{
 
    
     const eased = progress * progress;
-    const nextDelay = 170 - eased * 156;
+    const nextDelay = 80 - eased * 60;
 
     setTimeout(spawnErrorPopup, nextDelay);
   }
