@@ -1876,7 +1876,7 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 
-camera.position.set(0,0.2,9);   // ←ここ追加
+camera.position.set(0,0.2,9); 
 
 const renderer = new THREE.WebGLRenderer({
   antialias:true,
@@ -1940,10 +1940,6 @@ fairy.renderOrder = 10;
 const fairyPivot = new THREE.Group();
 scene.add(fairyPivot);
 fairyPivot.add(fairy);
-
-/* =========================================================
-   3.5) 観測HUDリング
-   ========================================================= */
 
 /* =========================================================
    3.5) 観測HUDリング
@@ -2140,7 +2136,7 @@ opacity:0.45,
 depthWrite:false
 });
 
-nebula = new THREE.Sprite(mat);   // ←const削除
+nebula = new THREE.Sprite(mat); 
 
 nebula.scale.set(85,85,1);
 nebula.position.set(0,0,-4);
@@ -2586,7 +2582,7 @@ const ECG_WIDTH = 520;
 const ECG_BASE_Y = 90;
 const ECG_BASE_Y2 = 90;
 
-const ECG_SPEED = 0.95;      // 左→右
+const ECG_SPEED = 0.95;
 const ECG_RESET_X = ECG_WIDTH + 60;
 
 let ecgHeadX = -90;
@@ -2597,7 +2593,6 @@ function rand(min, max){
   return min + Math.random() * (max - min);
 }
 
-/* 拍を広めに、実際の心電図っぽく作る */
 function makeBeatShape(){
 
   const pAmp = rand(1.8, 4.2);
@@ -2729,7 +2724,7 @@ function updateVitalWave(){
     buildRunningWavePath(ECG_BASE_Y, ecgHeadX, activeBeat)
   );
 
-  /* 残像っぽいサブ波形 */
+  /* サブ波形 */
   if(activeBeat){
     const ghostBeat = activeBeat.map((p, i) => ({
       x: p.x - 2.5,
@@ -2786,7 +2781,7 @@ function updateProgress(){
     visited.length / STORY_TOTAL * 100
   );
   progressBar.style.width = percent + "%";
-  progressText.textContent = "SYNC " + percent + "%";
+  progressText.textContent = ">> DATA RECOVERY PROTOCOL --- " + percent + "%";
   if(percent === 100){
     setTimeout(()=>{
       rebootModal.style.display = "flex";
@@ -2995,28 +2990,26 @@ const y2 = (-v2.y * 0.5 + 0.5) * window.innerHeight;
 const targetX = x2;
 const targetY = y2;
 
-/* 少し遅れて追従 */
+/* 追従 */
 ringX += (targetX - ringX) * 0.12;
 ringY += (targetY - ringY) * 0.12;
 
 targetRing.style.left = ringX + mouseX * 4 + "px";
 targetRing.style.top  = ringY + mouseY * 2.5 + "px";
      
-/* ノードを妖精位置に */
+/* ノード調整 */
 fairy.getWorldPosition(tmpVec3b);
 const v = tmpVec3b.clone().project(camera);
 
 const nodeBaseX = (v.x * 0.5 + 0.5) * window.innerWidth;
 const nodeBaseY = (-v.y * 0.5 + 0.5) * window.innerHeight;
 
-/* ノード中心位置を少し妖精にかぶせる */
 const nodeOffsetX = -28;
 const nodeOffsetY = -48;
 
 const nodeX = nodeBaseX + nodeOffsetX;
 const nodeY = nodeBaseY + nodeOffsetY;
 
-/* ノード自体は中央合わせで配置 */
 vitalNode.style.left = (nodeX - 6) + "px";
 vitalNode.style.top = (nodeY - 6) + "px";
 
@@ -3120,9 +3113,6 @@ header.classList.remove("block-glitch");
 }
 
 },2200);
-
-     
-
      
 animate();
 
