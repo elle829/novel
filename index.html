@@ -3028,23 +3028,28 @@ rebootBtn.addEventListener("click",()=>{
 
         const loadInterval = setInterval(()=>{
 
-          p += Math.random() * 8 + 2;
+       const progress = p / 100;
+     
+       /* 後半ほど遅くする */
+       const speed = (1 - progress);
+     
+       p += Math.random() * 4 * speed + 0.5;
+     
+       if(p >= 100){
+         p = 100;
+         clearInterval(loadInterval);
+     
+         setTimeout(()=>{
+           location.href = "dayafter.html";
+         },400);
+       }
+     
+       bar.style.width = p + "%";
+       percent.textContent = Math.floor(p) + "%";
+     
+     },140);
 
-          if(p >= 100){
-            p = 100;
-            clearInterval(loadInterval);
-
-            setTimeout(()=>{
-              location.href = "dayafter.html";
-            },400);
-          }
-
-          bar.style.width = p + "%";
-          percent.textContent = Math.floor(p) + "%";
-
-        },120);
-
-      },1650);
+      },900);
 
       return;
     }
