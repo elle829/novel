@@ -3017,7 +3017,7 @@ setTimeout(()=>{
 },450);
      
   setTimeout(()=>{
-
+  document.body.style.filter = "";
   const crash = document.getElementById("crashScreen");
   crash.classList.add("active");
 
@@ -3035,7 +3035,7 @@ setTimeout(()=>{
       clearInterval(loadInterval);
 
       setTimeout(()=>{
-        location.href = "afterday.html";
+        location.href = "dayafter.html";
       },400);
     }
 
