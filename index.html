@@ -1603,6 +1603,76 @@ transform:rotate(360deg);
 }
 
 /* ===============================
+   POWER CUT (ブラウン管落ち)
+=============================== */
+
+#powerCut{
+  position:fixed;
+  inset:0;
+  background:black;
+  z-index:1999;
+  pointer-events:none;
+  opacity:0;
+}
+
+/* 発火 */
+#powerCut.active{
+  opacity:1;
+}
+
+/* 横線 */
+.power-line{
+  position:absolute;
+  left:0;
+  top:50%;
+  width:100%;
+  height:2px;
+
+  background:white;
+
+  transform:translateY(-50%) scaleY(1);
+
+  box-shadow:
+    0 0 10px white,
+    0 0 30px rgba(255,255,255,.9),
+    0 0 80px rgba(255,255,255,.6);
+
+  opacity:0;
+}
+
+/* アニメーション */
+#powerCut.active .power-line{
+  animation:powerCutAnim .45s ease forwards;
+}
+
+@keyframes powerCutAnim{
+
+  /* 一瞬フラッシュ */
+  0%{
+    opacity:0;
+    transform:translateY(-50%) scaleY(8);
+  }
+
+  /* 横線になる */
+  30%{
+    opacity:1;
+    transform:translateY(-50%) scaleY(1);
+  }
+
+  /* 中央に収束 */
+  70%{
+    opacity:1;
+    transform:translateY(-50%) scaleX(0.05) scaleY(1);
+  }
+
+  /* 消える */
+  100%{
+    opacity:0;
+    transform:translateY(-50%) scaleX(0) scaleY(1);
+  }
+}
+
+/* ===============================
    CRASH SCREEN
 =============================== */
 
@@ -2927,39 +2997,46 @@ count++;
 if(count>120){
 
   clearInterval(interval);
+
+  /* バチッ */
   document.body.style.filter = "contrast(1.4) brightness(1.2)";
-  /* =========================
-     画面ブツ切り
-  ========================= */
-  const crash = document.getElementById("crashScreen");
-  crash.classList.add("active");
-
-  /* =========================
-     ローディング
-  ========================= */
-
-  const bar = document.getElementById("crashBar");
-  const percent = document.getElementById("crashPercent");
-
-  let p = 0;
-
-  const loadInterval = setInterval(()=>{
-
-    p += Math.random() * 8 + 2;
-
-    if(p >= 100){
-      p = 100;
-      clearInterval(loadInterval);
-      
-      setTimeout(()=>{
-        location.href = "dayafter.html";
-      },400);
-    }
-
-    bar.style.width = p + "%";
-    percent.textContent = Math.floor(p) + "%";
-
+  setTimeout(()=>{
+    document.body.style.filter = "";
   },120);
+
+  /* 電源ブツ切り */
+  const power = document.getElementById("powerCut");
+  power.classList.add("active");
+
+  setTimeout(()=>{
+
+    const crash = document.getElementById("crashScreen");
+    crash.classList.add("active");
+
+    const bar = document.getElementById("crashBar");
+    const percent = document.getElementById("crashPercent");
+
+    let p = 0;
+
+    const loadInterval = setInterval(()=>{
+
+      p += Math.random() * 8 + 2;
+
+      if(p >= 100){
+        p = 100;
+        clearInterval(loadInterval);
+
+        setTimeout(()=>{
+          location.href = "afterday.html";
+        },400);
+      }
+
+      bar.style.width = p + "%";
+      percent.textContent = Math.floor(p) + "%";
+
+    },120);
+
+  },480);
 
 }
 },20);
@@ -3245,7 +3322,11 @@ animate();
 
 </script>
 
-/* クラッシュhtml */
+<!-- クラッシュUI -->
+<div id="powerCut">
+  <div class="power-line"></div>
+</div>
+     
 <div id="crashScreen">
   <div class="crash-noise"></div>
 
