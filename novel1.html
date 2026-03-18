@@ -51,7 +51,6 @@ body{
   height:100vh;
   overflow:hidden;
   background:url("./png/dayafter.png") center/cover no-repeat;
-  display:flex;
   justify-content:center;
   align-items:center;
   font-family:
@@ -63,13 +62,17 @@ body{
 /* ===== 本 ===== */
 
 #book{
-  position:relative;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
   width:min(92vw,1100px);
   height:min(80vh,700px);
   display:flex;
   box-shadow:
     0 60px 140px rgba(0,0,0,0.45),
     0 10px 40px rgba(0,0,0,0.25);
+  animation:float 6s ease-in-out infinite;
 }
 
 /* 中央線（柔らかく） */
@@ -109,22 +112,11 @@ body{
   mix-blend-mode:soft-light;
 }
 
-#book{
-  animation:float 6s ease-in-out infinite;
-}
-
 @keyframes float{
   0%,100%{ transform:translate(-50%,-50%) translateY(0); }
   50%{ transform:translate(-50%,-50%) translateY(-6px); }
 }
 
-#pdf-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 10;
-}
 
 /* ===== ページ ===== */
 
