@@ -2968,84 +2968,98 @@ function markMoonVisited(index){
      
 updateProgress();
 /* reboot */
+/* reboot */
 rebootBtn.addEventListener("click",()=>{
-     
-rebootModal.style.display="none";
-let count = 0;
-const interval = setInterval(()=>{
-const e = document.createElement("div");
-e.className="error-popup";
-e.style.left=Math.random()*window.innerWidth+"px";
-e.style.top=Math.random()*window.innerHeight+"px";
-const scale = 0.6 + Math.random() * 0.8;
-e.style.transform = `scale(${scale})`;
-e.innerHTML = `
-<div class="error-title">LOADING ERROR</div>
-<div class="error-code">
-ERROR_CODE: 466c696e73<br>
-[RECORD_CONNECTION_DENY]
-</div>
-<div class="error-box">
-RE-LINK LEYLINE...
-</div>
-`;
-document.body.appendChild(e);
-count++;
-if(count>125){
 
-  clearInterval(interval);
+  rebootModal.style.display = "none";
 
-  document.body.style.filter = "contrast(1.4) brightness(1.2)";
-  setTimeout(()=>{
-    document.body.style.filter = "";
-  },120);
+  let count = 0;
+  const maxErrors = 125;
 
-  /* 電源ブツ切り */
-  const power = document.getElementById("powerCut");
-  power.classList.add("active");
+  function spawnErrorPopup(){
 
-/* =========================
-   ★ 暗転フェーズ（余韻）
-========================= */
+    const e = document.createElement("div");
+    e.className = "error-popup";
+    e.style.left = Math.random() * window.innerWidth + "px";
+    e.style.top  = Math.random() * window.innerHeight + "px";
 
-setTimeout(()=>{
+    const scale = 0.6 + Math.random() * 0.8;
+    e.style.transform = `scale(${scale})`;
 
-  /* ノイズ” */
-  document.body.style.filter = "brightness(0.3) contrast(1.2)";
+    e.innerHTML = `
+      <div class="error-title">LOADING ERROR</div>
+      <div class="error-code">
+      ERROR_CODE: 466c696e73<br>
+      [RECORD_CONNECTION_DENY]
+      </div>
+      <div class="error-box">
+      RE-LINK LEYLINE...
+      </div>
+    `;
 
-},450);
-     
-  setTimeout(()=>{
-  document.body.style.filter = "";
-  const crash = document.getElementById("crashScreen");
-  crash.classList.add("active");
+    document.body.appendChild(e);
+    count++;
 
-  const bar = document.getElementById("crashBar");
-  const percent = document.getElementById("crashPercent");
+    /* 終了条件 */
+    if(count > maxErrors){
 
-  let p = 0;
+      document.body.style.filter = "contrast(1.4) brightness(1.2)";
+      setTimeout(()=>{
+        document.body.style.filter = "";
+      },120);
 
-  const loadInterval = setInterval(()=>{
-
-    p += Math.random() * 8 + 2;
-
-    if(p >= 100){
-      p = 100;
-      clearInterval(loadInterval);
+      const power = document.getElementById("powerCut");
+      power.classList.add("active");
 
       setTimeout(()=>{
-        location.href = "dayafter.html";
-      },400);
+        document.body.style.filter = "brightness(0.22) contrast(1.1)";
+      },450);
+
+      setTimeout(()=>{
+        document.body.style.filter = "";
+
+        const crash = document.getElementById("crashScreen");
+        crash.classList.add("active");
+
+        const bar = document.getElementById("crashBar");
+        const percent = document.getElementById("crashPercent");
+
+        let p = 0;
+
+        const loadInterval = setInterval(()=>{
+
+          p += Math.random() * 8 + 2;
+
+          if(p >= 100){
+            p = 100;
+            clearInterval(loadInterval);
+
+            setTimeout(()=>{
+              location.href = "dayafter.html";
+            },400);
+          }
+
+          bar.style.width = p + "%";
+          percent.textContent = Math.floor(p) + "%";
+
+        },120);
+
+      },1650);
+
+      return;
     }
 
-    bar.style.width = p + "%";
-    percent.textContent = Math.floor(p) + "%";
 
-  },120);
+    const progress = count / maxErrors;
 
-},900);
-}
-},20);
+   
+    const eased = progress * progress;
+    const nextDelay = 170 - eased * 156;
+
+    setTimeout(spawnErrorPopup, nextDelay);
+  }
+
+  spawnErrorPopup();
 });
      
 /* =========================================================
