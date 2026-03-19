@@ -98,26 +98,26 @@ body{
   background:
 
 radial-gradient(
-circle at 50% 78%,
-rgba(80,110,200,0.12) 0%,
-rgba(30,40,120,0.08) 16%,
-rgba(10,14,40,0) 42%
+circle at 50% 40%,
+rgba(70,95,210,0.20) 0%,
+rgba(35,55,130,0.10) 42%,
+rgba(0,0,0,0) 72%
 ),
 
 radial-gradient(
-circle at 50% 40%,
-rgba(40,60,160,0.15) 0%,
-rgba(20,30,80,0.05) 40%,
-rgba(0,0,0,0) 70%
+circle at 50% 78%,
+rgba(110,145,255,0.22) 0%,
+rgba(60,85,180,0.12) 18%,
+rgba(10,14,40,0) 45%
 ),
 
 linear-gradient(
 to top,
-#02030a 0%,
-#05071a 25%,
-#0a1230 45%,
-#060a1f 70%,
-#010203 100%
+#070b18 0%,
+#0b1230 25%,
+#142558 45%,
+#0d183d 70%,
+#040817 100%
 );
 
   color:white;
@@ -2039,7 +2039,8 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 
-camera.position.set(0,0.2,9); 
+camera.position.set(0,0.2,9);
+camera.lookAt(0,0,0);
 
 const renderer = new THREE.WebGLRenderer({
   antialias:true,
@@ -2050,7 +2051,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.sortObjects = true;
      
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 0.85;
+renderer.toneMappingExposure = 1.0;
      
 renderer.setSize(window.innerWidth,window.innerHeight);
 
@@ -2241,10 +2242,11 @@ for(let i=0;i<10;i++){
   const tex=createMoonTexture(i/9);
 
   const mat=new THREE.SpriteMaterial({
-    map:tex,
-    transparent:true,
-    depthWrite:false,
-  });
+       map:tex,
+       transparent:true,
+       depthWrite:false,
+       blending:THREE.AdditiveBlending
+     });
      
   const moon=new THREE.Sprite(mat);
 
@@ -2356,7 +2358,7 @@ function createWarpStars(count){
 
 }
 
-const warpStars = createWarpStars(420);
+const warpStars = createWarpStars(240);
 scene.add(warpStars);
 
 const warpPositions =
@@ -2395,7 +2397,7 @@ function createDriftStars(count){
 
 }
 
-const driftStars = createDriftStars(280);
+const driftStars = createDriftStars(160);
 scene.add(driftStars);
 
 starsNear.renderOrder = -5;
@@ -2539,7 +2541,8 @@ function updatePopupForHoveredMoon(moon){
      /* 妖精座標 */
      
      fairy.getWorldPosition(tmpVec3b);
-     const fairyScreen = tmpVec3b.clone().project(camera);
+     tmpVec3b.project(camera);
+     const fairyScreen = tmpVec3b;
      
      const fairyX = (fairyScreen.x * 0.5 + 0.5) * window.innerWidth;
      const fairyY = (-fairyScreen.y * 0.5 + 0.5) * window.innerHeight;
@@ -3033,8 +3036,6 @@ function animate(){
 
   starsFar.position.x = mouseX * 0.2;
   starsFar.position.y = mouseY * 0.15;
-     
-  camera.lookAt(0,0,0);
 
   raycaster.setFromCamera(mouse,camera);
 
@@ -3100,6 +3101,8 @@ function animate(){
      }else{
      
        moon.material.color.set(0xffffff);
+       moon.material.blending = THREE.NormalBlending;
+       moon.material.depthWrite = false;
        moon.material.opacity = Math.min(1, 0.5 + depth * 0.5);
      
      }
@@ -3213,10 +3216,7 @@ window.addEventListener("resize",()=>{
   camera.updateProjectionMatrix();
 
   renderer.setSize(window.innerWidth,window.innerHeight);
-
-  renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio,2)
-  );
+  renderer.setPixelRatio(1.2);
 
 });
 
