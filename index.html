@@ -1763,6 +1763,50 @@ transform:rotate(360deg);
   font-size:12px;
   letter-spacing:.2em;
 }
+
+/* ===============================
+   モバイルブロック
+=============================== */
+
+#mobileBlock{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#000;
+  z-index:9999;
+
+  align-items:center;
+  justify-content:center;
+}
+
+/* 中身 */
+.mobile-message{
+  text-align:center;
+  color:#dfe9ff;
+  font-family:"UI-EN","UI-JP",serif;
+  letter-spacing:.12em;
+}
+
+.mobile-title{
+  font-size:20px;
+  margin-bottom:16px;
+  text-shadow:
+    0 0 8px rgba(120,190,255,.8),
+    0 0 20px rgba(120,190,255,.5);
+}
+
+.mobile-text{
+  font-size:13px;
+  opacity:.8;
+  line-height:1.8;
+}
+
+/* モバイルだけ表示 */
+@media (max-width:768px){
+  #mobileBlock{
+    display:flex;
+  }
+}     
      
 </style>
 
@@ -1771,6 +1815,10 @@ transform:rotate(360deg);
 
 
 <body>
+
+<div id="mobileBlock">
+このサイトはPC専用です
+</div>     
 
 <div id="bootScreen">
 <div class="boot-panel">
